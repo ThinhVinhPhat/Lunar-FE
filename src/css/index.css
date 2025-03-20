@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+  scroll-behavior: smooth;
+  font-family: "Karla", "Arial", sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

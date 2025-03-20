@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 
 
 const instance = axios.create({
-  baseURL: "https://l70kdf08-3100.asse.devtunnels.ms" + '/api/v1/',
+  baseURL: "https://jwt-be-production.up.railway.app" + '/api/v1/',
 });
 
 instance.interceptors.request.use(

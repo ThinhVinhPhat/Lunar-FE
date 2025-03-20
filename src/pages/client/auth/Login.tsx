@@ -1,20 +1,27 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useLogin } from "../../hooks/queryClient/mutator/auth/login";
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { useContextProvider } from "../../../../src/hooks/useContextProvider";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, isPending } = useLogin();
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutate({ email, password });
-  };
+  const { handleLogin, isPendingLogin, currentUser } = useContextProvider();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleLogin(email, password);
+  };
   return (
     <>
-      {isPending && <LoadingSpinner />}
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      {isPendingLogin && <LoadingSpinner />}
+      <div className="min-h-screen pt-32 pb-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm">
             <div className="text-center mb-8">
@@ -22,7 +29,7 @@ const Login = () => {
               <p className="text-gray-600">Welcome back to Shwood Shop</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
               <div>
                 <label
                   htmlFor="email"
@@ -84,14 +91,14 @@ const Login = () => {
 
               <button
                 type="submit"
-                disabled={isPending}
-                className={`w-full bg-gray-900 text-white py-3 rounded-md transition-colors ${
-                  isPending
+                disabled={isPendingLogin}
+                className={`w-full bg-[#C8A846] hover:bg-[#b69339] text-white py-3 rounded-md transition-colors ${
+                  isPendingLogin
                     ? "opacity-70 cursor-not-allowed"
-                    : "hover:bg-gray-800"
+                    : "hover:bg-[#b69339]"
                 }`}
               >
-                {isPending ? "Signing in..." : "Sign In"}
+                {isPendingLogin ? "Signing in..." : "Sign In"}
               </button>
             </form>
 

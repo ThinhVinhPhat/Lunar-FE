@@ -1,0 +1,24 @@
+.collection-swiper .swiper-pagination {
+  position: relative;
+  margin-top: 20px;
+}
+.collection-swiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  opacity: 1;
+}
+
+.collection-swiper .swiper-pagination-bullet-active {
+  background: #c8a846;
+}
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  display: none;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #c8a846;
+  font-size: 20px;
+}

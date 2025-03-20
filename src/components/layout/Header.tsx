@@ -2,29 +2,47 @@ import React, { useState } from "react";
 import Logo from "../ui/Logo";
 import Navigation from "./Navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import SearchModal from "../ui/Search";
+import { useContextProvider } from "../../hooks/useContextProvider";
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { setIsOpenSearch, isOpenSearch } = useContextProvider();
+  const toggleSearch = () => {
+    setIsOpenSearch(!isOpenSearch);
+  };
+
   const navigate = useNavigate();
   return (
     <header className="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
-      <div className="bg-gray-100 py-2 text-center text-sm">
+      {/* <div className="admin-btn bg-gray-100 flex justify-start">
+        <button onClick={() => navigate("/admin/login")}>Admin</button>
+      </div> */}
+      <div className="bg-[#C8A846] text-white underline py-2 text-center text-sm">
         Free U.S. shipping over $99 & free returns*
       </div>
 
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-4 ml-[-20px] flex items-center justify-between">
         <Logo />
-
         <Navigation isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
         <div className="flex items-center gap-4">
-          <button className="hidden md:block">Search</button>
+          <button
+            onClick={toggleSearch}
+            className="hidden md:block hover:text-[#C8A846]"
+          >
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
           <button onClick={() => navigate("/login")}>Login</button>
-          <FontAwesomeIcon icon={faShoppingCart} />
         </div>
       </div>
+
+      <SearchModal
+        isOpen={isOpenSearch}
+        onClose={() => setIsOpenSearch(false)}
+      />
     </header>
   );
 };
