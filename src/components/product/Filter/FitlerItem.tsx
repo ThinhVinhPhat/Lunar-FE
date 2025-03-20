@@ -27,7 +27,7 @@ function FilterItem({
       </button>
       {openSections[name] && (
         <div className="mt-2 space-y-2">
-          {filterOptions[name].map((category) => (
+          {filterOptions[name].map((category: any) => (
             <label key={category} className="flex items-center">
               <input
                 type="checkbox"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { ProductType } from "../../types/product";
 import ProductItem from "../product/ProductItem";
 
@@ -19,7 +19,7 @@ const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
               Shop Our Most Popular Styles
             </h2>
           </div>
-          <Link
+          {/* <NavLink
             to="/products"
             className="text-[#2c2c2c] hover:text-[#C8A846] transition-colors duration-300 flex items-center gap-2"
           >
@@ -37,7 +37,7 @@ const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
                 d="M9 5l7 7-7 7"
               />
             </svg>
-          </Link>
+          </NavLink> */}
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">

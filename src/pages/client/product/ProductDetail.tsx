@@ -27,7 +27,8 @@ const ProductDetail = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     product?.productCategories[0]?.categoryDetails.id
   );
-  const { data: categoryProducts } = useProducts(selectedCategory);
+  const { data: categoryProducts, isLoading: isLoadingCategoryProducts } =
+    useProducts(selectedCategory);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("Description");
@@ -433,7 +434,10 @@ const ProductDetail = () => {
                   )}
                 </div>
               </div>
-              <RelatedProduct categoryProducts={categoryProducts} />
+              <RelatedProduct
+                categoryProducts={categoryProducts}
+                isLoading={isLoadingCategoryProducts}
+              />
             </div>
           </div>
         )

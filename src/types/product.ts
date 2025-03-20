@@ -30,3 +30,7 @@ export interface ProductType {
     };
   }[];
 }
+
+export interface ProductsType {
+  data: ProductType[];
+}

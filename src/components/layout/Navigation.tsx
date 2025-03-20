@@ -10,7 +10,7 @@ const Navigation = ({
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) => {
-  const { data: categories } = useGetCategoriesDetailByCateName("Material");
+  const { data: categories, isLoading } = useGetCategoriesDetailByCateName("Material");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const menuItems = [
@@ -24,7 +24,7 @@ const Navigation = ({
     },
     {
       title: "Collections",
-      subMenu: <FeaturedCollection categories={categories} />,
+      subMenu: <FeaturedCollection categories={categories} isLoading={isLoading} />,
     },
     {
       title: "Explore",
@@ -53,7 +53,7 @@ const Navigation = ({
                 onMouseLeave={handleMenuLeave}
               >
                 <button
-                  onClick={() => navigate(item.navigate)}
+                  onClick={() => navigate(item.navigate ?? "")}
                   className="hover:text-gray-600 text-md font-medium uppercase tracking-wider"
                 >
                   {item.title}

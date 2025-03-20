@@ -1,4 +1,4 @@
-import { Category, CategoryDetail } from "../../types/category";
+import { Category } from "../../types/category";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
@@ -47,7 +47,7 @@ function FeaturedCollection({ categories }: FeaturedCollectionProps) {
           }}
           className="collection-swiper"
         >
-          {categories?.map((category: CategoryDetail) => {
+          {categories?.map((category: any) => {
             const image = category?.image?.replace(/[{}"]/g, "").split(",");
             return (
               <SwiperSlide key={category.id}>
