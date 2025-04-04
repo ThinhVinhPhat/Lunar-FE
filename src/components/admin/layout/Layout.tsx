@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -14,7 +14,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -29,7 +28,11 @@ const AdminLayout = () => {
   };
 
   const navItems = [
-    { title: "Dashboard", path: "/admin/dashboard", icon: <LayoutDashboard size={20} /> },
+    {
+      title: "Dashboard",
+      path: "/admin/dashboard",
+      icon: <LayoutDashboard size={20} />,
+    },
     { title: "Products", path: "/admin/products", icon: <Package size={20} /> },
     {
       title: "Categories",

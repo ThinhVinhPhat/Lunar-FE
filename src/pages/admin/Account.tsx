@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import AdminLayout from "../../components/admin/layout/Layout";
+import  { useState } from "react";
 import {
-  Plus,
   Search,
   Edit,
   Trash2,
@@ -12,12 +10,22 @@ import {
   Lock,
 } from "lucide-react";
 
+type Account = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+  image: string;
+};
+
 const AdminAccount = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState(null);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   // Sample account data
   const accounts = [
@@ -75,17 +83,17 @@ const AdminAccount = () => {
       account.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (account) => {
+  const handleEdit = (account: Account) => {
     setCurrentAccount(account);
     setShowAddModal(true);
   };
 
-  const handleDelete = (account) => {
+  const handleDelete = (account: Account) => {
     setCurrentAccount(account);
     setShowDeleteModal(true);
   };
 
-  const handlePermissions = (account) => {
+  const handlePermissions = (account: Account) => {
     setCurrentAccount(account);
     setShowPermissionsModal(true);
   };
@@ -240,8 +248,9 @@ const AdminAccount = () => {
             <div>
               <p className="text-sm text-gray-700">
                 Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">{filteredAccounts.length}</span> of{" "}
-                <span className="font-medium">{accounts.length}</span> results
+                <span className="font-medium">{filteredAccounts.length}</span>{" "}
+                of <span className="font-medium">{accounts.length}</span>{" "}
+                results
               </p>
             </div>
             <div>
@@ -457,8 +466,12 @@ const AdminAccount = () => {
                       <div className="bg-gray-50 p-4 rounded-md mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <div>
-                            <h4 className="text-sm font-medium text-gray-700">Role: {currentAccount?.role}</h4>
-                            <p className="text-xs text-gray-500">Set specific permissions for this user</p>
+                            <h4 className="text-sm font-medium text-gray-700">
+                              Role: {currentAccount?.role}
+                            </h4>
+                            <p className="text-xs text-gray-500">
+                              Set specific permissions for this user
+                            </p>
                           </div>
                           <div>
                             <span
@@ -478,84 +491,190 @@ const AdminAccount = () => {
                       <div className="space-y-4">
                         {/* Dashboard Permissions */}
                         <div className="border border-gray-200 rounded-md p-4">
-                          <h4 className="font-medium text-gray-800 mb-2">Dashboard</h4>
+                          <h4 className="font-medium text-gray-800 mb-2">
+                            Dashboard
+                          </h4>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">View Dashboard</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                View Dashboard
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                           </div>
                         </div>
 
                         {/* Products Permissions */}
                         <div className="border border-gray-200 rounded-md p-4">
-                          <h4 className="font-medium text-gray-800 mb-2">Products</h4>
+                          <h4 className="font-medium text-gray-800 mb-2">
+                            Products
+                          </h4>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">View Products</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                View Products
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Add Products</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Add Products
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Edit Products</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Edit Products
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Delete Products</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Delete Products
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                           </div>
                         </div>
 
                         {/* Categories Permissions */}
                         <div className="border border-gray-200 rounded-md p-4">
-                          <h4 className="font-medium text-gray-800 mb-2">Categories</h4>
+                          <h4 className="font-medium text-gray-800 mb-2">
+                            Categories
+                          </h4>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">View Categories</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                View Categories
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Add Categories</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Add Categories
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Edit Categories</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Edit Categories
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Delete Categories</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Delete Categories
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                           </div>
                         </div>
 
                         {/* User Management Permissions */}
                         <div className="border border-gray-200 rounded-md p-4">
-                          <h4 className="font-medium text-gray-800 mb-2">User Management</h4>
+                          <h4 className="font-medium text-gray-800 mb-2">
+                            User Management
+                          </h4>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">View Users</label>
-                              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                View Users
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Add Users</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator" || currentAccount?.role === "Manager"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Add Users
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator" ||
+                                  currentAccount?.role === "Manager"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Edit Users</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator" || currentAccount?.role === "Manager"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Edit Users
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator" ||
+                                  currentAccount?.role === "Manager"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Delete Users</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Delete Users
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                             <div className="flex items-center justify-between">
-                              <label className="text-sm text-gray-700">Manage Permissions</label>
-                              <input type="checkbox" defaultChecked={currentAccount?.role === "Administrator"} className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded" />
+                              <label className="text-sm text-gray-700">
+                                Manage Permissions
+                              </label>
+                              <input
+                                type="checkbox"
+                                defaultChecked={
+                                  currentAccount?.role === "Administrator"
+                                }
+                                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
+                              />
                             </div>
                           </div>
                         </div>

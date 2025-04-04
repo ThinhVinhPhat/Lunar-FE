@@ -59,7 +59,7 @@ function CartContent({
                 </Link>
               </h3>
               <p className="ml-4">
-                ${Number(item?.product?.price * item.quantity).toFixed(2)}
+                ${Number(item?.product?.price || 0 * item.quantity).toFixed(2)}
               </p>
             </div>
 

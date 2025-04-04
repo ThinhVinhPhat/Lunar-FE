@@ -1,5 +1,3 @@
-import React from "react";
-import AdminLayout from "../../../components/admin/layout/Layout";
 import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,

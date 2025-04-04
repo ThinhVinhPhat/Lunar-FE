@@ -3,9 +3,7 @@ import Cookies from "js-cookie";
 import { useRegister } from "../hooks/queryClient/mutator/auth/register";
 import { useForgotPassword } from "../hooks/queryClient/mutator/auth/forgot";
 import { useUpdatePassword } from "../hooks/queryClient/mutator/auth/update-password";
-import { useEffect } from "react";
 import { useContextProvider } from "./useContextProvider";
-import { useGetUser } from "../hooks/queryClient/query/user";
 import { IRegister } from "@/types/register";
 
 export const useAuthAction = () => {
@@ -17,7 +15,6 @@ export const useAuthAction = () => {
     useForgotPassword();
   const { mutate: mutateUpdatePassword, statusResponse: statusUpdatePassword } =
     useUpdatePassword();
-  const { data: user } = useGetUser();
 
 
   

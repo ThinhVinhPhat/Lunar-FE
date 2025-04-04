@@ -4,7 +4,6 @@ import { useContextProvider } from "../../hooks/useContextProvider";
 import { OrderDetail } from "../../types/order";
 import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 import { createPayment } from "../../api/service/payment.service";
 import { useGetUser } from "../../../src/hooks/queryClient/query/user";
 import CartContent from "../cart/CartContent";

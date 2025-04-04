@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useContextProvider } from "../../../../src/hooks/useContextProvider";
-import { useGetUser } from "../../../../src/hooks/queryClient/query/user";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { data: me } = useGetUser();
   const { isLogin, setIsLogin } = useContextProvider();
   const { handleLogin, isPendingLogin } = useAuthAction();
   const navigate = useNavigate();

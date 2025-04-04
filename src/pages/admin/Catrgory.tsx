@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import AdminLayout from "../../components/admin/layout/Layout";
+import { useState } from "react";
 import {
   Plus,
   Search,
@@ -9,12 +8,21 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+type Category = {
+  id: number;
+  name: string;
+  image: string;
+  description: string;
+  products: number;
+  createdAt: string;
+};
+
 const AdminCategory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(null);
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
 
   // Sample category data
   const categories = [
@@ -69,12 +77,12 @@ const AdminCategory = () => {
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (category) => {
+  const handleEdit = (category: Category) => {
     setCurrentCategory(category);
     setShowEditModal(true);
   };
 
-  const handleDelete = (category) => {
+  const handleDelete = (category: Category) => {
     setCurrentCategory(category);
     setShowDeleteModal(true);
   };

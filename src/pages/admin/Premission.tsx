@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AdminLayout from "../../components/admin/layout/Layout";
 import { Search, Edit, Save, Shield, CheckCircle, XCircle } from "lucide-react";
 
 const Permissions = () => {
@@ -229,7 +228,7 @@ const Permissions = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {permissionGroups.map((group, groupIndex) => (
+              {permissionGroups.map((group) => (
                 <React.Fragment key={group.name}>
                   <tr className="bg-gray-50">
                     <td
@@ -239,7 +238,7 @@ const Permissions = () => {
                       {group.name}
                     </td>
                   </tr>
-                  {group.permissions.map((permission, permIndex) => (
+                  {group.permissions.map((permission) => (
                     <tr key={permission.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {permission.name}

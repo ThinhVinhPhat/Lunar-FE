@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import AdminLayout from "../../components/admin/layout/Layout";
+import { useState } from "react";
 import {
   Plus,
   Search,
@@ -14,8 +13,8 @@ const AdminProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
+  // const [showEditModal, setShowEditModal] = useState(false);
+  // const [currentProduct, setCurrentProduct] = useState(null);
 
   // Sample product data
   const products = [
@@ -87,15 +86,15 @@ const AdminProduct = () => {
       product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (product) => {
-    setCurrentProduct(product);
-    setShowEditModal(true);
-  };
+  // const handleEdit = (product: any) => {
+  //   setCurrentProduct(product);
+  //   setShowEditModal(true);
+  // };
 
-  const handleDelete = (product) => {
-    setCurrentProduct(product);
-    setShowDeleteModal(true);
-  };
+  // const handleDelete = (product: any) => {
+  //   setCurrentProduct(product);
+  //   setShowDeleteModal(true);
+  // };
 
   return (
     <>
@@ -226,13 +225,13 @@ const AdminProduct = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
-                      onClick={() => handleEdit(product)}
+                      // onClick={() => handleEdit(product)}
                       className="text-blue-600 hover:text-blue-900 mr-3"
                     >
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(product)}
+                      // onClick={() => handleDelete(product)}
                       className="text-red-600 hover:text-red-900"
                     >
                       <Trash2 size={16} />
