@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
-import { ProductType } from "@/src/types/product";
+import { ProductType } from "@/types/product";
 import { useProducts } from "../../hooks/queryClient/query/product/products";
 import { useDebounce } from "../../hooks/useDebounce";
 
@@ -42,6 +42,18 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
   const debouncedValue = useDebounce(searchQuery, 500);
 
   useEffect(() => {
@@ -77,7 +89,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-10 flex items-start justify-center pt-20 px-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-10 flex items-start justify-center pt-10 px-4 overflow-y-auto">
       <div
         ref={modalRef}
         className="bg-white w-full max-w-4xl rounded-lg shadow-xl overflow-hidden transform transition-all"

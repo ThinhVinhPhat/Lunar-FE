@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
 import { ProductType } from "../../types/product";
 import ProductItem from "../product/ProductItem";
 

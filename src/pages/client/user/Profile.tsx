@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { UserType } from "../../../types/user";
-import { toast } from "react-toastify";
-import {
-  FiUser,
-  FiMail,
-  FiMapPin,
-  FiHome,
-  FiBriefcase,
-  FiEdit2,
-  FiSave,
-  FiPhone,
-} from "react-icons/fi";
-import { useContextProvider } from "../../../hooks/useContextProvider";
+import { enqueueSnackbar } from "notistack";
+import { FiUser, FiEdit2, FiSave } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
+import FormField from "../../../components/form/form-field";
+import { useGetUser } from "../../../hooks/queryClient/query/user";
 
 const Profile: React.FC = () => {
-  const { currentUser } = useContextProvider();
+  const { data: me } = useGetUser();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,12 +17,12 @@ const Profile: React.FC = () => {
   const { mutateAsync: updateUser } = useUpdateUser();
 
   useEffect(() => {
-    if (currentUser) {
-      setFormData(currentUser);
+    if (me) {
+      setFormData(me);
     } else {
       navigate("/login");
     }
-  }, [currentUser]);
+  }, [me, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,10 +36,14 @@ const Profile: React.FC = () => {
     try {
       setLoading(true);
       await updateUser(formData);
-      toast.success("Profile information updated successfully!");
+      enqueueSnackbar("Profile information updated successfully!", {
+        variant: "success",
+      });
       setIsEditing(false);
     } catch (error) {
-      toast.error("An error occurred while updating your information.");
+      enqueueSnackbar("An error occurred while updating your information.", {
+        variant: "error",
+      });
       console.error(error);
     } finally {
       setLoading(false);
@@ -75,20 +71,16 @@ const Profile: React.FC = () => {
                 </p>
               </div>
               <div className="mt-4 md:mt-0">
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="flex items-center px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
-                >
-                  {isEditing ? (
-                    <>
-                      <FiSave className="mr-2" /> Save Information
-                    </>
-                  ) : (
+                {isEditing == false && (
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="flex items-center px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                  >
                     <>
                       <FiEdit2 className="mr-2" /> Edit
                     </>
-                  )}
-                </button>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -101,171 +93,24 @@ const Profile: React.FC = () => {
                     <FiUser className="w-16 h-16 text-gray-400" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800">
-                    {currentUser?.firstName} {currentUser?.lastName}
+                    {me?.firstName} {me?.lastName}
                   </h2>
-                  <p className="text-gray-600">{currentUser?.role}</p>
+                  <p className="text-gray-600">{me?.role}</p>
                 </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiUser className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={currentUser?.firstName}
+                {Object.keys(formData).map((field) => {
+                  if (field === "id" || field === "role") return null;
+                  return (
+                    <FormField
+                      key={field}
+                      label={field.charAt(0).toUpperCase() + field.slice(1)}
+                      name={field}
+                      value={formData[field as keyof UserType]}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
                     />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiUser className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={currentUser?.lastName}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMail className="text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={currentUser?.email}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Company
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiBriefcase className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="company"
-                      value={currentUser?.company}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4 md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiHome className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="address"
-                      value={currentUser?.address}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMapPin className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="city"
-                      value={currentUser?.city}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiPhone className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={currentUser?.phone}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`pl-10 w-full py-3 border ${
-                        isEditing
-                          ? "border-gray-300"
-                          : "border-gray-200 bg-gray-50"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
-                    />
-                  </div>
-                </div>
+                  );
+                })}
               </div>
 
               {isEditing && (
@@ -273,7 +118,7 @@ const Profile: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setFormData(currentUser);
+                      setFormData(me);
                       setIsEditing(false);
                     }}
                     className="mr-4 px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"

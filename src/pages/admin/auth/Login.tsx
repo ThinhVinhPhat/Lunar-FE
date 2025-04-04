@@ -6,6 +6,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { mutate, isPending } = useLogin();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutate({ email, password });

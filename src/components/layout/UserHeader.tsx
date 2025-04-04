@@ -11,12 +11,18 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useContextProvider } from "../../hooks/useContextProvider";
 import SearchModal from "../ui/Search";
+import Cart from "../ui/Cart";
+import { useGetUser } from "../../hooks/queryClient/query/user";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 export const UserHeader: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { data: me } = useGetUser();
   const navigate = useNavigate();
-  const { handleLogout, currentUser, setIsOpenSearch, isOpenSearch } =
+  const { setIsOpenSearch, isOpenSearch, setIsOpenCart, isOpenCart, cart } =
     useContextProvider();
+  const { handleLogout } = useAuthAction();
+
 
   const handleSignOut = () => {
     handleLogout();
@@ -50,7 +56,7 @@ export const UserHeader: React.FC = () => {
             >
               <FontAwesomeIcon icon={faUser} />
               <span className="text-sm">
-                {currentUser?.firstName + " " + currentUser?.lastName}
+                {me?.firstName + " " + me?.lastName}
               </span>
             </button>
 
@@ -79,10 +85,13 @@ export const UserHeader: React.FC = () => {
             )}
           </div>
 
-          <button className="relative hover:text-[#C8A846]">
+          <button
+            onClick={() => setIsOpenCart(!isOpenCart)}
+            className="relative hover:text-[#C8A846]"
+          >
             <FontAwesomeIcon icon={faShoppingCart} />
             <span className="absolute -top-2 -right-2 bg-[#C8A846] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              0
+              {cart?.orderDetails.length || 0}
             </span>
           </button>
         </div>
@@ -92,6 +101,7 @@ export const UserHeader: React.FC = () => {
         isOpen={isOpenSearch}
         onClose={() => setIsOpenSearch(false)}
       />
+      <Cart isOpen={isOpenCart} onClose={() => setIsOpenCart(false)} />
     </header>
   );
 };

@@ -18,7 +18,9 @@ import { Profit } from "../../../components/product/Profit";
 import { Tabs } from "../../../components/product/Tabs";
 import { useProduct } from "../../../hooks/queryClient/query/product/product";
 import { useProducts } from "../../../hooks/queryClient/query/product/products";
-
+import { useContextProvider } from "../../../hooks/useContextProvider";
+import { useOrderDetail } from "../../../hooks/queryClient/mutator/order/order-detail";
+import { enqueueSnackbar } from "notistack";
 const ProductDetail = () => {
   const { id } = useParams();
 
@@ -32,12 +34,31 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("Description");
+  const { cart, setShouldFetchCart } = useContextProvider();
+  const { mutate: createOrderDetail } = useOrderDetail();
 
   const handleQuantityChange = (value: number) => {
     const newQuantity = quantity + value;
     if (newQuantity > 0 && newQuantity <= (product?.stock || 0)) {
       setQuantity(newQuantity);
     }
+  };
+
+  const handleAddToCart = async (id: string) => {
+    if (cart) {
+      await createOrderDetail({
+        orderId: cart.id,
+        productId: id,
+        quantity: quantity,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2500);
+      enqueueSnackbar("Product added to cart", { variant: "success" });
+    } else {
+      enqueueSnackbar("Error Cart", { variant: "error" });
+    }
+    setShouldFetchCart(true);
   };
 
   const handleCategoryChange = (id: string) => {
@@ -238,6 +259,7 @@ const ProductDetail = () => {
                   </div>
 
                   <button
+                    onClick={() => handleAddToCart(product.id)}
                     className="w-full bg-[#C8A846] text-white py-4 text-lg font-medium rounded-md hover:bg-[#b69339] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     disabled={product.stock === 0}
                   >
@@ -336,7 +358,7 @@ const ProductDetail = () => {
                     <div className="prose prose-sm max-w-none">
                       <h3 className="text-lg font-medium mb-4">Fit Details</h3>
 
-                      <div className="grid md:grid-cols-2 gap-8">
+                      <div className="grid md:grid-cols-2 gap-2">
                         <div>
                           {fitDetails.map((item) => (
                             <p key={item.label} className="mb-2">
@@ -345,11 +367,21 @@ const ProductDetail = () => {
                             </p>
                           ))}
                         </div>
-                        <div>
+                        <div className="flex flex-row gap-2 ml-[-300px]">
                           <img
-                            src="https://placehold.co/400x200?text=Fit+Diagram"
+                            src="https://shwoodshop.com/cdn/shop/files/example-frame01.png?v=1623219416&width=420"
                             alt="Fit diagram"
-                            className="rounded-lg"
+                            className="rounded-lg w-[300px]"
+                          />
+                          <img
+                            src="https://shwoodshop.com/cdn/shop/files/frame_width-01.png?v=1667433549&width=420"
+                            alt="Fit diagram"
+                            className="rounded-lg  w-[300px] "
+                          />
+                          <img
+                            src="https://shwoodshop.com/cdn/shop/files/example-frame03.png?v=1623219416&width=420"
+                            alt="Fit diagram"
+                            className="rounded-lg  w-[300px]"
                           />
                         </div>
                       </div>

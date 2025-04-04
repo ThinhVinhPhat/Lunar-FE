@@ -8,7 +8,9 @@ export const getProducts = async (
   let query = `product?offset=${offset}&limit=${limit}`;
 
   if (category && category?.length > 0) {
-    query += `&category=${category}`;
+    category.forEach((item) => {
+      query += `&category=${item}`;
+    });
   }
   console.log(query);
 

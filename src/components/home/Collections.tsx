@@ -7,7 +7,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { useGetCategoriesDetailByCateName } from "../../hooks/queryClient/query/category";
-import { CategoryDetail } from "@/src/types/category";
+import { CategoryDetail } from "@/types/category";
 
 const Collections = () => {
   const navigate = useNavigate();
@@ -70,7 +70,6 @@ const Collections = () => {
 
     return items;
   };
-  console.log(categories[0]?.image.split(",")[0].replace(/[{}]/g, ""));
 
   return (
     <div
@@ -99,8 +98,8 @@ const Collections = () => {
                 >
                   {getSlideItems(slideIndex)?.map(
                     (category: CategoryDetail, index: number) => {
-                      const image = category.image
-                        .replace(/[{}"]/g, "")
+                      const image = category?.image
+                        ?.replace(/[{}"]/g, "")
                         .split(",");
                       return (
                         <div
@@ -115,7 +114,11 @@ const Collections = () => {
                           <div className="relative aspect-[4/5] overflow-hidden">
                             <img
                               src={
-                                hoveredId === category.id ? image[0] : image[1]
+                                hoveredId === category?.id && image
+                                  ? image[0]
+                                  : image
+                                  ? image[1]
+                                  : ""
                               }
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                               alt={category.name}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
-import { useContextProvider } from "../../../hooks/useContextProvider";
+import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,14 +13,14 @@ const Register = () => {
     confirmPassword: "",
   });
   const navigate = useNavigate();
-  const { handleRegister, isPendingRegister, currentUser } =
-    useContextProvider();
+  const { handleRegister, isPendingRegister } = useAuthAction();
+  const { data: me } = useGetUser();
 
   useEffect(() => {
-    if (currentUser) {
+    if (me) {
       navigate("/");
     }
-  }, [currentUser, navigate]);
+  }, [me, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +54,7 @@ const Register = () => {
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-              <p className="text-gray-600">Join the Shwood Shop community</p>
+              <p className="text-gray-600">Join the Lunar Shop community</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

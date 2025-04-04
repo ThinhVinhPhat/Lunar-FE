@@ -10,7 +10,7 @@ const Navigation = ({
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) => {
-  const { data: categories, isLoading } = useGetCategoriesDetailByCateName("Material");
+  const { data: categories } = useGetCategoriesDetailByCateName("Material");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const menuItems = [
@@ -24,7 +24,7 @@ const Navigation = ({
     },
     {
       title: "Collections",
-      subMenu: <FeaturedCollection categories={categories} isLoading={isLoading} />,
+      subMenu: <FeaturedCollection categories={categories} />,
     },
     {
       title: "Explore",

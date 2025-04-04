@@ -26,7 +26,7 @@ export const Button = ({
   const baseClasses =
     "relative px-4 py-3 rounded-full border-2 border-[#C8A846] text-[#C8A846] " +
     "bg-[var(--primary-color)] overflow-hidden " +
-    "before:absolute before:top-0 before:left-0 before:w-full before:h-full " + 
+    "before:absolute before:top-0 before:left-0 before:w-full before:h-full " +
     "before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.4)_50%,transparent_75%)] " +
     "before:translate-x-[-30%] hover:before:translate-x-[20%] " +
     "before:transition-transform before:duration-500";

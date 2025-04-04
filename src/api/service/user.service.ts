@@ -1,4 +1,4 @@
-import { UserType } from "@/src/types/user";
+import { UserType } from "@/types/user";
 import instance from "..";
 import Cookies from "js-cookie";
 

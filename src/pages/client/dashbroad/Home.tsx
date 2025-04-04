@@ -3,10 +3,10 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import Collections from "../../../components/home/Collections";
 import Reviews from "../../../components/home/Reviews";
 import { Button } from "../../../components/ui/Button";
-import { useContextProvider } from "../../../hooks/useContextProvider";
+import { useProductAction } from "../../../hooks/useProductAction";
 
 const Home = () => {
-  const { products, isLoading } = useContextProvider();
+  const { products, isLoading } = useProductAction();
   return (
     <main className="bg-white">
       <Hero />

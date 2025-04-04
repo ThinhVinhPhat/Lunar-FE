@@ -3,12 +3,14 @@ import { Footer } from "./Footer";
 import { Outlet } from "react-router-dom";
 import { useContextProvider } from "../../../src/hooks/useContextProvider";
 import { UserHeader } from "./UserHeader";
+import ScrollToTop from "../../../src/ultis/ScrollToTop";
 
 export const Layout = () => {
-  const { currentUser } = useContextProvider();
+  const { isLogin } = useContextProvider();
   return (
     <div>
-      {currentUser ? (
+      <ScrollToTop />
+      {isLogin ? (
         <>
           <UserHeader />
         </>

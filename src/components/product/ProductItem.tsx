@@ -1,4 +1,4 @@
-import { ProductType } from "@/src/types/product";
+import { ProductType } from "@/types/product";
 import { Link } from "react-router-dom";
 
 type ProductItemProps = {

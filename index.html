@@ -7,9 +7,35 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
+    <script>
+      (function() {
+        const fullUrl = window.location.href;
+        
+        if (fullUrl.includes("jwt-be-production.up.railway.app/api/v1/payment/success/checkout/session")) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const orderId = urlParams.get("order_id");
+          const sessionId = urlParams.get("session_id");
+          
+          document.write('<meta http-equiv="refresh" content="0; URL=http://localhost:5173/payment/success?order_id=' + orderId + '&session_id=' + sessionId + '">');
+        } else if (fullUrl.includes("https://jwt-be-production.up.railway.app/api/v1/payment/failed/checkout/session")) {
+          document.write('<meta http-equiv="refresh" content="0; URL=http://localhost:5173/payment/failure">');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+<script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/67ed5d5b7879f0190a27a846/1inrj9bsl';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
 </html>

@@ -1,4 +1,4 @@
-import { ProductType } from "@/src/types/product";
+import { ProductType } from "@/types/product";
 import { useState } from "react";
 import { FiFilter } from "react-icons/fi";
 import ProductItem from "../ProductItem";

@@ -1,4 +1,4 @@
-import { useContextProvider } from "../../../hooks/useContextProvider";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,7 +8,7 @@ function ForgotPassword() {
   const [step, setStep] = useState<"email" | "code" | "newPassword">("email");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { handleForgotPassword, handleUpdatePassword } = useContextProvider();
+  const { handleForgotPassword, handleUpdatePassword } = useAuthAction(); 
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;

@@ -2,21 +2,31 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useContextProvider } from "../../../../src/hooks/useContextProvider";
+import { useGetUser } from "../../../../src/hooks/queryClient/query/user";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { handleLogin, isPendingLogin, currentUser } = useContextProvider();
+  const { data: me } = useGetUser();
+  const { isLogin, setIsLogin } = useContextProvider();
+  const { handleLogin, isPendingLogin } = useAuthAction();
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (currentUser) {
+    if (isLogin) {
       navigate("/");
     }
-  }, [currentUser, navigate]);
+  }, [isLogin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleLogin(email, password);
+    const response = await handleLogin(email, password);
+    console.log(response);
+    if (response == true) {
+      navigate("/");
+      setIsLogin(true);
+    }
   };
   return (
     <>
@@ -26,7 +36,7 @@ const Login = () => {
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold mb-2">Login</h1>
-              <p className="text-gray-600">Welcome back to Shwood Shop</p>
+              <p className="text-gray-600">Welcome back to Lunar Shop</p>
             </div>
 
             <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">

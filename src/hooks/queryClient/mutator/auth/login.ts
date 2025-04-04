@@ -29,7 +29,7 @@ export const useLogin = () => {
     },
   });
   return {
-    responseStatus: status.current,
+    responseStatus: response.status,
     ...response,
     data: response.data || null,
   };
