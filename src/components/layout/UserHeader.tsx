@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faShoppingCart,
   faUser,
-  faSignOut,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -14,15 +13,21 @@ import SearchModal from "../ui/Search";
 import Cart from "../ui/Cart";
 import { useGetUser } from "../../hooks/queryClient/query/user";
 import { useAuthAction } from "../../hooks/useAuthAction";
+import UserOptions from "./UserOptions";
 
 export const UserHeader: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { data: me } = useGetUser();
   const navigate = useNavigate();
-  const { setIsOpenSearch, isOpenSearch, setIsOpenCart, isOpenCart, cart } =
-    useContextProvider();
+  const {
+    setIsOpenSearch,
+    isOpenSearch,
+    setIsOpenCart,
+    isOpenCart,
+    cart,
+    isLogin,
+  } = useContextProvider();
   const { handleLogout } = useAuthAction();
-
 
   const handleSignOut = () => {
     handleLogout();
@@ -48,43 +53,26 @@ export const UserHeader: React.FC = () => {
           >
             <FontAwesomeIcon icon={faSearch} />
           </button>
+          {isLogin && (
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-2 hover:text-[#C8A846]"
+              >
+                <FontAwesomeIcon icon={faUser} />
+                <span className="text-sm">
+                  {me?.firstName + " " + me?.lastName}
+                </span>
+              </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-2 hover:text-[#C8A846]"
-            >
-              <FontAwesomeIcon icon={faUser} />
-              <span className="text-sm">
-                {me?.firstName + " " + me?.lastName}
-              </span>
-            </button>
-
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  My Profile
-                </button>
-                <button
-                  onClick={() => navigate("/orders")}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  My Orders
-                </button>
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                >
-                  <FontAwesomeIcon icon={faSignOut} className="mr-2" />
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-
+              <UserOptions
+                isProfileOpen={isProfileOpen}
+                setIsProfileOpen={setIsProfileOpen}
+                navigate={navigate}
+                handleSignOut={handleSignOut}
+              />
+            </div>
+          )}
           <button
             onClick={() => setIsOpenCart(!isOpenCart)}
             className="relative hover:text-[#C8A846]"

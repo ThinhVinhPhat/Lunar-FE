@@ -6,33 +6,28 @@ export const UserService = {
   getUser: async () => {
     console.log(Cookies.get("accessToken"));
 
-    const response = await instance.get(`/users/me`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
+    const response = await instance.get(`/users/me`, {});
     return response.data;
   },
 
   updateUser: async (data: UserType) => {
-    console.log(data);
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      if (key === "avatar") return;
 
-    const response = await instance.patch(
-      `/users/update`,
-      {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        company: data.company,
-        address: data.address,
-        city: data.city,
-        phone: data.phone,
+      formData.append(key, data[key as keyof UserType] as string);
+    });
+
+    if (data.avatar && data.avatar.length > 0) {
+      formData.append("avatar", data.avatar[0] as File);
+    }
+
+    console.log(formData);
+    const response = await instance.patch(`/users/update`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      }
-    );
+    });
     return response.data;
   },
 };

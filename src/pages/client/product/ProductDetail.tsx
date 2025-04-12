@@ -35,7 +35,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("Description");
   const { cart, setShouldFetchCart } = useContextProvider();
-  const { mutate: createOrderDetail } = useOrderDetail();
+  const { mutateAsync: createOrderDetail } = useOrderDetail();
 
   const handleQuantityChange = (value: number) => {
     const newQuantity = quantity + value;
@@ -51,9 +51,6 @@ const ProductDetail = () => {
         productId: id,
         quantity: quantity,
       });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2500);
       enqueueSnackbar("Product added to cart", { variant: "success" });
     } else {
       enqueueSnackbar("Error Cart", { variant: "error" });
@@ -467,7 +464,7 @@ const ProductDetail = () => {
                 </div>
               </div>
               <RelatedProduct
-                categoryProducts={categoryProducts}
+                categoryProducts={categoryProducts.data}
                 isLoading={isLoadingCategoryProducts}
               />
             </div>

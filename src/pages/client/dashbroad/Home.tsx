@@ -4,9 +4,28 @@ import Collections from "../../../components/home/Collections";
 import Reviews from "../../../components/home/Reviews";
 import { Button } from "../../../components/ui/Button";
 import { useProductAction } from "../../../hooks/useProductAction";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const Home = () => {
   const { products, isLoading } = useProductAction();
+  const [query] = useSearchParams();
+
+  useEffect(() => {
+    try {
+      if (query.get("token")) {
+        Cookies.set("accessToken", query.get("token") || "");
+        if (query.get("refreshToken")) {
+          Cookies.set("refreshToken", query.get("refreshToken") || "");
+        }
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [query]);
+
   return (
     <main className="bg-white">
       <Hero />

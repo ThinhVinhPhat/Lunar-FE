@@ -1,3 +1,4 @@
+import { enqueueSnackbar } from "notistack";
 import { UserService } from "../../../../api/service/user.service";
 import { UserType } from "../../../../types/user";
 import { useMutation } from "@tanstack/react-query";
@@ -5,6 +6,16 @@ import { useMutation } from "@tanstack/react-query";
 export const useUpdateUser = () => {
   const response = useMutation({
     mutationFn: (data: UserType) => UserService.updateUser(data),
+    onSuccess: () => {
+      enqueueSnackbar("User updated successfully", {
+        variant: "success",
+      });
+    },
+    onError: () => {
+      enqueueSnackbar("Failed to update user", {
+        variant: "error",
+      });
+    },
   });
 
   return {

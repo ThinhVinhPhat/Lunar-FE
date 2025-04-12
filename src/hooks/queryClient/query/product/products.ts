@@ -9,7 +9,7 @@ type DataProp = {
 
 export const useProducts = (data?: DataProp) => {
   const response = useQuery({
-    queryKey: ["products", data?.category],
+    queryKey: ["products", data?.category, data?.offset, data?.limit],
     queryFn: () => getProducts(data?.category, data?.offset, data?.limit),
   });
 

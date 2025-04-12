@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Search, Edit, Save, Shield, CheckCircle, XCircle } from "lucide-react";
+import { useContextProvider } from "../../hooks/useContextProvider";
+import { Navigate } from "react-router-dom";
 
 const Permissions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const { isAdmin } = useContextProvider();
 
-  // Sample roles data
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" />;
+  }
   const roles = [
     {
       id: 1,
@@ -148,7 +153,6 @@ const Permissions = () => {
         </button>
       </div>
 
-      {/* Search */}
       <div className="mb-6 bg-white rounded-lg shadow p-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -200,7 +204,6 @@ const Permissions = () => {
         ))}
       </div>
 
-      {/* Permissions Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-800">

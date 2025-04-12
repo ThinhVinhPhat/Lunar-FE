@@ -1,21 +1,47 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useLogin } from "../../../hooks/queryClient/mutator/auth/login";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { useNavigate } from "react-router-dom";
+import { enqueueSnackbar } from "notistack";
+import { useContextProvider } from "../../../hooks/useContextProvider";
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, isPending } = useLogin();
+  const { mutateAsync: mutate, isPending } = useLogin();
+  const { data: user } = useGetUser();
+  const navigate = useNavigate();
+  const { setIsAdmin } = useContextProvider();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user?.role === "Admin") {
+      setIsAdmin(true);
+      navigate("/admin/dashboard");
+    }
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ email, password });
+    const res = await mutate({ email, password });
+    if (res) {
+      if (user?.role === "Admin") {
+        enqueueSnackbar("Login Success", { variant: "success" });
+        setIsAdmin(true);
+        navigate("/admin/dashboard");
+      } else {
+        enqueueSnackbar(
+          "Login Failed! You are not authorized to access this page",
+          { variant: "error" }
+        );
+        setIsAdmin(false);
+        navigate("/admin/login");
+      }
+    }
   };
-
   return (
     <>
       {isPending && <LoadingSpinner />}
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="min-h-screen mt-20 pt-20 pb-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm">
             <div className="text-center mb-8">
@@ -36,7 +62,7 @@ const AdminLogin = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C8A846] focus:border-transparent"
                   required
                 />
               </div>
@@ -53,7 +79,7 @@ const AdminLogin = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C8A846] focus:border-transparent"
                   required
                 />
               </div>
@@ -63,7 +89,7 @@ const AdminLogin = () => {
                   <input
                     id="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 border-gray-300 rounded"
+                    className="h-4 w-4 border-gray-300 rounded text-[#C8A846] focus:ring-[#C8A846]"
                   />
                   <label
                     htmlFor="remember-me"
@@ -72,24 +98,15 @@ const AdminLogin = () => {
                     Remember me
                   </label>
                 </div>
-
-                <div className="text-sm">
-                  <Link
-                    to="/forgot-password"
-                    className="text-gray-700 hover:text-gray-900 bg-primary-color"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={isPending}
-                className={`w-full bg-gray-900 text-white py-3 rounded-md transition-colors ${
+                className={`w-full bg-[#C8A846] text-white py-3 rounded-md transition-colors ${
                   isPending
                     ? "opacity-70 cursor-not-allowed"
-                    : "hover:bg-gray-800"
+                    : "hover:bg-[#ae923e]"
                 }`}
               >
                 {isPending ? "Signing in..." : "Sign In"}

@@ -1,19 +1,30 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useGetUser } from "../../../hooks/queryClient/query/user";
-import { useAuthAction } from "../../../hooks/useAuthAction";
+import { useForm } from "react-hook-form";
+import { AuthType } from "@/types/user";
+import { FormField } from "../../../components/form/form-register";
+import { useRegister } from "../../../hooks/queryClient/mutator/auth/register";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+  } = useForm({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
+  const [isRevealPassword, setIsRevealPassword] = useState(false);
   const navigate = useNavigate();
-  const { handleRegister, isPendingRegister } = useAuthAction();
+  const { mutateAsync: registerUser, isPending: isPendingRegister } =
+    useRegister();
   const { data: me } = useGetUser();
 
   useEffect(() => {
@@ -22,28 +33,12 @@ const Register = () => {
     }
   }, [me, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const response = await handleRegister(formData);
+  const onSubmit = async (data: AuthType) => {
+    const response = await registerUser(data);
     if (response) {
-      setFormData({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      reset();
+      navigate("/login");
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
   return (
@@ -57,77 +52,55 @@ const Register = () => {
               <p className="text-gray-600">Join the Lunar Shop community</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="first_name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  First Name
-                </label>
-                <input
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="last_name"
-                  name="last_name"
-                  type="text"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {[
+                "firstName",
+                "lastName",
+                "email",
+                "password",
+                "confirmPassword",
+              ].map((field) => (
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <FormField
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    type={
+                      field === "password" || field === "confirmPassword"
+                        ? isRevealPassword
+                          ? "text"
+                          : "password"
+                        : field === "email"
+                        ? "email"
+                        : "text"
+                    }
+                    isPassword={
+                      field === "password" || field === "confirmPassword"
+                    }
+                    onClick={() =>
+                      field === "password" || field === "confirmPassword"
+                        ? setIsRevealPassword(!isRevealPassword)
+                        : null
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                    // error={errors[field as keyof typeof errors]}
+                    {...register(
+                      field as
+                        | "email"
+                        | "password"
+                        | "confirmPassword"
+                        | "first_name"
+                        | "last_name",
+                      { required: true }
+                    )}
+                  />
+                </div>
+              ))}
 
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
               <button
                 type="submit"
                 disabled={isPendingRegister}

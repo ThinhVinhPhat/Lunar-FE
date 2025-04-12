@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
-import { ProductType } from "@/types/product";
+import { Product } from "@/types/product";
 import { useProducts } from "../../hooks/queryClient/query/product/products";
 import { useDebounce } from "../../hooks/useDebounce";
 
@@ -11,7 +11,7 @@ interface SearchModalProps {
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const { products, isLoading } = useProducts();
@@ -61,8 +61,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       setFilteredProducts([]);
       return;
     }
-    const filtered = products.filter(
-      (product: ProductType) =>
+    const filtered = products.products.filter(
+      (product: Product) =>
         product.name.toLowerCase().includes(debouncedValue.toLowerCase()) ||
         product.productCategories.some((category) =>
           category.categoryDetails.name

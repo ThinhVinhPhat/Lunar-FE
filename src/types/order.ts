@@ -19,7 +19,16 @@ export type Order = {
   status: string;
   paymentId: string;
   orderDetails: OrderDetail[];
+  total?: number;
 };
+
+export type OrderStatus = "pending" | "processing" | "shipped" | "delivered";
+
+export type OrderType = {
+    order: Order;
+    total: number;
+};
+
 
 export type OrderDetail = {
   id: string;

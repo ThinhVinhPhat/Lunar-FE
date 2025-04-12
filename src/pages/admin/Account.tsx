@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   Search,
   Edit,
@@ -9,6 +9,8 @@ import {
   UserPlus,
   Lock,
 } from "lucide-react";
+import { useContextProvider } from "../../hooks/useContextProvider";
+import { Navigate } from "react-router-dom";
 
 type Account = {
   id: number;
@@ -26,7 +28,11 @@ const AdminAccount = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const { isAdmin } = useContextProvider();
 
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" />;
+  }
   // Sample account data
   const accounts = [
     {
@@ -242,7 +248,6 @@ const AdminAccount = () => {
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
         <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
@@ -290,7 +295,6 @@ const AdminAccount = () => {
         </div>
       </div>
 
-      {/* Add/Edit Account Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -308,7 +312,6 @@ const AdminAccount = () => {
                       {currentAccount ? "Edit Account" : "Add New Account"}
                     </h3>
                     <div className="mt-4">
-                      {/* Form fields */}
                       <form className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700">
@@ -392,7 +395,6 @@ const AdminAccount = () => {
         </div>
       )}
 
-      {/* Delete Account Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

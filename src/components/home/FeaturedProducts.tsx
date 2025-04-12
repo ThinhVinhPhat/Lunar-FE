@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ProductType } from "../../types/product";
+import { Product, ProductType } from "../../types/product";
 import ProductItem from "../product/ProductItem";
 
 type FeaturedProductsProps = {
-  products: ProductType[] | null;
+  products: ProductType | null;
   isLoading: boolean;
 };
 const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
@@ -53,9 +53,9 @@ const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
                   </div>
                 </div>
               ))
-            : products
-                ?.slice(0, 4)
-                .map((product: ProductType) => (
+            : products?.products
+                .slice(0, 4)
+                .map((product: Product) => (
                   <ProductItem
                     key={product.id}
                     product={product}

@@ -5,13 +5,14 @@ import { ContextProvider } from "./context/context-provider.tsx";
 import { SnackbarProvider } from "notistack";
 
 const AppWrapper = () => {
-
   return (
     <QueryProvider>
       <ContextProvider>
+        {/* <AuthProvider> */}
         <SnackbarProvider>
           <RouterProvider router={router} />
         </SnackbarProvider>
+        {/* </AuthProvider> */}
       </ContextProvider>
     </QueryProvider>
   );

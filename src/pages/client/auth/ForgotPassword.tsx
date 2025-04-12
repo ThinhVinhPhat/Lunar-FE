@@ -1,4 +1,5 @@
-import { useAuthAction } from "../../../hooks/useAuthAction";
+import { useForgotPassword } from "../../../hooks/queryClient/mutator/auth/forgot";
+import { useUpdatePassword } from "../../../hooks/queryClient/mutator/auth/update-password";
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,7 +9,10 @@ function ForgotPassword() {
   const [step, setStep] = useState<"email" | "code" | "newPassword">("email");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { handleForgotPassword, handleUpdatePassword } = useAuthAction(); 
+  const { mutate: mutateForgotPassword, statusResponse: statusForgotPassword } =
+    useForgotPassword();
+  const { mutate: mutateUpdatePassword, statusResponse: statusUpdatePassword } =
+    useUpdatePassword();
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -61,10 +65,10 @@ function ForgotPassword() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const response = await handleForgotPassword(email);
+    mutateForgotPassword(email);
 
     setTimeout(() => {
-      if (response) {
+      if (statusForgotPassword) {
         setMessage({
           type: "success",
           text: "Verification code has been sent to your email.",
@@ -94,12 +98,12 @@ function ForgotPassword() {
       isCodeVerified &&
       email
     ) {
-      const response = await handleUpdatePassword(
+      mutateUpdatePassword({
         email,
-        verificationCode.join(""),
-        newPassword
-      );
-      if (response) {
+        code: verificationCode.join(""),
+        password: newPassword,
+      });
+      if (statusUpdatePassword) {
         setMessage({
           type: "success",
           text: "Password has been successfully reset!",

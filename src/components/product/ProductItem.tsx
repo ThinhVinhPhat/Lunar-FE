@@ -1,8 +1,8 @@
-import { ProductType } from "@/types/product";
+import { Product } from "@/types/product";
 import { Link } from "react-router-dom";
 
 type ProductItemProps = {
-  product: ProductType;
+  product: Product;
   hoveredId: string | null;
   setHoveredId: (id: string | null) => void;
 };
@@ -66,8 +66,10 @@ function ProductItem({ product, hoveredId, setHoveredId }: ProductItemProps) {
               <>
                 <span className="text-red-500 font-medium">
                   $
-                  {Number(product.price) *
-                    (1 - product.discount_percentage / 100)}
+                  {Math.round(
+                    Number(product.price) *
+                      (1 - product.discount_percentage / 100)
+                  )}
                 </span>
                 <span className="text-gray-400 line-through text-sm">
                   ${product.price}

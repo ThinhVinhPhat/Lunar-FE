@@ -1,12 +1,10 @@
+import { AuthType } from "@/types/user";
 import { register } from "../../../../../src/api/service/auth.service";
-import { IRegister } from "@/types/register";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
-import { useRef } from "react";
 export const useRegister = () => {
-  const status = useRef(false);
   const response = useMutation({
-    mutationFn: (data: IRegister) => {
+    mutationFn: (data: AuthType) => {
       if (data.password.length < 6) {
         enqueueSnackbar("Mật khẩu phải có ít nhất 6 ký tự!", {
           variant: "error",
@@ -16,24 +14,22 @@ export const useRegister = () => {
       return register(
         data.email,
         data.password,
-        data.first_name,
-        data.last_name
+        data.firstName,
+        data.lastName,
+        "Customer"
       );
     },
     onSuccess: () => {
       enqueueSnackbar("Đăng ký thành công!", { variant: "success" });
-      status.current = true;
     },
     onError: (error) => {
       enqueueSnackbar("Đăng ký thất bại do email đã tồn tại!", {
         variant: "error",
       });
       console.log(error);
-      status.current = false;
     },
   });
   return {
-    responseStatus: status.current,
     ...response,
     data: response.data,
   };

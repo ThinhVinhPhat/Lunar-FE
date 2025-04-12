@@ -14,8 +14,10 @@ import PaymentResult from "../pages/client/PaymentResult";
 import AdminAccount from "../pages/admin/Account";
 import AdminCategory from "../pages/admin/Catrgory";
 import Permissions from "../pages/admin/Premission";
-import AdminProduct from "../pages/admin/Product";
+import AdminProduct from "../pages/admin/product";
 import AdminLayout from "../components/admin/layout/Layout";
+import CollectionList from "../pages/client/product/CollectionList";
+import OrderList from "../pages/client/order/OrderList";
 
 export const router = createBrowserRouter([
   {
@@ -39,8 +41,16 @@ export const router = createBrowserRouter([
         element: <Profile />,
       },
       {
+        path: "/orders",
+        element: <OrderList />,
+      },
+      {
         path: "/products/:type",
         element: <ProductList />,
+      },
+      {
+        path: "/collections/:type",
+        element: <CollectionList />,
       },
       {
         path: "/register",
@@ -83,8 +93,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin/permissions",
         element: <Permissions />,
-
-      }
+      },
     ],
   },
   {

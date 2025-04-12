@@ -1,4 +1,4 @@
-export interface ProductType {
+export interface Product {
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -29,6 +29,14 @@ export interface ProductType {
       status: boolean;
     };
   }[];
+}
+
+export interface ProductType {
+  images: any;
+  name: string;
+  price: number;
+  products: Product[];
+  productCount: number;
 }
 
 export interface ProductsType {

@@ -3,14 +3,18 @@ import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import Filter from "../../../components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../hooks/queryClient/query/product/products";
+import { Pagination } from "../../../components/ui/Pagination";
 
 const ProductList = () => {
   const { type } = useParams();
+  const [page, setPage] = useState(1);
+  const offset = (page - 1) * 10;
   const [currentFiltered, setCurrentFiltered] = useState<string[]>([]);
-  const { products, isLoading } = useProducts({ category: currentFiltered });
-
-  console.log(products);
-
+  const { products, isLoading } = useProducts({
+    category: currentFiltered,
+    offset,
+    limit: 10,
+  });
   return (
     <div className="bg-white min-h-screen pt-20">
       <div className="relative bg-gray-900 text-white">
@@ -42,10 +46,16 @@ const ProductList = () => {
         <>
           <div className="max-w-7xl mx-auto px-4 py-8">
             <section>
+              <Pagination
+                productCount={products.productCount}
+                currentPage={page}
+                onSetPage={setPage}
+              />
               <Filter
                 isLoading={isLoading}
-                filteredProducts={products}
+                filteredProducts={products.products}
                 onFilterChange={setCurrentFiltered}
+                type="product"
               />
             </section>
 

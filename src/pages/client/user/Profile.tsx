@@ -1,62 +1,71 @@
 import React, { useState, useEffect } from "react";
-import { UserType } from "../../../types/user";
-import { enqueueSnackbar } from "notistack";
-import { FiUser, FiEdit2, FiSave } from "react-icons/fi";
+import { FiUser, FiEdit2, FiSave, FiCamera } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
-import FormField from "../../../components/form/form-field";
 import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { useForm } from "react-hook-form";
+import { FormField } from "../../../components/form/form-register";
+import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-list";
+import OrderHistory from "./OrderHistory";
+import UserProduct from "./UserProduct";
+import clsx from "clsx";
 
 const Profile: React.FC = () => {
   const { data: me } = useGetUser();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserType | null>(null);
-  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty },
+    setValue,
+  } = useForm({
+    defaultValues: {
+      firstName: me?.firstName,
+      lastName: me?.lastName,
+      email: me?.email,
+      phone: me?.phone,
+      address: me?.address,
+      company: me?.company,
+      city: me?.city,
+      role: me?.role,
+      avatar: me?.avatar ? [me.avatar] : [],
+    },
+  });
   const navigate = useNavigate();
-
-  const { mutateAsync: updateUser } = useUpdateUser();
+  const { data: orderList } = useGetOrderList("Confirmed", 0, 10);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    me?.avatar ? me.avatar.toString() : null
+  );
+  const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
 
   useEffect(() => {
-    if (me) {
-      setFormData(me);
-    } else {
+    if (!me) {
       navigate("/login");
     }
   }, [me, navigate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => (prev ? { ...prev, [name]: value } : null));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData) return;
-
-    try {
-      setLoading(true);
-      await updateUser(formData);
-      enqueueSnackbar("Profile information updated successfully!", {
-        variant: "success",
-      });
-      setIsEditing(false);
-    } catch (error) {
-      enqueueSnackbar("An error occurred while updating your information.", {
-        variant: "error",
-      });
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setValue("avatar", [file], { shouldDirty: true });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  if (!formData) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+  const onSubmit = async (data: any) => {
+    try {
+      if (isDirty) {
+        updateUser(data);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 mt-20 lg:px-8">
@@ -86,11 +95,33 @@ const Profile: React.FC = () => {
           </div>
 
           <div className="p-6">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 flex flex-col items-center mb-6">
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                    <FiUser className="w-16 h-16 text-gray-400" />
+                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-4 relative group">
+                    <input
+                      type="file"
+                      disabled={!isEditing}
+                      id="avatar-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                    />
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <FiUser className="w-16 h-16 text-gray-400" />
+                    )}
+                    <label
+                      htmlFor="avatar-upload"
+                      className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    >
+                      <FiCamera className="text-white text-2xl" />
+                    </label>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800">
                     {me?.firstName} {me?.lastName}
@@ -98,17 +129,46 @@ const Profile: React.FC = () => {
                   <p className="text-gray-600">{me?.role}</p>
                 </div>
 
-                {Object.keys(formData).map((field) => {
-                  if (field === "id" || field === "role") return null;
+                {[
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "phone",
+                  "address",
+                  "company",
+                  "city",
+                ].map((field) => {
                   return (
-                    <FormField
-                      key={field}
-                      label={field.charAt(0).toUpperCase() + field.slice(1)}
-                      name={field}
-                      value={formData[field as keyof UserType]}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <FiUser className="text-gray-400" />
+                        </div>
+                        <FormField
+                          key={field}
+                          label={field.charAt(0).toUpperCase() + field.slice(1)}
+                          className={`pl-10 w-full py-3 border ${
+                            isEditing
+                              ? "border-gray-300"
+                              : "border-gray-200 bg-gray-50"
+                          } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
+                          {...register(
+                            field as
+                              | "firstName"
+                              | "lastName"
+                              | "email"
+                              | "phone"
+                              | "address"
+                              | "company"
+                              | "city",
+                            { required: true }
+                          )}
+                        />
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -118,20 +178,25 @@ const Profile: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setFormData(me);
                       setIsEditing(false);
                     }}
                     className="mr-4 px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-                    disabled={loading}
+                    disabled={isUpdating}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors flex items-center"
-                    disabled={loading}
+                    disabled={!isDirty}
+                    className={clsx(
+                      "px-6 py-3 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors flex items-center",
+                      {
+                        "bg-gray-200 text-gray-400 cursor-not-allowed":
+                          !isDirty,
+                      }
+                    )}
                   >
-                    {loading ? (
+                    {isUpdating ? (
                       <>
                         <span className="animate-spin mr-2">⟳</span> Saving...
                       </>
@@ -146,48 +211,8 @@ const Profile: React.FC = () => {
             </form>
           </div>
 
-          <div className="border-t border-gray-200 p-6">
-            <h3 className="text-xl font-bold text-[#C8A846] mb-4">
-              Order History
-            </h3>
-            <div className="bg-gray-50 p-6 rounded-lg text-center">
-              <p className="text-gray-600">You don't have any orders yet.</p>
-              <button className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors">
-                Shop Now
-              </button>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-200 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-bold text-[#C8A846] mb-4">
-                  Favorite Products
-                </h3>
-                <div className="bg-gray-50 p-6 rounded-lg text-center">
-                  <p className="text-gray-600">
-                    You don't have any favorite products yet.
-                  </p>
-                  <button className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors">
-                    Explore Products
-                  </button>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[#C8A846] mb-4">
-                  Your Reviews
-                </h3>
-                <div className="bg-gray-50 p-6 rounded-lg text-center">
-                  <p className="text-gray-600">
-                    You haven't reviewed any products yet.
-                  </p>
-                  <button className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors">
-                    View Purchased Products
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <OrderHistory orderList={orderList} />
+          <UserProduct />
         </div>
 
         <div className="mt-8 text-center text-gray-600">

@@ -1,112 +1,33 @@
-import { ProductType } from "@/types/product";
-import { useState } from "react";
+import { Product } from "@/types/product";
 import { FiFilter } from "react-icons/fi";
 import ProductItem from "../ProductItem";
 import FilterItem from "./FitlerItem";
+import { filterOptions } from "../../../database/filter";
+import { useFilter } from "../../../hooks/useFilter";
 
 type FilterProps = {
   isLoading: boolean;
-  filteredProducts: ProductType[];
+  filteredProducts: Product[];
   onFilterChange: (filters: string[]) => void;
+  type: "collection" | "product";
 };
 
-function Filter({ isLoading, filteredProducts, onFilterChange }: FilterProps) {
-  const [openSections, setOpenSections] = useState({
-    categories: true,
-    colors: true,
-    materials: true,
-    shapes: true,
-    price: true,
-  });
-
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-
-  const filterOptions = {
-    categories: ["Sunglasses", "Eyeglasses", "Accessories"],
-    colors: ["Black", "Brown", "Green", "Blue", "Tortoise", "Gold", "Silver"],
-    materials: [
-      "Wood Classics",
-      "Acetate Originals",
-      "Metal Originals",
-      "CAMP Eyewear",
-      "Acetate Originals",
-    ],
-    shapes: ["Round", "Square", "Rectangle", "Aviator", "Browline"],
-  };
-  const [activeFilters, setActiveFilters] = useState<{
-    categories: string[];
-    colors: string[];
-    materials: string[];
-    shapes: string[];
-    priceRange: [number, number] | null;
-  }>({
-    categories: [],
-    colors: [],
-    materials: [],
-    shapes: [],
-    priceRange: null,
-  });
-
-  const toggleFilter = () => {
-    const result = [
-      ...activeFilters.categories,
-      ...activeFilters.materials,
-      ...activeFilters.shapes,
-    ];
-
-    onFilterChange(result);
-    setActiveFilters({
-      ...activeFilters,
-      categories: [],
-      materials: [],
-      shapes: [],
-    });
-  };
-
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections({
-      ...openSections,
-      [section]: !openSections[section],
-    });
-  };
-
-  const handleFilterChange = (
-    type: keyof typeof activeFilters,
-    value: string
-  ) => {
-    setActiveFilters((prev: any) => {
-      if (
-        type === "categories" ||
-        type === "colors" ||
-        type === "materials" ||
-        type === "shapes"
-      ) {
-        const currentFilters = [...prev[type]];
-        if (currentFilters.includes(value)) {
-          return {
-            ...prev,
-            [type]: currentFilters.filter((item) => item !== value),
-          };
-        } else {
-          return {
-            ...prev,
-            [type]: [...currentFilters, value],
-          };
-        }
-      }
-      return prev;
-    });
-  };
-
-  const clearFilters = () => {
-    setActiveFilters({
-      categories: [],
-      colors: [],
-      materials: [],
-      shapes: [],
-      priceRange: null,
-    });
-  };
+function Filter({
+  isLoading,
+  filteredProducts,
+  onFilterChange,
+  type,
+}: FilterProps) {
+  const {
+    openSections,
+    hoveredId,
+    activeFilters,
+    toggleFilter,
+    toggleSection,
+    handleFilterChange,
+    clearFilters,
+    setHoveredId,
+  } = useFilter(onFilterChange);
 
   return (
     <>
@@ -132,20 +53,44 @@ function Filter({ isLoading, filteredProducts, onFilterChange }: FilterProps) {
                 Clear all filters
               </button>
             </div>
-            {Object.keys(filterOptions).map((key) => (
-              <FilterItem
-                key={key}
-                name={key}
-                activeFilters={activeFilters}
-                handleFilterChange={handleFilterChange}
-                toggleSection={toggleSection}
-                openSections={openSections}
-                filterOptions={filterOptions}
-              />
-            ))}
+            {Object.keys(filterOptions)?.map((key) => {
+              if (type === "collection") {
+                if (key !== "collections") {
+                  return (
+                    <FilterItem
+                      key={key}
+                      name={key}
+                      activeFilters={activeFilters}
+                      handleFilterChange={handleFilterChange}
+                      toggleSection={toggleSection}
+                      openSections={openSections}
+                      filterOptions={{
+                        ...filterOptions,
+                        collections: "",
+                      }}
+                    />
+                  );
+                }
+              } else if (type === "product") {
+                return (
+                  <FilterItem
+                    key={key}
+                    name={key}
+                    activeFilters={activeFilters}
+                    handleFilterChange={handleFilterChange}
+                    toggleSection={toggleSection}
+                    openSections={openSections}
+                    filterOptions={filterOptions}
+                  />
+                );
+              }
+            })}
             <div className="mt-8">
               <button
-                onClick={() => toggleFilter()}
+                onClick={() => {
+                  toggleFilter();
+                  window.scrollTo({ top: 50, behavior: "smooth" });
+                }}
                 className="w-full py-3 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors"
               >
                 Apply Filters
@@ -177,6 +122,7 @@ function Filter({ isLoading, filteredProducts, onFilterChange }: FilterProps) {
               ))}
             </div>
           )}
+          
         </div>
       </div>
     </>

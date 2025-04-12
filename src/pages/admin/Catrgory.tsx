@@ -7,6 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { Navigate } from "react-router-dom";
+import { useContextProvider } from "../../hooks/useContextProvider";
 
 type Category = {
   id: number;
@@ -23,7 +25,11 @@ const AdminCategory = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+  const { isAdmin } = useContextProvider();
 
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" />;
+  }
   // Sample category data
   const categories = [
     {
@@ -119,7 +125,6 @@ const AdminCategory = () => {
         </div>
       </div>
 
-      {/* Categories Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         {filteredCategories.map((category) => (
           <div
@@ -170,7 +175,6 @@ const AdminCategory = () => {
         ))}
       </div>
 
-      {/* Pagination */}
       <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 rounded-lg shadow">
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
@@ -217,7 +221,6 @@ const AdminCategory = () => {
         </div>
       </div>
 
-      {/* Add Category Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -289,7 +292,6 @@ const AdminCategory = () => {
         </div>
       )}
 
-      {/* Edit Category Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -364,7 +366,6 @@ const AdminCategory = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

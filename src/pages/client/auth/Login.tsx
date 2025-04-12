@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useContextProvider } from "../../../../src/hooks/useContextProvider";
-import { useAuthAction } from "../../../hooks/useAuthAction";
+import { useForm } from "react-hook-form";
+import { AuthType } from "@/types/user";
+import { FormField } from "../../../components/form/form-register";
+import { useLogin } from "../../../hooks/queryClient/mutator/auth/login";
+import SocialLogin from "./SocialLogin";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const { isLogin, setIsLogin } = useContextProvider();
-  const { handleLogin, isPendingLogin } = useAuthAction();
+  const [isRevealPassword, setIsRevealPassword] = useState(false);
+
+  const { mutateAsync: login, isPending: isPendingLogin } = useLogin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,14 +27,17 @@ const Login = () => {
     }
   }, [isLogin, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const response = await handleLogin(email, password);
-    console.log(response);
-    if (response == true) {
+  const onSubmit = async (data: AuthType) => {
+    const res = await login(data);
+    console.log(res);
+    if (res) {
       navigate("/");
       setIsLogin(true);
     }
+  };
+  const handleGoogleLogin = () => {
+    window.location.href =
+      "https://glasses-store-be.onrender.com/api/v1/auth/google/login";
   };
   return (
     <>
@@ -37,40 +50,34 @@ const Login = () => {
               <p className="text-gray-600">Welcome back to Lunar Shop</p>
             </div>
 
-            <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {["email", "password"].map((field) => (
+                <div key={field}>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <FormField
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    type={
+                      field === "password"
+                        ? isRevealPassword
+                          ? "text"
+                          : "password"
+                        : "text"
+                    }
+                    isPassword={field === "password"}
+                    onClick={() => setIsRevealPassword(!isRevealPassword)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                    {...register(field as "email" | "password", {
+                      required: true,
+                    })}
+                    // error={errors[field as keyof typeof errors]}
+                  />
+                </div>
+              ))}
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -111,15 +118,16 @@ const Login = () => {
             </form>
 
             <div className="mt-8 text-center">
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-4">
                 Don't have an account?{" "}
                 <Link
                   to="/register"
-                  className="text-gray-900 hover:underline font-medium"
+                  className="text-[#C8A846] hover:underline font-medium"
                 >
                   Create one
                 </Link>
               </p>
+              <SocialLogin onGoogleLogin={handleGoogleLogin} />
             </div>
           </div>
         </div>
