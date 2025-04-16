@@ -21,11 +21,15 @@ import { useProducts } from "../../../hooks/queryClient/query/product/products";
 import { useContextProvider } from "../../../hooks/useContextProvider";
 import { useOrderDetail } from "../../../hooks/queryClient/mutator/order/order-detail";
 import { enqueueSnackbar } from "notistack";
+import {
+  features,
+  fitDetails,
+  included,
+} from "../../../database/product/feature";
+import { useGetOrderDetail } from "../../../hooks/queryClient/query/order/use-get-detail";
 const ProductDetail = () => {
   const { id } = useParams();
-
   const { product, isLoading } = useProduct(id);
-
   const [selectedCategory, setSelectedCategory] = useState(
     product?.productCategories[0]?.categoryDetails.id
   );
@@ -34,8 +38,9 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("Description");
-  const { cart, setShouldFetchCart } = useContextProvider();
+  const { cart, setCart } = useContextProvider();
   const { mutateAsync: createOrderDetail } = useOrderDetail();
+  const {  refetch } = useGetOrderDetail(cart?.id || "");
 
   const handleQuantityChange = (value: number) => {
     const newQuantity = quantity + value;
@@ -51,40 +56,18 @@ const ProductDetail = () => {
         productId: id,
         quantity: quantity,
       });
+
+      const { data: updatedOrder } = await refetch();
+      setCart(updatedOrder?.data);
       enqueueSnackbar("Product added to cart", { variant: "success" });
     } else {
       enqueueSnackbar("Error Cart", { variant: "error" });
     }
-    setShouldFetchCart(true);
   };
 
   const handleCategoryChange = (id: string) => {
     setSelectedCategory(id);
   };
-
-  const features = [
-    "Premium-grade hardwood",
-    "14-ply carbon fiber and wood laminate construction",
-    "German spring hinges",
-    "Split frame with rim lock for easy lensing",
-  ];
-
-  const included = [
-    { text: "Premium CR-39 lens", icon: faCheck },
-    { text: "100% UVA/UVB protection", icon: faCheck },
-    { text: "Custom travel case", icon: faCheck },
-    { text: "Microfiber cleaning cloth", icon: faCheck },
-    { text: "1-year warranty", icon: faShieldHalved },
-  ];
-
-  const fitDetails = [
-    { label: "Overall Width", value: "Wide" },
-    { label: "Gender", value: "Unisex" },
-    { label: "Lens", value: "54mm" },
-    { label: "Bridge", value: "19mm" },
-    { label: "Overall Width", value: "144mm" },
-    { label: "Temple", value: "145mm" },
-  ];
 
   const averageRating =
     reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
@@ -464,7 +447,7 @@ const ProductDetail = () => {
                 </div>
               </div>
               <RelatedProduct
-                categoryProducts={categoryProducts.data}
+                categoryProducts={categoryProducts?.data}
                 isLoading={isLoadingCategoryProducts}
               />
             </div>

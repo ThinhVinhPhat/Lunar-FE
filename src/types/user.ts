@@ -9,6 +9,8 @@ export type UserType = {
   role: string;
   phone: string;
   avatar: File[] | null;
+  status: string;
+  createdAt: string;
 };
 
 export type AuthType = {

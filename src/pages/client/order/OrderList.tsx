@@ -1,18 +1,17 @@
 import { Pagination } from "../../../components/ui/Pagination";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OrderModal from "./OrderModal";
 import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-list";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { Order } from "@/types/order";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
-import { useNavigate } from "react-router-dom";
+import { AuthProps, isLoginAuth } from "../../../components/withAuth";
 import OrderEmpty from "./OrderEmpty";
-function OrderList() {
+
+const OrderList: React.FC<AuthProps> = () => {
   const [status, setStatus] = useState("ALL_ORDER");
   const [isOpen, setIsOpen] = useState(false);
-  const { data: user } = useGetUser();
-  const navigate = useNavigate();
+
   const [page, setPage] = useState(1);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
   const offset = (page - 1) * 10;
@@ -22,11 +21,6 @@ function OrderList() {
     10
   );
 
-  useEffect(() => {
-    if (!user) {
-      navigate(`/`);
-    }
-  }, [user]);
   return (
     <div className="container mx-auto px-4 py-8 mt-36">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Your Orders</h1>
@@ -133,6 +127,8 @@ function OrderList() {
       )}
     </div>
   );
-}
+};
 
-export default OrderList;
+const WOrderList = isLoginAuth(OrderList);
+
+export default WOrderList;

@@ -63,7 +63,6 @@ function CartContent({
               </p>
             </div>
 
-            {/* Quantity & Remove */}
             <div className="flex flex-1 items-end justify-between text-sm">
               <div className="flex items-center border border-gray-300 rounded">
                 <button

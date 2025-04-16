@@ -1,32 +1,24 @@
-import { useEffect, useState } from "react";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
 import { Product } from "@/types/product";
-import { DeleteProductModal, AddProductModal } from "./modals";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
-import { useContextProvider } from "../../../hooks/useContextProvider";
+import { Edit, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
 import Pagination from "../../../components/admin/pagination";
+import SearchComponent from "../../../components/admin/ui/Search";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useDeleteProduct } from "../../../hooks/queryClient/mutator/product/delete-product";
+import { useProducts } from "../../../hooks/queryClient/query/product/products";
+import { AddProductModal } from "./modals/AddProduct";
+import { AuthProps, isLoginAdminAuth } from "../../../components/withAuth";
 
-const AdminProduct = () => {
+const AdminProduct: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // const [showEditModal, setShowEditModal] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const { mutateAsync: deleteProduct } = useDeleteProduct();
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 5;
-  const navigate = useNavigate();
-  const { isAdmin } = useContextProvider();
   const { data: products, isLoading } = useProducts({ offset, limit: 5 });
-
-  useEffect(() => {
-    if (!isAdmin) {
-      navigate("/admin/login");
-    }
-  }, [isAdmin]);
 
   const filteredProducts = products?.data?.products?.filter(
     (product: Product) =>
@@ -41,10 +33,10 @@ const AdminProduct = () => {
     searchTerm === "" ? products?.data?.productCount : filteredProducts?.length;
   const totalPages = Math.ceil(totalProducts / 5);
 
-  // const handleEdit = (product: any) => {
-  //   setCurrentProduct(product);
-  //   setShowEditModal(true);
-  // };
+  const handleEdit = (product: Product) => {
+    setCurrentProduct(product);
+    setShowAddModal(true);
+  };
 
   const handleDelete = async () => {
     const response = await deleteProduct(currentProduct?.id);
@@ -72,37 +64,10 @@ const AdminProduct = () => {
 
       <div className="mb-6 bg-white rounded-lg shadow p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={18} className="text-gray-400" />
-            </div>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search products..."
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent"
-            />
-          </div>
-          {/* <div className="flex items-center gap-2">
-            <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-              <Filter size={16} className="mr-2 text-gray-500" />
-              Filters
-            </button>
-            <select className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent">
-              <option value="">All Categories</option>
-              <option value="Sunglasses">Sunglasses</option>
-              <option value="Eyeglasses">Eyeglasses</option>
-              <option value="Readers">Readers</option>
-              <option value="Sports">Sports</option>
-            </select>
-            <select className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent">
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Low Stock">Low Stock</option>
-              <option value="Out of Stock">Out of Stock</option>
-            </select>
-          </div> */}
+          <SearchComponent
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
         </div>
       </div>
       {isLoading ? (
@@ -184,7 +149,7 @@ const AdminProduct = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        // onClick={() => handleEdit(product)}
+                        onClick={() => handleEdit(product)}
                         className="text-blue-600 hover:text-blue-900 mr-3"
                       >
                         <Edit size={16} />
@@ -216,8 +181,9 @@ const AdminProduct = () => {
       <AddProductModal
         showAddModal={showAddModal}
         setShowAddModal={setShowAddModal}
+        currentProduct={currentProduct || undefined}
       />
-      <DeleteProductModal
+      <DeleteConfirmModal
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}
         onDelete={handleDelete}
@@ -226,4 +192,6 @@ const AdminProduct = () => {
   );
 };
 
-export default AdminProduct;
+const WAdminProduct = isLoginAdminAuth(AdminProduct);
+
+export default WAdminProduct;

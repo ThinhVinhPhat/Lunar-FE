@@ -3,16 +3,55 @@ import { Controller, useForm } from "react-hook-form";
 import { FormField } from "../../../../components/form/form-register";
 import { useAddProduct } from "../../../../hooks/queryClient/mutator/product/add-product";
 import clsx from "clsx";
+import { Product } from "@/types/product";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CategoryDetail } from "@/types/category";
+import { useEffect, useState } from "react";
 
 type AddProductModalsProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;
+  currentProduct?: Product;
 };
+
+type AddProductForm = {
+  name: string;
+  price: number;
+  stock: number;
+  discount: number;
+  description: string;
+  categoryId: string[];
+  images: (string | File)[];
+  isFreeShip: boolean;
+  isFeatured: boolean;
+  isNew: boolean;
+};
+
+const schema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  price: z.number(),
+  stock: z.number().min(0, { message: "Stock is required" }),
+  discount: z.number().min(0, { message: "Discount is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  categoryId: z.array(z.string()).min(1, { message: "Category is required" }),
+  images: z.array(z.union([z.string(), z.instanceof(File)])),
+  isFreeShip: z.boolean(),
+  isFeatured: z.boolean(),
+  isNew: z.boolean(),
+});
 
 export const AddProductModal = ({
   showAddModal,
   setShowAddModal,
+  currentProduct = undefined,
 }: AddProductModalsProps) => {
+  const [product, setProduct] = useState<Product | undefined>(currentProduct);
+
+  useEffect(() => {
+    setProduct(currentProduct);
+  }, [currentProduct]);
+
   const {
     register,
     handleSubmit,
@@ -20,21 +59,25 @@ export const AddProductModal = ({
     setValue,
     getValues,
     reset,
-    formState: { isDirty },
-  } = useForm({
+    formState: { isDirty, errors },
+  } = useForm<AddProductForm>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      price: 0,
-      stock: 0,
-      discount: 0,
-      description: "",
-      categoryId: [],
-      images: [] as File[],
-      isFreeShip: true,
-      isFeatured: false,
-      isNew: true,
+      name: product?.name,
+      price: Number(product?.price),
+      stock: Number(product?.stock),
+      description: product?.description,
+      discount: Number(product?.discount_percentage),
+      categoryId: product?.productCategories.map(
+        (category: any) => category.categoryDetails.id
+      ),
+      images: product?.images,
+      isFreeShip: product?.isFreeShip,
+      isFeatured: product?.isFeatured,
+      isNew: product?.isNew,
     },
   });
+
   const { data: categoriesDetails } = useGetCategoriesDetail();
   const { mutateAsync: addProduct, isPending: isAdding } = useAddProduct();
 
@@ -85,6 +128,7 @@ export const AddProductModal = ({
                         <FormField
                           label="Product Name"
                           placeholder="Enter product name"
+                          error={errors.name?.message as any}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("name")}
                         />
@@ -94,37 +138,43 @@ export const AddProductModal = ({
                           Category
                         </label>
                         <div className="flex flex-col space-y-2">
-                          {categoriesDetails?.map((category: any) => (
-                            <div
-                              key={category.id}
-                              className="flex items-center"
-                            >
-                              <Controller
-                                control={control}
-                                name="categoryId"
-                                render={({ field }) => (
-                                  <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-                                      const newValue = e.target.checked
-                                        ? [...field.value, category.id]
-                                        : field.value.filter(
-                                            (id) => id !== category.id
-                                          );
-                                      field.onChange(newValue);
-                                    }}
-                                  />
-                                )}
-                              />
-
-                              <label
-                                htmlFor={`category-${category.id}`}
-                                className="ml-2 block text-sm text-gray-900"
+                          {categoriesDetails?.map(
+                            (category: CategoryDetail) => (
+                              <div
+                                key={category.id}
+                                className="flex items-center"
                               >
-                                {category.name}
-                              </label>
-                            </div>
-                          ))}
+                                <Controller
+                                  control={control}
+                                  name="categoryId"
+                                  render={({ field }) => (
+                                    <input
+                                      type="checkbox"
+                                      checked={getValues("categoryId")?.some(
+                                        (id: string) => id === category.id
+                                      )}
+                                      onChange={(e) => {
+                                        const newValue = e.target.checked
+                                          ? [...field.value, category.id]
+                                          : field.value.filter(
+                                              (id) => id !== category.id
+                                            );
+                                        field.onChange(newValue);
+                                      }}
+                                    />
+                                  )}
+                                />
+
+                                <label
+                                  htmlFor={`category-${category.id}`}
+                                  className="ml-2 block text-sm text-gray-900"
+                                >
+                                  {category.name}
+                                </label>
+                                {errors.categoryId?.message}
+                              </div>
+                            )
+                          )}
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -136,8 +186,10 @@ export const AddProductModal = ({
                             type="number"
                             label="price"
                             step={0.01}
+                            value={product?.price}
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter price"
+                            error={errors.price?.message as any}
                             {...register("price")}
                           />
                         </div>
@@ -147,10 +199,12 @@ export const AddProductModal = ({
                           </label>
                           <FormField
                             type="number"
+                            value={product?.stock}
                             label="Stock"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter stock"
                             {...register("stock")}
+                            error={errors.stock?.message as any}
                           />
                         </div>
                         <div>
@@ -159,10 +213,12 @@ export const AddProductModal = ({
                           </label>
                           <FormField
                             type="number"
+                            value={product?.discount_percentage}
                             label="Discount"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter discount"
                             {...register("discount")}
+                            error={errors.discount?.message as any}
                           />
                         </div>
                       </div>
@@ -192,7 +248,8 @@ export const AddProductModal = ({
                                     "flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]";
                                   fileInput.accept = "image/*";
                                   fileInput.onchange = (e: Event) => {
-                                    const inputEvent = e as unknown as React.ChangeEvent<HTMLInputElement>;
+                                    const inputEvent =
+                                      e as unknown as React.ChangeEvent<HTMLInputElement>;
                                     handleImageChange(inputEvent);
                                   };
 
@@ -216,6 +273,23 @@ export const AddProductModal = ({
                               </button>
                             </div>
                           </div>
+                          <div className="image-holder flex flex-wrap items-center space-x-2">
+                            {product?.images?.map((image: any) => {
+                              return image instanceof File ? (
+                                <img
+                                  src={URL.createObjectURL(image)}
+                                  className="w-1/4 h-1/4 object-cover"
+                                  alt="Product Image"
+                                />
+                              ) : (
+                                <img
+                                  src={image}
+                                  className="w-1/4 h-1/4 object-cover"
+                                  alt="Product Image"
+                                />
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -224,6 +298,7 @@ export const AddProductModal = ({
                         </label>
                         <textarea
                           rows={3}
+                          value={product?.description}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("description")}
                         ></textarea>
@@ -232,18 +307,20 @@ export const AddProductModal = ({
                         <label className="block text-sm font-medium text-gray-700">
                           Status
                         </label>
-                        <div className="flex flex-col space-y-2">
-                          <input type="checkbox" {...register("isFreeShip")} />
-                          <label htmlFor="isFreeShip">Free Ship</label>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                          <input type="checkbox" {...register("isNew")} />
-                          <label htmlFor="isNew">New</label>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                          <input type="checkbox" {...register("isFeatured")} />
-                          <label htmlFor="isFeatured">Featured</label>
-                        </div>
+                        {["isFreeShip", "isNew", "isFeatured"].map((status) => (
+                          <div className="flex flex-col space-y-2">
+                            <FormField
+                              type="checkbox"
+                              label={status}
+                              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                              checked={
+                                product?.[status as keyof Product] as boolean
+                              }
+                              {...register(status as keyof AddProductForm)}
+                            />
+                            <label htmlFor={status}>{status}</label>
+                          </div>
+                        ))}
                       </div>
 
                       <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

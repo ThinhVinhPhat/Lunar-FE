@@ -4,7 +4,7 @@ export interface CategoryDetail {
   updatedAt: string;
   name: string;
   description: string;
-  image: string;
+  image: File[] | string;
   status: boolean;
 }
 
@@ -16,4 +16,10 @@ export interface Category {
   description: string;
   images: string[];
   status: boolean;
+  categoryDetails: CategoryDetail[];
+}
+
+export interface ProductCategory {
+  categoryId: string;
+  productId: string;
 }

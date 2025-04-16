@@ -8,6 +8,7 @@ import { createPayment } from "../../api/service/payment.service";
 import { useGetUser } from "../../../src/hooks/queryClient/query/user";
 import CartContent from "../cart/CartContent";
 import CartButton from "../cart/CartButton";
+import { useGetOrderDetail } from "../../hooks/queryClient/query/order/use-get-detail";
 
 type CartProps = {
   isOpen: boolean;
@@ -16,17 +17,16 @@ type CartProps = {
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
   const [subtotal, setSubtotal] = useState(0);
-  const { cart, setCartItems, cartItems, setShouldFetchCart } =
-    useContextProvider();
+  const { cart, setCartItems, cartItems, setCart } = useContextProvider();
   const { data: me } = useGetUser();
   const hasValidInfo = me?.address && me?.phone;
   const isCartEmpty = cartItems.length === 0;
+  const { refetch } = useGetOrderDetail(cart?.id || "");
 
   useEffect(() => {
     setCartItems(cart?.orderDetails || []);
     calculateSubtotal(cart?.orderDetails || []);
-    setShouldFetchCart(true);
-  }, [cart]);
+  }, [cart, setCartItems, setCart]);
 
   useEffect(() => {
     if (isOpen) {
@@ -66,6 +66,8 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
       await deleteOrderDetail(id);
       setCartItems(updatedItems);
       calculateSubtotal(updatedItems);
+      const { data: updatedOrder } = await refetch();
+      setCart(updatedOrder?.data);
       enqueueSnackbar("Product removed from cart", { variant: "success" });
     } catch (error) {
       enqueueSnackbar("Error removing product from cart", { variant: "error" });
@@ -73,7 +75,10 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
   };
 
   const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1) {
+      removeItem(id);
+      return;
+    }
 
     const updatedItems = cartItems.map((item) =>
       item.id === id ? { ...item, quantity: newQuantity } : item

@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { Search, Edit, Save, Shield, CheckCircle, XCircle } from "lucide-react";
-import { useContextProvider } from "../../hooks/useContextProvider";
-import { Navigate } from "react-router-dom";
+import { isLoginAdminAuth, AuthProps } from "../../components/withAuth";
 
-const Permissions = () => {
+const Permissions: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const { isAdmin } = useContextProvider();
 
-  if (!isAdmin) {
-    return <Navigate to="/admin/login" />;
-  }
   const roles = [
     {
       id: 1,
@@ -284,4 +279,5 @@ const Permissions = () => {
   );
 };
 
-export default Permissions;
+const WithPermission = isLoginAdminAuth(Permissions);
+export default WithPermission;

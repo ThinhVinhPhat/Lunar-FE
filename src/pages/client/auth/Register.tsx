@@ -1,39 +1,51 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
-import { useForm } from "react-hook-form";
 import { AuthType } from "@/types/user";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { enqueueSnackbar } from "notistack";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { FormField } from "../../../components/form/form-register";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useRegister } from "../../../hooks/queryClient/mutator/auth/register";
+import { AuthProps, isAlreadyLoginAuth } from "../../../components/withAuth";
 
-const Register = () => {
+const schema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().email().min(1, { message: "Email is required" }),
+  password: z.string().min(8, { message: "Password is required" }),
+  confirmPassword: z
+    .string()
+    .min(8, { message: "Confirm password is required" }),
+});
+
+const Register: React.FC<AuthProps> = () => {
   const {
     register,
     handleSubmit,
     reset,
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
+    resolver: zodResolver(schema),
   });
   const [isRevealPassword, setIsRevealPassword] = useState(false);
   const navigate = useNavigate();
   const { mutateAsync: registerUser, isPending: isPendingRegister } =
     useRegister();
-  const { data: me } = useGetUser();
-
-  useEffect(() => {
-    if (me) {
-      navigate("/");
-    }
-  }, [me, navigate]);
 
   const onSubmit = async (data: AuthType) => {
+    if (data.password !== data.confirmPassword) {
+      enqueueSnackbar("Passwords do not match", { variant: "error" });
+      return;
+    }
     const response = await registerUser(data);
     if (response) {
       reset();
@@ -93,11 +105,16 @@ const Register = () => {
                         | "email"
                         | "password"
                         | "confirmPassword"
-                        | "first_name"
-                        | "last_name",
+                        | "firstName"
+                        | "lastName",
                       { required: true }
                     )}
                   />
+                  {errors[field as keyof typeof errors] && (
+                    <p className="text-red-700">
+                      {errors[field as keyof typeof errors]?.message}
+                    </p>
+                  )}
                 </div>
               ))}
 
@@ -132,4 +149,6 @@ const Register = () => {
   );
 };
 
-export default Register;
+const WRegister = isAlreadyLoginAuth(Register);
+
+export default WRegister;

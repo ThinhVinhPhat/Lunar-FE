@@ -11,14 +11,12 @@ type ContextType = {
   isOpenCart: boolean;
   cart: Order | undefined;
   cartItems: OrderDetail[];
-  shouldFetchCart: boolean;
   setIsLogin: (value: boolean) => void;
   setIsAdmin: (value: boolean) => void;
   setIsOpenSearch: (value: boolean) => void;
   setIsOpenCart: (value: boolean) => void;
   setCart: (value: Order | undefined) => void;
   setCartItems: (value: OrderDetail[]) => void;
-  setShouldFetchCart: (value: boolean) => void;
 };
 
 export const Context = createContext<ContextType | undefined>(undefined);
@@ -34,7 +32,6 @@ export const ContextProvider = ({
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [cartItems, setCartItems] = useState<OrderDetail[]>([]);
-  const [shouldFetchCart, setShouldFetchCart] = useState(true);
   const { data: user } = useGetUser();
   const { data: order, mutateAsync: mutateOrder } = useCreateOrder();
 
@@ -56,7 +53,6 @@ export const ContextProvider = ({
           shippingFee: 0,
           note: "",
         });
-        setShouldFetchCart(false);
       }
     };
     fetchCart();
@@ -66,7 +62,7 @@ export const ContextProvider = ({
     if (order) {
       setCart(order);
     }
-  }, [order, shouldFetchCart]);
+  }, [order]);
 
   const memorizedValue = useMemo(() => {
     return {
@@ -76,25 +72,15 @@ export const ContextProvider = ({
       isOpenCart,
       cart,
       cartItems,
-      shouldFetchCart,
       setIsLogin,
       setIsAdmin,
       setIsOpenSearch,
       setIsOpenCart,
       setCart,
       setCartItems,
-      setShouldFetchCart,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isOpenSearch,
-    isOpenCart,
-    cart,
-    cartItems,
-    isLogin,
-    shouldFetchCart,
-    isAdmin,
-  ]);
+  }, [isOpenSearch, isOpenCart, cart, cartItems, isLogin, isAdmin]);
 
   return <Context.Provider value={memorizedValue}>{children}</Context.Provider>;
 };

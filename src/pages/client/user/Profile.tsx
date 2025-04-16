@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FiUser, FiEdit2, FiSave, FiCamera } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
 import { useForm } from "react-hook-form";
 import { FormField } from "../../../components/form/form-register";
 import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-list";
 import OrderHistory from "./OrderHistory";
 import UserProduct from "./UserProduct";
 import clsx from "clsx";
+import { AuthProps, isLoginAuth } from "../../../components/withAuth";
 
-const Profile: React.FC = () => {
-  const { data: me } = useGetUser();
+const Profile: React.FC<AuthProps> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const {
     register,
@@ -20,29 +18,23 @@ const Profile: React.FC = () => {
     setValue,
   } = useForm({
     defaultValues: {
-      firstName: me?.firstName,
-      lastName: me?.lastName,
-      email: me?.email,
-      phone: me?.phone,
-      address: me?.address,
-      company: me?.company,
-      city: me?.city,
-      role: me?.role,
-      avatar: me?.avatar ? [me.avatar] : [],
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      email: user?.email,
+      phone: user?.phone,
+      address: user?.address,
+      company: user?.company,
+      city: user?.city,
+      role: user?.role,
+      avatar: user?.avatar ? [user.avatar] : [],
     },
   });
-  const navigate = useNavigate();
+
   const { data: orderList } = useGetOrderList("Confirmed", 0, 10);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    me?.avatar ? me.avatar.toString() : null
+    user?.avatar ? user.avatar.toString() : null
   );
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
-
-  useEffect(() => {
-    if (!me) {
-      navigate("/login");
-    }
-  }, [me, navigate]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -124,9 +116,9 @@ const Profile: React.FC = () => {
                     </label>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800">
-                    {me?.firstName} {me?.lastName}
+                    {user?.firstName} {user?.lastName}
                   </h2>
-                  <p className="text-gray-600">{me?.role}</p>
+                  <p className="text-gray-600">{user?.role}</p>
                 </div>
 
                 {[
@@ -223,4 +215,6 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+const WProfile = isLoginAuth(Profile);
+
+export default WProfile;

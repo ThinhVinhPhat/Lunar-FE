@@ -11,14 +11,13 @@ import {
   Legend,
 } from "chart.js";
 import { ShoppingBag } from "lucide-react";
-import { Navigate } from "react-router-dom";
-import { useContextProvider } from "../../../hooks/useContextProvider";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
+
 import {
   salesData,
   revenueData,
   statsCards,
 } from "../../../database/admin/dashboard";
+import { AuthProps, isLoginAdminAuth } from "../../../components/withAuth";
 
 ChartJS.register(
   CategoryScale,
@@ -31,12 +30,7 @@ ChartJS.register(
   Legend
 );
 
-const Dashboard = () => {
-  const { isAdmin } = useContextProvider();
-  const { data: user } = useGetUser();
-  if (!isAdmin) {
-    return <Navigate to="/admin/login" />;
-  }
+const Dashboard: React.FC<AuthProps> = ({ user }) => {
   return (
     <>
       <div className="mb-8">
@@ -122,4 +116,6 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+const DashboardWrapper = isLoginAdminAuth(Dashboard);
+
+export default DashboardWrapper;

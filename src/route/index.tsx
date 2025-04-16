@@ -11,8 +11,8 @@ import Profile from "../pages/client/user/Profile";
 import ProductList from "../pages/client/product/ProductList";
 import Explore from "../pages/client/Explore";
 import PaymentResult from "../pages/client/PaymentResult";
-import AdminAccount from "../pages/admin/Account";
-import AdminCategory from "../pages/admin/Catrgory";
+import AdminAccount from "../pages/admin/account";
+import AdminCategory from "../pages/admin/category";
 import Permissions from "../pages/admin/Premission";
 import AdminProduct from "../pages/admin/product";
 import AdminLayout from "../components/admin/layout/Layout";
@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
     element: <PaymentResult status={"success"} />,
   },
   {
-    path: "/payment/failed",
+    path: "/api/v1/payment/failed",
     element: <PaymentResult status={"failed"} />,
   },
 ]);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useContextProvider } from "../../../../src/hooks/useContextProvider";
@@ -7,25 +7,35 @@ import { AuthType } from "@/types/user";
 import { FormField } from "../../../components/form/form-register";
 import { useLogin } from "../../../hooks/queryClient/mutator/auth/login";
 import SocialLogin from "./SocialLogin";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AuthProps, isAlreadyLoginAuth } from "../../../components/withAuth";
 
-const Login = () => {
-  const { register, handleSubmit } = useForm({
+const schema = z.object({
+  email: z.string().email().min(1, { message: "Email is required" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
+});
+
+const Login: React.FC<AuthProps> = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       email: "",
       password: "",
     },
+    resolver: zodResolver(schema),
   });
-  const { isLogin, setIsLogin } = useContextProvider();
+  const {  setIsLogin } = useContextProvider();
   const [isRevealPassword, setIsRevealPassword] = useState(false);
 
   const { mutateAsync: login, isPending: isPendingLogin } = useLogin();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isLogin) {
-      navigate("/");
-    }
-  }, [isLogin, navigate]);
 
   const onSubmit = async (data: AuthType) => {
     const res = await login(data);
@@ -76,6 +86,11 @@ const Login = () => {
                     })}
                     // error={errors[field as keyof typeof errors]}
                   />
+                  {errors[field as keyof typeof errors] && (
+                    <p className="text-red-700">
+                      {errors[field as keyof typeof errors]?.message}
+                    </p>
+                  )}
                 </div>
               ))}
 
@@ -136,4 +151,6 @@ const Login = () => {
   );
 };
 
-export default Login;
+const WLogin = isAlreadyLoginAuth(Login);
+
+export default WLogin;

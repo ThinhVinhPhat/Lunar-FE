@@ -1,5 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, Menu, X } from "lucide-react";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 
 type NavigationProps = {
   isSidebarOpen: boolean;
@@ -16,6 +17,8 @@ function Navigation({
   navItems,
 }: NavigationProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { handleLogout } = useAuthAction();
   return (
     <div
       className={`${
@@ -55,7 +58,10 @@ function Navigation({
           <li className="mt-6 pt-6 border-t border-gray-200">
             <button
               className="flex items-center w-full p-3 rounded-lg text-gray-600 hover:bg-[#f5ecd1] hover:text-[#C8A846]"
-              onClick={() => alert("Logging out...")}
+              onClick={() => {
+                handleLogout();
+                navigate("/admin/login");
+              }}
             >
               <span className="mr-3">
                 <LogOut size={20} />

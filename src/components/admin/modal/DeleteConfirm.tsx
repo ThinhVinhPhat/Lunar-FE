@@ -1,15 +1,16 @@
 import { Trash2 } from "lucide-react";
-type DeleteProductModalsProps = {
+
+type DeleteConfirmModalsProps = {
   showDeleteModal: boolean;
   setShowDeleteModal: (showDeleteModal: boolean) => void;
   onDelete: () => void;
 };
 
-export const DeleteProductModal = ({
+export const DeleteConfirmModal = ({
   showDeleteModal,
   setShowDeleteModal,
   onDelete,
-}: DeleteProductModalsProps) => {
+}: DeleteConfirmModalsProps) => {
   return (
     showDeleteModal && (
       <div className="fixed inset-0 z-50 overflow-y-auto">

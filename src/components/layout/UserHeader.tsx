@@ -79,7 +79,7 @@ export const UserHeader: React.FC = () => {
           >
             <FontAwesomeIcon icon={faShoppingCart} />
             <span className="absolute -top-2 -right-2 bg-[#C8A846] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {cart?.orderDetails.length || 0}
+              {cart?.orderDetails?.length || 0}
             </span>
           </button>
         </div>

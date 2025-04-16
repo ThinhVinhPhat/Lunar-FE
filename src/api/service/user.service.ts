@@ -1,11 +1,8 @@
 import { UserType } from "@/types/user";
 import instance from "..";
-import Cookies from "js-cookie";
 
 export const UserService = {
   getUser: async () => {
-    console.log(Cookies.get("accessToken"));
-
     const response = await instance.get(`/users/me`, {});
     return response.data;
   },
@@ -42,5 +39,13 @@ export const updatePassword = async (
     code: code,
     password: password,
   });
+  return response.data;
+};
+
+export const findUser = async (data: any) => {
+  const response = await instance.get(`/users/find-all`, {
+    params: data,
+  });
+
   return response.data;
 };
