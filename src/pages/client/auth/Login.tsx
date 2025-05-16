@@ -9,7 +9,10 @@ import { useLogin } from "../../../hooks/queryClient/mutator/auth/login";
 import SocialLogin from "./SocialLogin";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthProps, isAlreadyLoginAuth } from "../../../components/withAuth";
+import {
+  AuthProps,
+  isAlreadyLoginAuth,
+} from "../../../components/wrapper/withAuth";
 
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
@@ -30,12 +33,11 @@ const Login: React.FC<AuthProps> = () => {
     },
     resolver: zodResolver(schema),
   });
-  const {  setIsLogin } = useContextProvider();
+  const { setIsLogin } = useContextProvider();
   const [isRevealPassword, setIsRevealPassword] = useState(false);
 
   const { mutateAsync: login, isPending: isPendingLogin } = useLogin();
   const navigate = useNavigate();
-
 
   const onSubmit = async (data: AuthType) => {
     const res = await login(data);

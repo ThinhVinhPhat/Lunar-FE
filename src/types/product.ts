@@ -9,11 +9,13 @@ export interface Product {
   description: string;
   status: boolean;
   stock: number;
+  views: number;
   video: string;
   images: string[];
   isFreeShip: boolean;
   isNew: boolean;
   isFeatured: boolean;
+  isFavorite: boolean;
   productCategories: {
     id: string;
     createdAt: string;

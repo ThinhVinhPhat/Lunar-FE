@@ -3,6 +3,8 @@ import { FiSearch, FiX } from "react-icons/fi";
 import { Product } from "@/types/product";
 import { useProducts } from "../../hooks/queryClient/query/product/products";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useTranslation } from "react-i18next";
+import IsLoadingWrapper from "../wrapper/isLoading";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -15,7 +17,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const { products, isLoading } = useProducts();
-
+  const { t } = useTranslation();
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
       setTimeout(() => {
@@ -97,7 +99,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-medium text-gray-900">
-              Search Products
+              {t("search.search_products")}
             </h3>
             <button
               onClick={onClose}
@@ -114,7 +116,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search for products..."
+              placeholder={t("search.search_placeholder")}
               className="w-full py-3 pl-12 pr-10 border-b-2 border-gray-200 focus:border-[#C8A846] focus:outline-none text-lg"
             />
             <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
@@ -131,7 +133,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           {!searchQuery && (
             <div className="mb-6">
               <h4 className="text-sm font-medium text-gray-500 mb-2">
-                Popular searches
+                {t("search.popular_searches")}
               </h4>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -154,67 +156,66 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           )}
 
           <div className="mt-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C8A846]"></div>
-              </div>
-            ) : searchQuery ? (
-              <>
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-sm font-medium text-gray-500">
-                    {filteredProducts.length} results for "{searchQuery}"
-                  </h4>
-                </div>
+            {searchQuery ? (
+              <IsLoadingWrapper isLoading={isLoading}>
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-sm font-medium text-gray-500">
+                      {filteredProducts.length} {t("search.results_for")} "
+                      {searchQuery}"
+                    </h4>
+                  </div>
 
-                {filteredProducts.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-h-[60vh] overflow-y-auto pb-4">
-                    {filteredProducts.map((product) => (
-                      <div
-                        key={product.id}
-                        className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                      >
-                        <div className="aspect-w-1 aspect-h-1 bg-gray-200 relative overflow-hidden">
-                          {product.images && product.images[0] && (
-                            <img
-                              src={product.images[0]}
-                              alt={product.name}
-                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                            />
-                          )}
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-sm font-medium text-gray-900 mb-1">
-                            {product.name}
-                          </h3>
-                          <p className="text-lg font-bold text-[#C8A846]">
-                            ${product.price}
-                          </p>
-                          <div className="mt-2">
-                            <button
-                              onClick={() => {
-                                window.location.href = `/product/${product.slug}`;
-                                onClose();
-                              }}
-                              className="w-full py-2 bg-[#C8A846] text-white rounded hover:bg-[#b39a3f] transition-colors"
-                            >
-                              View Details
-                            </button>
+                  {filteredProducts.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-h-[60vh] overflow-y-auto pb-4">
+                      {filteredProducts.map((product) => (
+                        <div
+                          key={product.id}
+                          className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                        >
+                          <div className="aspect-w-1 aspect-h-1 bg-gray-200 relative overflow-hidden">
+                            {product.images && product.images[0] && (
+                              <img
+                                src={product.images[0]}
+                                alt={product.name}
+                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                              />
+                            )}
+                          </div>
+                          <div className="p-4">
+                            <h3 className="text-sm font-medium text-gray-900 mb-1">
+                              {product.name}
+                            </h3>
+                            <p className="text-lg font-bold text-[#C8A846]">
+                              ${product.price}
+                            </p>
+                            <div className="mt-2">
+                              <button
+                                onClick={() => {
+                                  window.location.href = `/product/${product.slug}`;
+                                  onClose();
+                                }}
+                                className="w-full py-2 bg-[#C8A846] text-white rounded hover:bg-[#b39a3f] transition-colors"
+                              >
+                                {t("search.view_details")}
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">
-                      No products found matching "{searchQuery}"
-                    </p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      Try a different search term or browse our categories
-                    </p>
-                  </div>
-                )}
-              </>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">
+                        {t("search.no_products_found")} "{searchQuery}"
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">
+                        {t("search.try_different_search_term")}
+                      </p>
+                    </div>
+                  )}
+                </>
+              </IsLoadingWrapper>
             ) : null}
           </div>
         </div>

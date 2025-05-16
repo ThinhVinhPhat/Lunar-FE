@@ -13,11 +13,15 @@ import Explore from "../pages/client/Explore";
 import PaymentResult from "../pages/client/PaymentResult";
 import AdminAccount from "../pages/admin/account";
 import AdminCategory from "../pages/admin/category";
-import Permissions from "../pages/admin/Premission";
 import AdminProduct from "../pages/admin/product";
 import AdminLayout from "../components/admin/layout/Layout";
 import CollectionList from "../pages/client/product/CollectionList";
 import OrderList from "../pages/client/order/OrderList";
+import NotFound from "../pages/client/NotFound";
+import Setting from "../pages/admin/Setting";
+import Order from "../pages/admin/Order";
+import VerifyRegister from "../pages/client/auth/VerifyRegister";
+import OrderTrack from "../pages/client/order/OrderTrack";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +72,18 @@ export const router = createBrowserRouter([
         path: "/explore",
         element: <Explore />,
       },
+      {
+        path: "/*",
+        element: <NotFound />,
+      },
+      {
+        path: "/verify-register/:email",
+        element: <VerifyRegister />,
+      },
+      {
+        path: "/order/track/:id",
+        element: <OrderTrack />,
+      },
     ],
   },
   {
@@ -91,8 +107,12 @@ export const router = createBrowserRouter([
         element: <AdminProduct />,
       },
       {
-        path: "/admin/permissions",
-        element: <Permissions />,
+        path: "/admin/orders",
+        element: <Order />,
+      },
+      {
+        path: "/admin/settings",
+        element: <Setting />,
       },
     ],
   },

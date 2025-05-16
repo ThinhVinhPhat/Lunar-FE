@@ -49,3 +49,29 @@ export const findUser = async (data: any) => {
 
   return response.data;
 };
+
+export const createUser = async (data: any) => {
+  const response = await instance.post(`/users`, {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    password: data.password,
+    role: data.role,
+  });
+  return response.data;
+};
+
+export const deleteUser = async (id: string) => {
+  const response = await instance.delete(`/users/delete/${id}`);
+  return response.data;
+};
+
+export const updateUserAdmin = async (data: any) => {
+  const response = await instance.patch(`/users/update-by-admin`, {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    role: data.role,
+    status: data.status,
+  });
+  return response.data;
+};

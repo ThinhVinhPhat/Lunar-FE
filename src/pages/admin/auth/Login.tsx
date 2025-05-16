@@ -5,7 +5,10 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormField } from "../../../components/form/form-register";
-import { AuthProps, isAlreadyLoginAuth } from "../../../components/withAuth";
+import {
+  AuthProps,
+  isAlreadyLoginAuth,
+} from "../../../components/wrapper/withAuth";
 import { login } from "../../../api/service/auth.service";
 import Cookies from "js-cookie";
 import { UserService } from "../../../api/service/user.service";

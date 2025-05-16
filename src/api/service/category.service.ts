@@ -37,13 +37,13 @@ export const deleteCategoryDetail = async (id: string) => {
 export const addCategoryDetail = async (data: any) => {
   const formData = new FormData();
   Object.keys(data).forEach((key) => {
-    if (key === "image") {
-      data[key].forEach((image: File) => {
-        formData.append("image", image);
-      });
-    } else {
-      formData.append(key, data[key]);
-    }
+    // if (key === "image") {
+    //   data[key]?.forEach((image: File) => {
+    //     formData.append("image", image);
+    //   });
+    // } else {
+    formData.append(key, data[key]);
+    // }
   });
   const response = await instance.post(
     `/category-details/${data.categoryId}`,

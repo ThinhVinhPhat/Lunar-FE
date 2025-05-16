@@ -4,6 +4,7 @@ import { Bell } from "lucide-react";
 import { navItems } from "../../../database/admin/layout";
 import Navigation from "./Navigation";
 import { useGetUser } from "../../../hooks/queryClient/query/user";
+import LanguageSelector from "../../ui/LanguageSelector";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -26,8 +27,14 @@ const AdminLayout = () => {
       >
         <header
           className="bg-white shadow-sm h-16 fixed right-0 left-0 z-10 w-full"
-          style={{ 
-            left: isSidebarOpen ? (window.innerWidth >= 768 ? "16rem" : "0") : (window.innerWidth >= 768 ? "5rem" : "0") 
+          style={{
+            left: isSidebarOpen
+              ? window.innerWidth >= 768
+                ? "16rem"
+                : "0"
+              : window.innerWidth >= 768
+              ? "5rem"
+              : "0",
           }}
         >
           <div className="flex items-center justify-between h-full px-3 md:px-24">
@@ -45,9 +52,7 @@ const AdminLayout = () => {
                     alt="Profile"
                     className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover"
                   />
-                  <div
-                    className="hidden md:block"
-                  >
+                  <div className="hidden md:block ml-2 flex flex-row items-center">
                     <span className="text-sm font-medium text-gray-700">
                       {user?.firstName} {user?.lastName}
                     </span>

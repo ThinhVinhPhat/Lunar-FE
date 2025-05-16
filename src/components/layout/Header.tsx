@@ -6,6 +6,8 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import SearchModal from "../ui/Search";
 import { useContextProvider } from "../../hooks/useContextProvider";
+import LanguageSelector from "../ui/LanguageSelector";
+import Text from "../wrapper/Text";
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +23,7 @@ export const Header: React.FC = () => {
         <button onClick={() => navigate("/admin/login")}>Admin</button>
       </div> */}
       <div className="bg-[#C8A846] text-white underline py-2 text-center text-sm">
-        Free U.S. shipping over $99 & free returns*
+        <Text id="home.freeUSShippingOver99" />
       </div>
 
       <div className="container mx-auto px-4 py-4 ml-[-20px] flex items-center justify-between">
@@ -35,7 +37,10 @@ export const Header: React.FC = () => {
           >
             <FontAwesomeIcon icon={faSearch} />
           </button>
-          <button onClick={() => navigate("/login")}>Login</button>
+          <button onClick={() => navigate("/login")}>
+            <Text id="auth.login" />
+          </button>
+          <LanguageSelector />
         </div>
       </div>
 

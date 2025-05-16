@@ -1,8 +1,6 @@
 import { FormField } from "../../../../components/form/form-register";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CategoryDetail } from "@/types/category";
+import { Category, CategoryDetail } from "@/types/category";
 import { useAddDetail } from "../../../../hooks/queryClient/mutator/category/categoryDetail/add-detail";
 import { useEditDetail } from "../../../../hooks/queryClient/mutator/category/categoryDetail/edit-detail";
 import { useGetCategoriesDetail } from "../../../../hooks/queryClient/query/category";
@@ -10,18 +8,20 @@ type AddCategoryDetailProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;
   currentCategoryDetail?: CategoryDetail | null;
+  currentCategory?: Category | null;
 };
 
-const schema = z.object({
-  name: z.string().min(1, { message: "Category name is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
-  image: z.array(z.union([z.string(), z.instanceof(File)])),
-});
+// const schema = z.object({
+//   name: z.string().min(1, { message: "Category name is required" }),
+//   description: z.string().min(1, { message: "Description is required" }),
+//   image: z.instanceof(File).optional(),
+// });
 
 function AddCategoryDetail({
   showAddModal,
   setShowAddModal,
-  currentCategoryDetail = undefined,
+  currentCategoryDetail = null,
+  currentCategory = null,
 }: AddCategoryDetailProps) {
   const {
     register,
@@ -30,34 +30,34 @@ function AddCategoryDetail({
     getValues,
     formState: { errors, isDirty },
   } = useForm({
-    resolver: zodResolver(schema),
+    // resolver: zodResolver(schema),
     defaultValues: {
       name: currentCategoryDetail?.name || "",
       description: currentCategoryDetail?.description || "",
-      image: currentCategoryDetail?.image
-        ? Array.isArray(currentCategoryDetail.image)
-          ? currentCategoryDetail.image
-          : [currentCategoryDetail.image]
-        : [],
+      image: currentCategoryDetail?.image || [],
     },
   });
   const { mutateAsync: addDetail, isPending } = useAddDetail();
   const { mutateAsync: editDetail } = useEditDetail();
   const { refetch } = useGetCategoriesDetail();
 
+
   const onSubmit = async (data: any) => {
     console.log(data);
     if (currentCategoryDetail) {
       const response = await editDetail({
         ...data,
-        categoryId: currentCategoryDetail.id,
+        categoryId: currentCategory?.id,
       });
       if (response.status === 200) {
         setShowAddModal(false);
         refetch();
       }
     } else {
-      const response = await addDetail(data);
+      const response = await addDetail({
+        ...data,
+        categoryId: currentCategory?.id,
+      });
       if (response.status === 200) {
         setShowAddModal(false);
         refetch();
@@ -67,6 +67,7 @@ function AddCategoryDetail({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    console.log(files);
     if (files) {
       setValue("image", [...getValues("image"), ...files]);
     }
@@ -117,12 +118,11 @@ function AddCategoryDetail({
                           label="Image"
                           type="file"
                           accept="image/*"
-                          multiple
-                          error={errors.image?.message as any}
+                          error={errors.image?.message as string}
                           placeholder="Enter image"
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("image", {
-                            onChange: (e) => handleImageChange(e),
+                            onChange: handleImageChange,
                           })}
                         />
                       </div>

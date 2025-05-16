@@ -6,7 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link, useNavigate } from "react-router-dom";
-
+import Text from "../wrapper/Text";
 type FeaturedCollectionProps = {
   categories: Category[] | null;
 };
@@ -17,7 +17,7 @@ function FeaturedCollection({ categories }: FeaturedCollectionProps) {
     <div className="max-w-[1500px] ml-24 mx-auto px-4 py-12">
       <section className="mb-16 relative">
         <h2 className="text-3xl font-bold mb-8 text-center">
-          Featured Collections
+          <Text id="home.featuredCollections" />
         </h2>
 
         <div className="swiper-button-prev absolute left-0 top-1/2 z-10 -mt-12 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md cursor-pointer">

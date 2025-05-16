@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiUser, FiEdit2, FiSave, FiCamera } from "react-icons/fi";
 import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
 import { useForm } from "react-hook-form";
@@ -7,10 +7,15 @@ import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-
 import OrderHistory from "./OrderHistory";
 import UserProduct from "./UserProduct";
 import clsx from "clsx";
-import { AuthProps, isLoginAuth } from "../../../components/withAuth";
+import { useTranslation } from "react-i18next";
+import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { useNavigate } from "react-router-dom";
 
-const Profile: React.FC<AuthProps> = ({ user }) => {
+const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const { t } = useTranslation();
+  const { data: user } = useGetUser();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -29,6 +34,12 @@ const Profile: React.FC<AuthProps> = ({ user }) => {
       avatar: user?.avatar ? [user.avatar] : [],
     },
   });
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user]);
 
   const { data: orderList } = useGetOrderList("Confirmed", 0, 10);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -66,9 +77,11 @@ const Profile: React.FC<AuthProps> = ({ user }) => {
           <div className="bg-[#C8A846] text-white px-6 py-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold">Account Information</h1>
+                <h1 className="text-3xl font-bold">
+                  {t("profile.account_information")}
+                </h1>
                 <p className="mt-2 text-gray-300">
-                  Manage your personal information
+                  {t("profile.manage_your_personal_information")}
                 </p>
               </div>
               <div className="mt-4 md:mt-0">
@@ -78,7 +91,7 @@ const Profile: React.FC<AuthProps> = ({ user }) => {
                     className="flex items-center px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
                   >
                     <>
-                      <FiEdit2 className="mr-2" /> Edit
+                      <FiEdit2 className="mr-2" /> {t("profile.edit")}
                     </>
                   </button>
                 )}
@@ -130,10 +143,13 @@ const Profile: React.FC<AuthProps> = ({ user }) => {
                   "company",
                   "city",
                 ].map((field) => {
+                  const label =
+                    t(`profile_fields.${field}`).charAt(0).toUpperCase() +
+                    t(`profile_fields.${field}`).slice(1);
                   return (
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                        {label}
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -215,6 +231,4 @@ const Profile: React.FC<AuthProps> = ({ user }) => {
   );
 };
 
-const WProfile = isLoginAuth(Profile);
-
-export default WProfile;
+export default Profile;

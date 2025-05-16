@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FeaturedCollection from "../product/FeaturedCollection";
 import { useGetCategoriesDetailByCateName } from "../../hooks/queryClient/query/category";
+import { useTranslation } from "react-i18next";
 
 const Navigation = ({
   isOpen,
@@ -13,21 +14,22 @@ const Navigation = ({
   const { data: categories } = useGetCategoriesDetailByCateName("Material");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const menuItems = [
     {
-      title: "Men",
+      title: t("navigation.men"),
       navigate: "/products/men",
     },
     {
-      title: "Women",
+      title: t("navigation.women"),
       navigate: "/products/women",
     },
     {
-      title: "Collections",
+      title: t("navigation.collections"),
       subMenu: <FeaturedCollection categories={categories} />,
     },
     {
-      title: "Explore",
+      title: t("navigation.explore"),
       navigate: "/explore",
     },
   ];
@@ -54,14 +56,15 @@ const Navigation = ({
               >
                 <button
                   onClick={() => navigate(item.navigate ?? "")}
-                  className="hover:text-gray-600 text-md font-medium uppercase tracking-wider"
+                  className={`hover:text-gray-600 text-sm md:text-md font-medium uppercase tracking-wider transition-all duration-300`}
+                  style={{ width: `${item.title.length * 10}px` }}
                 >
                   {item.title}
                 </button>
                 <div className="absolute h-0.5 bg-black w-0 group-hover:w-full transition-all duration-300 bottom-0"></div>
 
                 {item.subMenu && (
-                  <div
+                  <div    
                     className={`${
                       activeMenu === item.title
                         ? "opacity-100 visible"

@@ -14,6 +14,8 @@ import Pagination from "../../../components/admin/pagination";
 import PermissionModal from "./modals/permision-modal";
 import AddModal from "./modals/add-modal";
 import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
+import { useDeleteUser } from "../../../hooks/queryClient/mutator/user/delete";
+import IsLoadingWrapper from "../../../components/wrapper/isLoading";
 
 enum Role {
   Customer = "Customer",
@@ -29,6 +31,7 @@ const AdminAccount = () => {
   const [page, setPage] = useState(1);
   const [currentRole, setCurrentRole] = useState(Role.Customer);
   const offset = (page - 1) * 10;
+  const { mutate: deleteUser } = useDeleteUser();
 
   const queryList = {
     email: "",
@@ -37,7 +40,7 @@ const AdminAccount = () => {
     limit: page * 10,
   };
 
-  const { data: accounts, isLoading } = useFindUser(queryList);
+  const { data: accounts, isLoading, refetch } = useFindUser(queryList);
   const totalPages = Math.ceil(accounts.length / 10);
 
   const filteredAccounts = accounts.filter(
@@ -50,12 +53,15 @@ const AdminAccount = () => {
 
   const handleEdit = (account: UserType) => {
     setCurrentAccount(account);
-    setShowAddModal(true);
+    setTimeout(() => {
+      setShowAddModal(true);
+    }, 0);
   };
 
   const handleDelete = (account: UserType) => {
-    setCurrentAccount(account);
-    setShowDeleteModal(true);
+    deleteUser(account.id as string);
+    setShowDeleteModal(false);
+    refetch();
   };
 
   const handlePermissions = (account: UserType) => {
@@ -63,15 +69,9 @@ const AdminAccount = () => {
     setShowPermissionsModal(true);
   };
 
-  console.log(accounts);
-
   return (
     <>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <Loader2 size={32} className="animate-spin" />
-        </div>
-      ) : (
+      <IsLoadingWrapper isLoading={isLoading}>
         <>
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -200,7 +200,10 @@ const AdminAccount = () => {
                             <Lock size={16} />
                           </button>
                           <button
-                            onClick={() => handleDelete(account)}
+                            onClick={() => {
+                              setCurrentAccount(account);
+                              setShowDeleteModal(true);
+                            }}
                             className="text-red-600 hover:text-red-900"
                           >
                             <Trash2 size={16} />
@@ -223,6 +226,7 @@ const AdminAccount = () => {
               showAddModal={showAddModal}
               setShowAddModal={setShowAddModal}
               currentAccount={currentAccount}
+              refetch={refetch}
             />
             <PermissionModal
               showPermissionsModal={showPermissionsModal}
@@ -232,11 +236,13 @@ const AdminAccount = () => {
             <DeleteConfirmModal
               showDeleteModal={showDeleteModal}
               setShowDeleteModal={setShowDeleteModal}
-              onDelete={() => {}}
+              onDelete={() => {
+                handleDelete(currentAccount as UserType);
+              }}
             />
           </div>
         </>
-      )}
+      </IsLoadingWrapper>
     </>
   );
 };

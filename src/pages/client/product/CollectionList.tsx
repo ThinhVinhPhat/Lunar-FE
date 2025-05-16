@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import Filter from "../../../components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
 import { useProducts } from "../../../hooks/queryClient/query/product/products";
 import { filterCategories } from "../../../database/filter";
+import IsLoadingWrapper from "../../../components/wrapper/isLoading";
 
 const CollectionList = () => {
   const { type } = useParams();
@@ -39,9 +39,7 @@ const CollectionList = () => {
           </p>
         </div>
       </div>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
+      <IsLoadingWrapper isLoading={isLoading}>
         <>
           <div className="max-w-7xl mx-auto px-4 py-8">
             <section>
@@ -74,7 +72,7 @@ const CollectionList = () => {
             </section>
           </div>
         </>
-      )}
+      </IsLoadingWrapper>
     </div>
   );
 };

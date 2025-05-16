@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -8,16 +7,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useGetCategoriesDetailByCateName } from "../../hooks/queryClient/query/category";
 import { CategoryDetail } from "@/types/category";
+import Text from "../wrapper/Text";
+import IsLoadingWrapper from "../wrapper/isLoading";
 
 const Collections = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { data: categories, isLoading: isLoadingCategories } =
     useGetCategoriesDetailByCateName("Material");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
-
   const itemsPerSlide = 3;
   const totalSlides = categories
     ? Math.ceil(categories.length / itemsPerSlide)
@@ -77,11 +77,7 @@ const Collections = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {isLoadingCategories ? (
-        <div className="flex justify-center items-center h-64">
-          <LoadingSpinner />
-        </div>
-      ) : (
+      <IsLoadingWrapper isLoading={isLoadingCategories}>
         <>
           <div className="overflow-hidden">
             <div
@@ -146,7 +142,7 @@ const Collections = () => {
                                 }
                                 className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 delay-150 hover:bg-[#b69339] transform group-hover:translate-y-0 translate-y-4"
                               >
-                                Explore Collection
+                                <Text id="collections.exploreCollection" />
                               </button>
                             </div>
                           </div>
@@ -193,7 +189,7 @@ const Collections = () => {
             </>
           )}
         </>
-      )}
+      </IsLoadingWrapper>
     </div>
   );
 };

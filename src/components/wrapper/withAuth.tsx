@@ -1,7 +1,8 @@
-import { useGetUser } from "../hooks/queryClient/query/user";
+import { useGetUser } from "../../hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
 import { Navigate } from "react-router-dom";
-import LoadingSpinner from "./ui/LoadingSpinner";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import IsLoadingWrapper from "./isLoading";
 
 export type AuthProps = {
   user: UserType;
@@ -15,10 +16,11 @@ export const isLoginAuth = <P extends AuthProps>(
     if (!user) {
       return <Navigate to="/login" />;
     }
-    if (isLoading) {
-      return <LoadingSpinner />;
-    }
-    return <WrappedComponent {...props} user={user} />;
+    return (
+      <IsLoadingWrapper isLoading={isLoading}>
+        <WrappedComponent {...props} user={user} />
+      </IsLoadingWrapper>
+    );
   };
 };
 

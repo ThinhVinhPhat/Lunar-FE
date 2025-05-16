@@ -1,4 +1,5 @@
 import { ProductType } from "./product";
+import { UserType } from "./user";
 
 export type CreateOrderProps = {
   shippingAddress: string;
@@ -19,16 +20,23 @@ export type Order = {
   status: string;
   paymentId: string;
   orderDetails: OrderDetail[];
-  total?: number;
+  total_price?: number;
+  user: UserType;
 };
 
-export type OrderStatus = "pending" | "processing" | "shipped" | "delivered";
+export enum OrderStatus {
+  ALL_ORDER = "ALL_ORDER",
+  PENDING = "Pending",
+  CONFIRMED = "Confirmed",
+  SHIPPED = "Shipped",
+  DELIVERED = "Delivered",
+  REJECTED = "Rejected",
+}
 
 export type OrderType = {
-    order: Order;
-    total: number;
+  order: Order;
+  total: number;
 };
-
 
 export type OrderDetail = {
   id: string;

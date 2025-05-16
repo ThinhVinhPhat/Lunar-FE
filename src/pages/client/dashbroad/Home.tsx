@@ -3,13 +3,12 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import Collections from "../../../components/home/Collections";
 import Reviews from "../../../components/home/Reviews";
 import { Button } from "../../../components/ui/Button";
-import { useProductAction } from "../../../hooks/useProductAction";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
+import Text from "../../../components/wrapper/Text";
 
 const Home = () => {
-  const { products, isLoading } = useProductAction();
   const [query] = useSearchParams();
 
   useEffect(() => {
@@ -34,13 +33,13 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <span className="text-[#C8A846] text-sm uppercase tracking-wider mb-2 block">
-              Explore
+              <Text id="home.explore" />
             </span>
             <h2 className="text-4xl font-bold mb-4 text-[#2c2c2c]">
-              Our Collections
+              <Text id="home.ourCollections" />
             </h2>
             <p className="text-[#6b6b6b]">
-              Explore our unique materials and styles
+              <Text id="home.exploreMaterials" />
             </p>
           </div>
           <Collections />
@@ -57,18 +56,15 @@ const Home = () => {
           </div>
           <div className="absolute top-64 left-0 w-full h-full">
             <h1 className="text-6xl font-bold mb-4 text-[#f1efef]">
-              Experimenting Everday
+              <Text id="home.experimentingEveryday" />
             </h1>
             <div className="flex flex-col justify-center items-center w-1/2 mx-auto">
-              <p className="text-[#fff] text-2xl text-left ml-10 flex flex-col justify-center items-center">
-                Boundaries are pushed and failures are celebrated. The drive to
-                experiment is what fuels our passion and transforms our work
-                into a labor of love.
-                {/* <span className="text-[#C8A846]">★★★★★</span> */}
+              <p className="text-[#fff] mb-10 text-2xl text-left ml-10 flex flex-col justify-center items-center">
+                <Text id="home.boundariesPushed" />
               </p>
             </div>
             <Button href="/explore" variant="secondary" size="medium">
-              Explore Our Process
+              <Text id="home.exploreProcess" />
             </Button>
           </div>
         </div>
@@ -76,7 +72,7 @@ const Home = () => {
 
       <section className="mb-10 bg-[var(--primary-color)] text-white">
         <div className="w-full  mx-auto px-4">
-          <FeaturedProducts products={products} isLoading={isLoading} />
+          <FeaturedProducts />
         </div>
       </section>
 
@@ -84,13 +80,13 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <span className="text-[#C8A846] text-sm uppercase tracking-wider mb-2 block">
-              Testimonials
+              <Text id="home.testimonials" />
             </span>
             <h2 className="text-4xl font-bold mb-4 text-[#2c2c2c]">
-              What Our Customers Say
+              <Text id="home.whatCustomersSay" />
             </h2>
             <p className="text-[#6b6b6b]">
-              Real reviews from real customers{" "}
+              <Text id="home.realReviews" />{" "}
               <span className="text-[#C8A846]">★★★★★</span>
             </p>
           </div>

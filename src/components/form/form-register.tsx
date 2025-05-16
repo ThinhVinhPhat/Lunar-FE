@@ -4,9 +4,10 @@ import { FieldError } from "react-hook-form";
 
 type FormFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  error?: FieldError | undefined;
+  error?: FieldError | string | undefined;
   isPassword?: boolean;
   onClick?: () => void;
+  options?: string[];
 };
 
 export const FormField = forwardRef(
@@ -18,6 +19,7 @@ export const FormField = forwardRef(
       error,
       onClick,
       isPassword,
+      options,
       ...other
     } = props;
     return (
@@ -28,13 +30,28 @@ export const FormField = forwardRef(
             className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
           />
         )}
-        <input
-          type={type}
-          className={`form-control ${className}`}
-          placeholder={label}
-          ref={ref}
-          {...other}
-        />
+        {type === "select" ? (
+          <select
+            className={`form-control ${className}`}
+            placeholder={label}
+            ref={ref}
+            {...other}
+          >
+            {options?.map((option: string) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={type}
+            className={`form-control ${className}`}
+            placeholder={label}
+            ref={ref}
+            {...other}
+          />
+        )}
         {error && <div className="error-feedback">{error.message}</div>}
       </div>
     );

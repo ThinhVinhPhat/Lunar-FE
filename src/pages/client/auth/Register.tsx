@@ -8,7 +8,10 @@ import { z } from "zod";
 import { FormField } from "../../../components/form/form-register";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useRegister } from "../../../hooks/queryClient/mutator/auth/register";
-import { AuthProps, isAlreadyLoginAuth } from "../../../components/withAuth";
+import {
+  AuthProps,
+  isAlreadyLoginAuth,
+} from "../../../components/wrapper/withAuth";
 
 const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -49,7 +52,7 @@ const Register: React.FC<AuthProps> = () => {
     const response = await registerUser(data);
     if (response) {
       reset();
-      navigate("/login");
+      navigate(`/verify-register/${data.email}`);
     }
   };
 

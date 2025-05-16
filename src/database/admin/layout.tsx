@@ -1,5 +1,12 @@
-import { Settings, ShieldCheck, Users } from "lucide-react";
-import { LayoutDashboard, Package, Tags } from "lucide-react";
+import { OrderStatus } from "../../types/order";
+import {
+  Settings,
+  Users,
+  LayoutDashboard,
+  Package,
+  Tags,
+  PackageSearch,
+} from "lucide-react";
 export const navItems = [
   {
     title: "Dashboard",
@@ -14,9 +21,9 @@ export const navItems = [
   },
   { title: "Accounts", path: "/admin/accounts", icon: <Users size={20} /> },
   {
-    title: "Permissions",
-    path: "/admin/permissions",
-    icon: <ShieldCheck size={20} />,
+    title: "Orders",
+    path: "/admin/orders",
+    icon: <PackageSearch size={20} />,
   },
   {
     title: "Settings",
@@ -24,3 +31,21 @@ export const navItems = [
     icon: <Settings size={20} />,
   },
 ];
+
+export const canTransition = (
+  from: OrderStatus | undefined,
+  to: OrderStatus
+): boolean => {
+  const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+    [OrderStatus.ALL_ORDER]: [],
+    [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.REJECTED],
+    [OrderStatus.CONFIRMED]: [OrderStatus.SHIPPED, OrderStatus.REJECTED],
+    [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
+    [OrderStatus.DELIVERED]: [],
+    [OrderStatus.REJECTED]: [],
+  };
+
+  return validTransitions[
+    (from as OrderStatus) || OrderStatus.PENDING
+  ].includes(to);
+};

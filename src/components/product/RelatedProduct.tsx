@@ -1,6 +1,6 @@
 import { ProductType } from "@/types/product";
 import { Link } from "react-router-dom";
-import LoadingSpinner from "../ui/LoadingSpinner";
+import IsLoadingWrapper from "../wrapper/isLoading";
 
 type RelatedProductProps = {
   categoryProducts: ProductType;
@@ -17,11 +17,9 @@ export const RelatedProduct = ({
         You May Also Like
       </h2>
       <div className="flex flex-wrap gap-4">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-40">
-            <LoadingSpinner />
-          </div>
-        ) : (
+        <IsLoadingWrapper isLoading={isLoading}>
+
+        <div className="flex flex-wrap gap-6 w-full">
           <div className="flex flex-wrap gap-6 w-full">
             {categoryProducts.products?.slice(0, 3).sort(() => Math.random() - 0.5).map((product) => (
               <Link key={product.id} to={`/product/${product.slug}`}>
@@ -42,9 +40,10 @@ export const RelatedProduct = ({
                 </h3>
                 <p className="text-gray-600">${product.price}</p>
               </Link>
-            ))}
+              ))}
+            </div>
           </div>
-        )}
+        </IsLoadingWrapper>
       </div>
     </div>
   );

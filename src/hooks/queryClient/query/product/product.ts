@@ -1,11 +1,18 @@
 import { getProduct } from "../../../../api/service/product.service";
 import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
-export const useProduct = (slug: string | undefined) => {
+export const useProduct = (slug: string | undefined, userId?: string) => {
+  const queryClient = useQueryClient();
   const response = useQuery({
-    queryKey: ["product" + slug],
-    queryFn: () => getProduct(slug),
+    queryKey: ["product", slug, userId],
+    queryFn: () => getProduct(slug, userId),
+    enabled: !!slug,
   });
+
+  if (response.data) {
+    queryClient.invalidateQueries({ queryKey: ["summary"] });
+  }
 
   return {
     ...response,

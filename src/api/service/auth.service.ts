@@ -31,3 +31,11 @@ export const forgotPassword = async (email: string) => {
   });
   return response.data;
 };
+
+export const verifyRegister = async (email: string, code: string) => {
+  const response = await instance.post("auth/verify", {
+    email: email,
+    code: code,
+  });
+  return response.data;
+};

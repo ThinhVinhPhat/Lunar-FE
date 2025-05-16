@@ -12,49 +12,47 @@ import {
   faPhone,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-
+  const { t } = useTranslation(); 
   return (
     <footer className="bg-[#2c2c2c] text-white">
-      {/* Newsletter Section */}
       <div className="bg-[#C8A846] py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-2xl font-bold mb-4">
-              Subscribe to Our Newsletter
+              {t("footer.subscribe")}
             </h3>
             <p className="mb-6 text-sm">
-              Be the first to know about new collections and exclusive offers.
+              {t("footer.subscribe_description")}
             </p>
             <form className="flex gap-2">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t("footer.subscribe_placeholder")}
                 className="flex-1 px-4 py-2 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
               />
               <button className="px-6 py-2 bg-[#2c2c2c] text-white rounded-md hover:bg-black transition-colors duration-300">
-                Subscribe
+                {t("footer.subscribe")}
               </button>
             </form>
           </div>
         </div>
       </div>
 
-      {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-4 gap-12">
-          {/* About Column */}
           <div>
-            <h4 className="font-bold text-lg mb-6">About Shwood</h4>
+            <h4 className="font-bold text-lg mb-6">{t("footer.about")}</h4>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/our-story"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Our Story
+                  {t("footer.our_story")}
                 </Link>
               </li>
               <li>
@@ -62,7 +60,7 @@ export const Footer: React.FC = () => {
                   to="/process"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Our Process
+                  {t("footer.our_process")}
                 </Link>
               </li>
               <li>
@@ -70,7 +68,7 @@ export const Footer: React.FC = () => {
                   to="/sustainability"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Sustainability
+                  {t("footer.sustainability")}
                 </Link>
               </li>
               <li>
@@ -78,22 +76,21 @@ export const Footer: React.FC = () => {
                   to="/careers"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Careers
+                  {t("footer.careers")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Support Column */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Customer Care</h4>
+            <h4 className="font-bold text-lg mb-6">{t("footer.customer_care")}</h4>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/shipping"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Shipping & Returns
+                  {t("footer.shipping_returns")}
                 </Link>
               </li>
               <li>
@@ -101,7 +98,7 @@ export const Footer: React.FC = () => {
                   to="/warranty"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Warranty
+                  {t("footer.warranty")}
                 </Link>
               </li>
               <li>
@@ -109,7 +106,7 @@ export const Footer: React.FC = () => {
                   to="/faq"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  FAQ
+                  {t("footer.faq")}
                 </Link>
               </li>
               <li>
@@ -117,15 +114,14 @@ export const Footer: React.FC = () => {
                   to="/contact"
                   className="hover:text-[#C8A846] transition-colors"
                 >
-                  Contact Us
+                  {t("footer.contact_us")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Contact Us</h4>
+            <h4 className="font-bold text-lg mb-6">{t("footer.contact_us")}</h4>
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
                 <FontAwesomeIcon icon={faPhone} className="text-[#C8A846]" />
@@ -151,15 +147,14 @@ export const Footer: React.FC = () => {
                 </div>
               </li>
               <li className="text-sm text-gray-400">
-                <p>Customer Service Hours:</p>
-                <p>9AM–3PM PST, Mon–Fri</p>
+                <p>{t("footer.customer_service_hours")}</p>
+                <p>{t("footer.customer_service_hours_description")}</p>
               </li>
             </ul>
           </div>
 
-          {/* Social Links */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Connect With Us</h4>
+            <h4 className="font-bold text-lg mb-6">{t("footer.connect_with_us")}</h4>
             <div className="flex gap-4">
               <a
                 href="#"
@@ -190,7 +185,6 @@ export const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-gray-700">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
@@ -200,19 +194,19 @@ export const Footer: React.FC = () => {
                 to="/terms"
                 className="hover:text-[#C8A846] transition-colors"
               >
-                Terms & Conditions
+                {t("footer.terms_conditions")}
               </Link>
               <Link
                 to="/privacy"
                 className="hover:text-[#C8A846] transition-colors"
               >
-                Privacy Policy
+                {t("footer.privacy_policy")}
               </Link>
               <Link
                 to="/accessibility"
                 className="hover:text-[#C8A846] transition-colors"
               >
-                Accessibility
+                {t("footer.accessibility")}
               </Link>
             </div>
           </div>

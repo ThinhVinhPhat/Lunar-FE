@@ -1,14 +1,91 @@
+import { useCreateUser } from "../../../../hooks/queryClient/mutator/user/create";
+import { useUpdateUserAdmin } from "../../../../hooks/queryClient/mutator/user/update-admin";
 import { UserType } from "@/types/user";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormField } from "../../../../components/form/form-register";
+import { useEffect } from "react";
 
 type AddModalProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;
   currentAccount: UserType | null;
+  refetch: () => void;
 };
-function AddModal({ showAddModal, setShowAddModal, currentAccount }: AddModalProps) {
+
+const schema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+  role: z.string().min(1, { message: "Role is required" }),
+  status: z.string().min(1, { message: "Status is required" }),
+});
+
+function AddModal({
+  showAddModal,
+  setShowAddModal,
+  currentAccount,
+  refetch,
+}: AddModalProps) {
+  const { mutateAsync: createUser } = useCreateUser();
+  const { mutateAsync: updateUserAdmin } = useUpdateUserAdmin();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "",
+      status: "Inactive",
+    },
+  });
+
+  useEffect(() => {
+    if (currentAccount) {
+      reset({
+        firstName: currentAccount.firstName,
+        lastName: currentAccount.lastName,
+        email: currentAccount.email,
+        role: currentAccount.role,
+        status: currentAccount.status ? "Active" : "Inactive",
+      });
+    }
+  }, [currentAccount, reset]);
+
+  if (showAddModal) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+
+  const onSubmit = async (data: any) => {
+    const result = {
+      ...data,
+      status: data.status == "Active" ? true : false,
+    };
+    console.log(result);
+
+    if (currentAccount) {
+      await updateUserAdmin(result);
+      refetch();
+    } else {
+      await createUser(result);
+      refetch();
+    }
+  };
   return (
     showAddModal && (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed  inset-0 z-50 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity">
             <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -24,83 +101,100 @@ function AddModal({ showAddModal, setShowAddModal, currentAccount }: AddModalPro
                     {currentAccount ? "Edit Account" : "Add New Account"}
                   </h3>
                   <div className="mt-4">
-                    <form className="space-y-4">
+                    <form
+                      className="space-y-4"
+                      onSubmit={handleSubmit(onSubmit)}
+                    >
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Full Name
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={currentAccount?.name}
+                        <FormField
+                          label="First Name"
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                          {...register("firstName", {
+                            required: true,
+                          })}
+                          error={errors.firstName?.message}
                         />
                       </div>
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          defaultValue={currentAccount?.email}
+                        <FormField
+                          label="Last Name"
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                          {...register("lastName", {
+                            required: true,
+                          })}
+                          error={errors.lastName?.message}
                         />
+                      </div>
+
+                      <div>
+                        {!currentAccount && (
+                          <FormField
+                            label="Email"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                            {...register("email", {
+                              required: true,
+                            })}
+                            error={errors.email?.message}
+                          />
+                        )}
                       </div>
                       {!currentAccount && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Password
-                          </label>
-                          <input
+                          <FormField
                             type="password"
+                            label="Password"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                            {...register("password", { required: true })}
+                            error={errors.password?.message}
                           />
                         </div>
                       )}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Role
-                        </label>
-                        <select
-                          defaultValue={currentAccount?.role}
+                        <FormField
+                          label="Role"
+                          type="select"
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                        >
-                          <option value="Administrator">Administrator</option>
-                          <option value="Manager">Manager</option>
-                          <option value="Editor">Editor</option>
-                          <option value="Viewer">Viewer</option>
-                        </select>
+                          options={["Admin", "Customer"]}
+                          {...register("role", {
+                            required: true,
+                          })}
+                          error={errors.role?.message}
+                        />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Status
-                        </label>
-                        <select
-                          defaultValue={currentAccount?.status}
+                        <FormField
+                          label="Status"
+                          type={"select"}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                          options={["Active", "Inactive"]}
+                          {...register("status", {
+                            required: true,
+                          })}
+                          error={errors.status?.message}
+                        />
+                      </div>
+
+                      <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button
+                          type="submit"
+                          disabled={!isDirty}
+                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#C8A846] text-base font-medium text-white hover:bg-[#b39539] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A846] sm:ml-3 sm:w-auto sm:text-sm"
                         >
-                          <option value="Active">Active</option>
-                          <option value="Inactive">Inactive</option>
-                        </select>
+                          Save Changes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowAddModal(false)}
+                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </form>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#C8A846] text-base font-medium text-white hover:bg-[#b39539] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A846] sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                {currentAccount ? "Save Changes" : "Add Account"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAddModal(false)}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                Cancel
-              </button>
             </div>
           </div>
         </div>

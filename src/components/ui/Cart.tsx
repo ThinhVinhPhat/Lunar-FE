@@ -9,6 +9,8 @@ import { useGetUser } from "../../../src/hooks/queryClient/query/user";
 import CartContent from "../cart/CartContent";
 import CartButton from "../cart/CartButton";
 import { useGetOrderDetail } from "../../hooks/queryClient/query/order/use-get-detail";
+import { useUpdateOrder } from "../../hooks/queryClient/mutator/order/order";
+import Text from "../wrapper/Text";
 
 type CartProps = {
   isOpen: boolean;
@@ -22,6 +24,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
   const hasValidInfo = me?.address && me?.phone;
   const isCartEmpty = cartItems.length === 0;
   const { refetch } = useGetOrderDetail(cart?.id || "");
+  const { mutateAsync: updateOrder } = useUpdateOrder();
 
   useEffect(() => {
     setCartItems(cart?.orderDetails || []);
@@ -74,7 +77,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
     }
   };
 
-  const updateQuantity = (id: string, newQuantity: number) => {
+  const updateQuantity = async (id: string, productId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       removeItem(id);
       return;
@@ -83,7 +86,12 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
     const updatedItems = cartItems.map((item) =>
       item.id === id ? { ...item, quantity: newQuantity } : item
     );
-
+    await updateOrder({
+      orderDetailId: id,
+      orderId: cart?.id || "",
+      productId: productId,
+      quantity: newQuantity,
+    });
     setCartItems(updatedItems);
     calculateSubtotal(updatedItems);
   };
@@ -104,7 +112,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
 
           <div className="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-xl z-50 flex flex-col">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold">Your Cart</h2>
+              <h2 className="text-xl font-bold">
+                <Text id="cart.your_cart" />
+              </h2>
               <button
                 onClick={() => onClose()}
                 className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
@@ -118,11 +128,11 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
               {freeShippingRemaining > 0 ? (
                 <div>
                   <p className="text-sm text-gray-600 mb-2">
-                    You're{" "}
+                    <Text id="cart.youre" />{" "}
                     <span className="font-bold">
                       ${freeShippingRemaining.toFixed(2)}
                     </span>{" "}
-                    away from free U.S. Shipping
+                    <Text id="cart.away_from_free_us_shipping" />
                   </p>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -135,7 +145,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
                 </div>
               ) : (
                 <p className="text-sm text-green-600 font-medium">
-                  🎉 You've qualified for free U.S. shipping!
+                  🎉 <Text id="cart.youve_qualified_for_free_us_shipping" />!
                 </p>
               )}
             </div>

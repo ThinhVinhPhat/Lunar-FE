@@ -4,8 +4,6 @@ import { FormField } from "../../../../components/form/form-register";
 import { useAddProduct } from "../../../../hooks/queryClient/mutator/product/add-product";
 import clsx from "clsx";
 import { Product } from "@/types/product";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CategoryDetail } from "@/types/category";
 import { useEffect, useState } from "react";
 
@@ -28,19 +26,6 @@ type AddProductForm = {
   isNew: boolean;
 };
 
-const schema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  price: z.number(),
-  stock: z.number().min(0, { message: "Stock is required" }),
-  discount: z.number().min(0, { message: "Discount is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
-  categoryId: z.array(z.string()).min(1, { message: "Category is required" }),
-  images: z.array(z.union([z.string(), z.instanceof(File)])),
-  isFreeShip: z.boolean(),
-  isFeatured: z.boolean(),
-  isNew: z.boolean(),
-});
-
 export const AddProductModal = ({
   showAddModal,
   setShowAddModal,
@@ -61,17 +46,17 @@ export const AddProductModal = ({
     reset,
     formState: { isDirty, errors },
   } = useForm<AddProductForm>({
-    resolver: zodResolver(schema),
     defaultValues: {
-      name: product?.name,
-      price: Number(product?.price),
-      stock: Number(product?.stock),
-      description: product?.description,
-      discount: Number(product?.discount_percentage),
-      categoryId: product?.productCategories.map(
-        (category: any) => category.categoryDetails.id
-      ),
-      images: product?.images,
+      name: product?.name || "",
+      price: Number(product?.price) || 0,
+      stock: Number(product?.stock) || 0,
+      description: product?.description || "",
+      discount: Number(product?.discount_percentage) || 0,
+      categoryId:
+        product?.productCategories?.map(
+          (category: any) => category.categoryDetails.id
+        ) || [],
+      images: product?.images || [],
       isFreeShip: product?.isFreeShip,
       isFeatured: product?.isFeatured,
       isNew: product?.isNew,
@@ -127,6 +112,7 @@ export const AddProductModal = ({
                         </label>
                         <FormField
                           label="Product Name"
+                          value={product?.name}
                           placeholder="Enter product name"
                           error={errors.name?.message as any}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
@@ -150,8 +136,11 @@ export const AddProductModal = ({
                                   render={({ field }) => (
                                     <input
                                       type="checkbox"
-                                      checked={getValues("categoryId")?.some(
-                                        (id: string) => id === category.id
+                                      value={category.id}
+                                      checked={product?.productCategories?.some(
+                                        (productCategory: any) =>
+                                          productCategory.categoryDetails.id ===
+                                          category.id
                                       )}
                                       onChange={(e) => {
                                         const newValue = e.target.checked
@@ -180,7 +169,7 @@ export const AddProductModal = ({
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700">
-                            Price ($) z
+                            Price ($)
                           </label>
                           <FormField
                             type="number"

@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { Product, ProductType } from "../../types/product";
 import ProductItem from "../product/ProductItem";
+import { Product } from "../../types/product";
+import Text from "../wrapper/Text";
+import { useProductAction } from "../../hooks/useProductAction";
 
-type FeaturedProductsProps = {
-  products: ProductType | null;
-  isLoading: boolean;
-};
-const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
+const FeaturedProducts = () => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { products, isLoading, handleFavoriteProduct } = useProductAction(0, 4);
 
   return (
     <section className=" w-full">
@@ -15,7 +14,7 @@ const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
         <div className="flex justify-between items-center mb-12">
           <div>
             <h2 className="text-3xl font-bold text-[#2c2c2c]">
-              Shop Our Most Popular Styles
+              <Text id="home.shopOurMostPopularStyles" />
             </h2>
           </div>
           {/* <NavLink
@@ -53,16 +52,15 @@ const FeaturedProducts = ({ products, isLoading }: FeaturedProductsProps) => {
                   </div>
                 </div>
               ))
-            : products?.products
-                .slice(0, 4)
-                .map((product: Product) => (
-                  <ProductItem
-                    key={product.id}
-                    product={product}
-                    hoveredId={hoveredId}
-                    setHoveredId={setHoveredId}
-                  />
-                ))}
+            : products?.products?.map((product: Product) => (
+                <ProductItem
+                  key={product.id}
+                  product={product}
+                  hoveredId={hoveredId}
+                  setHoveredId={setHoveredId}
+                  handleFavoriteProduct={handleFavoriteProduct}
+                />
+              ))}
         </div>
       </div>
     </section>

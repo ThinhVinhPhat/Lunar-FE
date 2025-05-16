@@ -14,7 +14,8 @@ import Cart from "../ui/Cart";
 import { useGetUser } from "../../hooks/queryClient/query/user";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import UserOptions from "./UserOptions";
-
+import LanguageSelector from "../ui/LanguageSelector";
+import Text from "../wrapper/Text";
 export const UserHeader: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { data: me } = useGetUser();
@@ -39,12 +40,14 @@ export const UserHeader: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
       <div className="bg-[#C8A846] text-white underline py-2 text-center text-sm">
-        Free U.S. shipping over $99 & free returns*
+        <Text id="home.freeUSShippingOver99" />
       </div>
 
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-2 py-4 flex items-center justify-between">
         <Logo />
-        <Navigation isOpen={isOpenSearch} setIsOpen={setIsOpenSearch} />
+        <div className="hidden md:block ml-16">
+          <Navigation isOpen={isOpenSearch} setIsOpen={setIsOpenSearch} />
+        </div>
 
         <div className="flex items-center gap-6">
           <button
@@ -82,6 +85,9 @@ export const UserHeader: React.FC = () => {
               {cart?.orderDetails?.length || 0}
             </span>
           </button>
+          <div className="hidden md:block mt-[-10px]">
+            <LanguageSelector />
+          </div>
         </div>
       </div>
 

@@ -15,7 +15,7 @@ export const createOrder = async (order: CreateOrderProps) => {
   return response.data;
 };
 
-export const getOrderById = async (id: string) => {
+export const getOrderById = async (id: string | undefined) => {
   const response = await instance.get(`/order/${id}`, {});
   return response.data;
 };
@@ -51,3 +51,37 @@ export const getOrdersByStatus = async (
   return response.data;
 };
 
+export const cancelOrder = async (orderId: string | undefined) => {
+  const response = await instance.patch(`/order/${orderId}`, {
+    status: "Rejected",
+  });
+  return response.data;
+};
+
+export const updateOrder = async (
+  orderDetailId: string,
+  orderId: string,
+  productId: string,
+  quantity: number
+) => {
+  const response = await instance.patch(
+    `/order-detail/${orderDetailId}?orderId=${orderId}&productId=${productId}`,
+    {
+      quantity: quantity,
+    }
+  );
+  return response.data;
+};
+
+export const updateOrderStatus = async (orderId: string, status: string, description: string) => {
+  const response = await instance.patch(`/order/update-status/${orderId}`, {
+    status: status,
+    description: description,
+  });
+  return response.data;
+};
+
+export const deleteOrder = async (orderId: string) => {
+  const response = await instance.delete(`/order/${orderId}`);
+  return response.data;
+};

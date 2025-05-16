@@ -9,7 +9,7 @@ export type UserType = {
   role: string;
   phone: string;
   avatar: File[] | null;
-  status: string;
+  status: string | boolean;
   createdAt: string;
 };
 

@@ -1,19 +1,17 @@
 import { useState } from "react";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import Filter from "../../../components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
 import { Pagination } from "../../../components/ui/Pagination";
-
+import Text from "../../../components/wrapper/Text";
+import { useProductAction } from "../../../hooks/useProductAction";
+import IsLoadingWrapper from "../../../components/wrapper/isLoading";
 const ProductList = () => {
   const { type } = useParams();
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 10;
   const [currentFiltered, setCurrentFiltered] = useState<string[]>([]);
-  const { products, isLoading } = useProducts({
+  const { products, isLoading } = useProductAction(offset, 10, {
     category: currentFiltered,
-    offset,
-    limit: 10,
   });
   return (
     <div className="bg-white min-h-screen pt-20">
@@ -33,16 +31,14 @@ const ProductList = () => {
         )}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Premium Eyewear Collection
+            <Text id="product_list.premium_eyewear_collection" />
           </h1>
           <p className="text-lg md:text-xl max-w-2xl">
-            Discover our handcrafted frames made from sustainable materials
+            <Text id="product_list.discover_our_handcrafted_frames_made_from_sustainable_materials" />
           </p>
         </div>
       </div>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
+      <IsLoadingWrapper isLoading={isLoading}>
         <>
           <div className="max-w-7xl mx-auto px-4 py-8">
             <section>
@@ -61,10 +57,11 @@ const ProductList = () => {
 
             <section className="bg-gray-100 py-16 mt-16">
               <div className="max-w-7xl mx-auto px-4 text-center">
-                <h2 className="text-3xl font-bold mb-4">Join Our Newsletter</h2>
+                <h2 className="text-3xl font-bold mb-4">
+                  <Text id="product_list.join_our_newsletter" />
+                </h2>
                 <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                  Subscribe to receive updates on new collections, exclusive
-                  offers, and eyewear care tips.
+                  <Text id="product_list.subscribe_to_receive_updates_on_new_collections_exclusive_offers_and_eyewear_care_tips" />
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
                   <input
@@ -73,14 +70,14 @@ const ProductList = () => {
                     className="px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent"
                   />
                   <button className="px-6 py-3 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors">
-                    Subscribe
+                    <Text id="product_list.subscribe" />
                   </button>
                 </div>
               </div>
             </section>
           </div>
         </>
-      )}
+      </IsLoadingWrapper>
     </div>
   );
 };

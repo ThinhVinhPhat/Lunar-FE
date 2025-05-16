@@ -4,11 +4,14 @@ import { useState } from "react";
 import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
 import Pagination from "../../../components/admin/pagination";
 import SearchComponent from "../../../components/admin/ui/Search";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useDeleteProduct } from "../../../hooks/queryClient/mutator/product/delete-product";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
 import { AddProductModal } from "./modals/AddProduct";
-import { AuthProps, isLoginAdminAuth } from "../../../components/withAuth";
+import {
+  AuthProps,
+  isLoginAdminAuth,
+} from "../../../components/wrapper/withAuth";
+import { useProductAction } from "../../../hooks/useProductAction";
+import IsLoadingWrapper from "../../../components/wrapper/isLoading";
 
 const AdminProduct: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,9 +21,9 @@ const AdminProduct: React.FC<AuthProps> = () => {
   const { mutateAsync: deleteProduct } = useDeleteProduct();
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 5;
-  const { data: products, isLoading } = useProducts({ offset, limit: 5 });
+  const { products, isLoading, refetch } = useProductAction(offset, 5);
 
-  const filteredProducts = products?.data?.products?.filter(
+  const filteredProducts = products?.products?.filter(
     (product: Product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.productCategories.some((category: any) =>
@@ -42,7 +45,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
     const response = await deleteProduct(currentProduct?.id);
     if (response.status === 200) {
       setShowDeleteModal(false);
-      products?.refetch();
+      refetch();
     }
   };
 
@@ -54,7 +57,10 @@ const AdminProduct: React.FC<AuthProps> = () => {
           <p className="text-gray-600">Manage your product inventory</p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => {
+            setCurrentProduct(() => null);
+            setShowAddModal(true);
+          }}
           className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#b39539] transition-colors"
         >
           <Plus size={16} className="mr-2" />
@@ -70,11 +76,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
           />
         </div>
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <LoadingSpinner />
-        </div>
-      ) : (
+      <IsLoadingWrapper isLoading={isLoading}>
         <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -170,7 +172,8 @@ const AdminProduct: React.FC<AuthProps> = () => {
             </table>
           </div>
         </div>
-      )}
+      </IsLoadingWrapper>
+
       <Pagination
         filteredProducts={filteredProducts}
         products={products}
@@ -178,6 +181,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
         page={page}
         totalPages={totalPages}
       />
+
       <AddProductModal
         showAddModal={showAddModal}
         setShowAddModal={setShowAddModal}

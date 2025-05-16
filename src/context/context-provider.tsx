@@ -4,15 +4,18 @@ import { Order } from "@/types/order";
 import { UserType } from "@/types/user";
 import { createContext, useEffect, useMemo, useState } from "react";
 import { useCreateOrder } from "../hooks/queryClient/mutator/order/order";
+import i18n from "../i18n";
 type ContextType = {
   isLogin: boolean | UserType;
   isAdmin: boolean;
+  currentLanguage: string;
   isOpenSearch: boolean;
   isOpenCart: boolean;
   cart: Order | undefined;
   cartItems: OrderDetail[];
   setIsLogin: (value: boolean) => void;
   setIsAdmin: (value: boolean) => void;
+  setCurrentLanguage: (value: string) => void;
   setIsOpenSearch: (value: boolean) => void;
   setIsOpenCart: (value: boolean) => void;
   setCart: (value: Order | undefined) => void;
@@ -34,7 +37,7 @@ export const ContextProvider = ({
   const [cartItems, setCartItems] = useState<OrderDetail[]>([]);
   const { data: user } = useGetUser();
   const { data: order, mutateAsync: mutateOrder } = useCreateOrder();
-
+  const [currentLanguage, setCurrentLanguage] = useState<string>(i18n.language);
   useEffect(() => {
     if (user?.firstName && user?.lastName) {
       setIsLogin(true);
@@ -72,6 +75,8 @@ export const ContextProvider = ({
       isOpenCart,
       cart,
       cartItems,
+      currentLanguage,
+      setCurrentLanguage,
       setIsLogin,
       setIsAdmin,
       setIsOpenSearch,
@@ -80,7 +85,15 @@ export const ContextProvider = ({
       setCartItems,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpenSearch, isOpenCart, cart, cartItems, isLogin, isAdmin]);
+  }, [
+    isOpenSearch,
+    isOpenCart,
+    cart,
+    cartItems,
+    isLogin,
+    isAdmin,
+    currentLanguage,
+  ]);
 
   return <Context.Provider value={memorizedValue}>{children}</Context.Provider>;
 };

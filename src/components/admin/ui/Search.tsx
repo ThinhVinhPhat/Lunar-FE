@@ -1,5 +1,4 @@
 import { Search } from "lucide-react";
-
 type SearchProps = {
   searchTerm: string;
   setSearchTerm: (searchTerm: string) => void;

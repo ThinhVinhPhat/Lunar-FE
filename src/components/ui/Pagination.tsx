@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Text from "../wrapper/Text";
 
 type PaginationProps = {
   productCount: number;
@@ -13,7 +14,12 @@ export const Pagination = ({
   const totalPages = Math.ceil(productCount / 10);
   return (
     <div className="flex justify-end items-center gap-2 mt-5 ">
-      {PaginationButton("First", currentPage, totalPages, onSetPage)}
+      {PaginationButton(
+        <Text id="product_list.first" /> as unknown as string,
+        currentPage,
+        totalPages,
+        onSetPage
+      )}
       <div className="flex items-center gap-2">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -33,7 +39,12 @@ export const Pagination = ({
           </button>
         ))}
       </div>
-      {PaginationButton("Last", currentPage, totalPages, onSetPage)}
+      {PaginationButton(
+        <Text id="product_list.last" /> as unknown as string,
+        currentPage,
+        totalPages,
+        onSetPage
+      )}
     </div>
   );
 };
