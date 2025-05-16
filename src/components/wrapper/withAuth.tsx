@@ -1,11 +1,10 @@
 import { useGetUser } from "../../hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
 import { Navigate } from "react-router-dom";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import IsLoadingWrapper from "./isLoading";
 
 export type AuthProps = {
-  user: UserType;
+  user?: UserType;
 };
 
 export const isLoginAuth = <P extends AuthProps>(

@@ -2,7 +2,6 @@ import { OrderDetail } from "@/types/order";
 import { FiShoppingCart, FiTrash2 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import Text from "../wrapper/Text";
-import { Product } from "@/types/product";
 
 type CartType = {
   hasValidInfo: boolean;
@@ -44,7 +43,7 @@ function CartContent({
     </div>
   ) : (
     <ul className="divide-y divide-gray-200">
-      {cartItems.map((item: OrderDetail) => (
+      {cartItems.map((item: any) => (
         <li key={item.id} className="py-4 flex">
           <div className="h-24 w-[150px] flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
             <img

@@ -1,6 +1,6 @@
 type CodeFormProps = {
   verificationCode: string[];
-  inputRefs: React.RefObject<HTMLInputElement>[];
+  inputRefs: React.RefObject<HTMLInputElement>[] | any;
   handleCodeChange: (index: number, value: string) => void;
   handleKeyDown: (
     index: number,

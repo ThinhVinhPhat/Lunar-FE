@@ -12,16 +12,13 @@ function UserProduct() {
   const { data: favoriteProducts, isLoading } = useGetFavoriteProducts();
   const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const offset = (page - 1) * 5;
+  const offset = (1 - 1) * 5;
   const [sort, setSort] = useState(CommentSort.NEWEST);
   const { data: userReviews, isLoading: isLoadingReviews } = useGetCommentUser({
     offset: offset,
-    limit: page * 5,
+    limit: 1 * 5,
     sort: sort,
   });
-
-  console.log(favoriteProducts);
   return (
     <div className="border-t border-gray-200 p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

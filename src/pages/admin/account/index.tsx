@@ -5,7 +5,6 @@ import {
   Trash2,
   UserPlus,
   Lock,
-  Loader2,
   User,
 } from "lucide-react";
 import { useFindUser } from "../../../hooks/queryClient/query/user";
@@ -147,7 +146,7 @@ const AdminAccount = () => {
                             {account?.avatar ? (
                               <img
                                 className="h-10 w-10 rounded-full object-cover"
-                                src={account?.avatar as string}
+                                src={account?.avatar as unknown as string}
                                 alt={account.firstName}
                               />
                             ) : (

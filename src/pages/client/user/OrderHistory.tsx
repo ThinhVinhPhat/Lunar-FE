@@ -43,7 +43,8 @@ function OrderHistory({ orderList }: { orderList: any }) {
                   {new Date(order.createdAt).toLocaleDateString()}
                 </p>
                 <p>
-                  <Text id="order_history.total" />: ${order.total}
+                  <Text id="order_history.total" />: $
+                  {(order.total_price || 0) + (order.shippingFee || 0)}
                 </p>
               </div>
             </div>

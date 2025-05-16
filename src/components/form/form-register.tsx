@@ -33,9 +33,9 @@ export const FormField = forwardRef(
         {type === "select" ? (
           <select
             className={`form-control ${className}`}
-            placeholder={label}
-            ref={ref}
-            {...other}
+            title={label} // Using title instead of placeholder as placeholder is not valid for select elements
+            ref={ref as React.Ref<HTMLSelectElement>}
+            {...(other as React.SelectHTMLAttributes<HTMLSelectElement>)}
           >
             {options?.map((option: string) => (
               <option key={option} value={option}>
@@ -52,7 +52,7 @@ export const FormField = forwardRef(
             {...other}
           />
         )}
-        {error && <div className="error-feedback">{error.message}</div>}
+        {error && <div className="error-feedback">{typeof error === 'string' ? error : error?.message}</div>}
       </div>
     );
   }

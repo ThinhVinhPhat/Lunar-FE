@@ -4,7 +4,7 @@ export interface CategoryDetail {
   updatedAt: string;
   name: string;
   description: string;
-  image: File[] | string;
+  image: any;
   status: boolean;
 }
 

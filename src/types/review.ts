@@ -1,4 +1,4 @@
-import { ProductType } from "./product";
+import { Product } from "./product";
 import { UserType } from "./user";
 
 export interface CommentType {
@@ -9,7 +9,7 @@ export interface CommentType {
   user: UserType;
   createdAt: Date;
   updatedAt: Date;
-  product: ProductType;
+  product: Product;
 }
 export enum CommentSort {
   NEWEST = "NEWEST",

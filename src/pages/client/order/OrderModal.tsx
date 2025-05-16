@@ -1,5 +1,7 @@
 import { Order } from "../../../types/order";
 import { useCancelOrder } from "../../../hooks/queryClient/mutator/order/order";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import html2pdf from "html2pdf.js";
 
 import PrintOrder from "../../../components/template/PrintOrder";

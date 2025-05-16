@@ -87,7 +87,7 @@ export default function PrintOrder({ order }: { order: Order | null }) {
                 Total:
               </td>
               <td className="p-2 border text-right">
-                ${(order?.total || 0) + (order?.shippingFee || 0)}
+                ${(order?.total_price || 0) + (order?.shippingFee || 0)}
               </td>
             </tr>
           </tfoot>

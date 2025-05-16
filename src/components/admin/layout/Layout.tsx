@@ -4,7 +4,6 @@ import { Bell } from "lucide-react";
 import { navItems } from "../../../database/admin/layout";
 import Navigation from "./Navigation";
 import { useGetUser } from "../../../hooks/queryClient/query/user";
-import LanguageSelector from "../../ui/LanguageSelector";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);

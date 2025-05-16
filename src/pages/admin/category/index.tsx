@@ -27,7 +27,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
   const [page, setPage] = useState(1);
   const { mutateAsync: deleteCategory } = useDeleteCategory();
   const { mutateAsync: deleteDetail } = useDeleteDetail();
-  const offset = (page - 1) * 10;
+  // const offset = (page - 1) * 10;
 
   const filteredCategories = categories.filter((category: Category) =>
     category?.categoryDetails?.some((item: CategoryDetail) =>
