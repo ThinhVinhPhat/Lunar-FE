@@ -1,27 +1,22 @@
 import React, { useState } from "react";
 import { Search, Edit, Trash } from "lucide-react";
 import { isLoginAdminAuth, AuthProps } from "../../components/wrapper/withAuth";
-import { Order, OrderStatus } from "../../types/order";
+import { Order } from "../../types/order";
 import { useGetOrderList } from "../../hooks/queryClient/query/order/use-get-list";
 import IsLoadingWrapper from "../../components/wrapper/isLoading";
-import {
-  useDeleteOrder,
-  useUpdateOrderStatus,
-} from "../../hooks/queryClient/mutator/order/order";
-import { canTransition } from "../../database/admin/layout";
+import { useDeleteOrder } from "../../hooks/queryClient/mutator/order/order";
+import UpdateOrderStatus from "../../components/order/UpdateOrderStatus";
 
 const OrdersManagement: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentStatus, setCurrentStatus] = useState("Confirmed");
-  const [description, setDescription] = useState("");
-  const [isOpenDescription, setIsOpenDescription] = useState(false);
+
   const {
     data: orders,
     isLoading,
     refetch,
   } = useGetOrderList(currentStatus, 0, 10);
-  const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
   const { mutateAsync: deleteOrder } = useDeleteOrder();
   const filteredOrders = orders?.orders?.filter((order: Order) =>
     order?.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -34,6 +29,7 @@ const OrdersManagement: React.FC<AuthProps> = () => {
   const closeModal = () => {
     setSelectedOrder(null);
   };
+  
 
   return (
     <IsLoadingWrapper isLoading={isLoading}>
@@ -182,47 +178,57 @@ const OrdersManagement: React.FC<AuthProps> = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-md font-medium text-gray-800 mb-2">
-                  Products in Order
-                </h3>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        {["Product Name", "Quantity", "Price", "Total"].map(
-                          (item, index) => (
-                            <th
-                              key={index}
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                              {item}
-                            </th>
-                          )
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {selectedOrder?.orderDetails?.map((detail, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {detail.product_name}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {detail.quantity}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${detail.price}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${detail.total}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {selectedOrder?.orderDetails?.length > 0 && (
+                  <>
+                    <h3 className="text-md font-medium text-gray-800 mb-2">
+                      Products in Order
+                    </h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            {["Product Name", "Quantity", "Price", "Total"].map(
+                              (item, index) => (
+                                <th
+                                  key={index}
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  {item}
+                                </th>
+                              )
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {selectedOrder?.orderDetails?.map((detail, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {detail.product_name}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {detail.quantity}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${detail.price}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${detail.total}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
               </div>
 
+              <UpdateOrderStatus
+                selectedOrder={selectedOrder}
+                refetch={refetch}
+                currentStatus={currentStatus}
+                setCurrentStatus={setCurrentStatus}
+              />
               <div className="mt-6 bg-[#F5EFD9] p-4 rounded-lg">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-700">Total Price</span>
@@ -248,103 +254,6 @@ const OrdersManagement: React.FC<AuthProps> = () => {
                     ).toLocaleString()}
                   </span>
                 </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-white rounded-lg shadow-sm border border-[#E1D4A7]">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                  Update Order Status
-                </h3>
-                <div className="flex flex-wrap gap-3 mb-4">
-                  {[
-                    "Pending",
-                    "Confirmed",
-                    "Shipped",
-                    "Delivered",
-                    "Rejected",
-                  ].map(
-                    (status) =>
-                      status !== selectedOrder.status && (
-                        <button
-                          key={status}
-                          onClick={async () => {
-                            if (
-                              !canTransition(
-                                selectedOrder.status as OrderStatus,
-                                status as OrderStatus
-                              )
-                            ) {
-                              setIsOpenDescription(true);
-                              setCurrentStatus(status);
-                            } else {
-                              await updateOrderStatus({
-                                orderId: selectedOrder.id,
-                                status: status,
-                                description: description,
-                              });
-                              refetch();
-                              setIsOpenDescription(false);
-                            }
-                          }}
-                          className={`text-sm py-2 px-4 rounded-md transition-all duration-200 font-medium ${
-                            status === "Rejected"
-                              ? "bg-red-100 text-red-600 hover:bg-red-200"
-                              : status === "Delivered"
-                              ? "bg-green-100 text-green-600 hover:bg-green-200"
-                              : "bg-[#F5EFD9] text-[#C8A846] hover:bg-[#E1D4A7]"
-                          }`}
-                        >
-                          {status}
-                        </button>
-                      )
-                  )}
-                </div>
-                {isOpenDescription && (
-                  <div className="bg-[#F9F7F1] p-4 rounded-lg border border-[#E1D4A7] mt-4">
-                    <label
-                      htmlFor="description"
-                      className="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      Please provide a reason for this status change:
-                    </label>
-                    <textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Enter description"
-                      rows={4}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent text-gray-700 transition-all duration-200"
-                    />
-                    <div className="flex justify-end mt-3 gap-2">
-                      <button
-                        onClick={() => setIsOpenDescription(false)}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (description === "") {
-                            alert(
-                              "Please provide a reason for this status change"
-                            );
-                            return;
-                          }
-                          setIsOpenDescription(false);
-                          await updateOrderStatus({
-                            orderId: selectedOrder.id,
-                            status: currentStatus,
-                            description: description,
-                          });
-                          refetch();
-                          setIsOpenDescription(false);
-                        }}
-                        className="px-4 py-2 bg-[#C8A846] hover:bg-[#977f35] text-white rounded-md transition-colors"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>

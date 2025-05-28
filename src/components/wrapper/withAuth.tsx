@@ -12,6 +12,7 @@ export const isLoginAuth = <P extends AuthProps>(
 ) => {
   return (props: P) => {
     const { data: user, isLoading } = useGetUser();
+
     if (!user) {
       return <Navigate to="/login" />;
     }
@@ -27,12 +28,16 @@ export const isLoginAdminAuth = <P extends AuthProps>(
   WrappedComponent: React.ComponentType<P>
 ) => {
   return (props: P) => {
-    const { data: user } = useGetUser();
+    const { data: user, isLoading } = useGetUser();
     if (user?.role !== "Admin") {
       return <Navigate to="/admin/login" />;
     }
 
-    return <WrappedComponent {...props} user={user} />;
+    return (
+      <IsLoadingWrapper isLoading={isLoading}>
+        <WrappedComponent {...props} user={user} />
+      </IsLoadingWrapper>
+    );
   };
 };
 
@@ -40,13 +45,30 @@ export const isAlreadyLoginAuth = <P extends AuthProps>(
   WrappedComponent: React.ComponentType<P>
 ) => {
   return (props: P) => {
-    const { data: user } = useGetUser();
-    if (user?.role == "Admin") {
-      return <Navigate to="/admin/dashboard" />;
+    const { data: user, isLoading } = useGetUser();
+
+    
+    const pathname = location.pathname;
+
+    if (pathname === "/admin/login" && user?.role === "Admin") {
+      return (
+        <IsLoadingWrapper isLoading={isLoading}>
+          <Navigate to="/admin/dashboard" />
+        </IsLoadingWrapper>
+      );
     }
-    if (user) {
-      return <Navigate to="/" />;
+
+    if ((pathname === "/login" || pathname === "/register") && user) {
+      return (
+        <IsLoadingWrapper isLoading={isLoading}>
+          <Navigate to="/" />
+        </IsLoadingWrapper>
+      );
     }
-    return <WrappedComponent {...props} user={user} />;
+    return (
+      <IsLoadingWrapper isLoading={isLoading}>
+        <WrappedComponent {...props} user={user} />
+      </IsLoadingWrapper>
+    );
   };
 };

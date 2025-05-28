@@ -22,6 +22,8 @@ export type Order = {
   orderDetails: OrderDetail[];
   total_price?: number;
   user: UserType;
+  shipments: Shipment[];
+  orderTracks: TrackingOrder[];
 };
 
 export enum OrderStatus {
@@ -47,4 +49,34 @@ export type OrderDetail = {
   price: string;
   total: string;
   product: ProductType;
+};
+export enum PaymentMethod {
+  CREDIT_CARD = "Credit Card",
+  PAYPAL = "PayPal",
+  BANK_TRANSFER = "Bank Transfer",
+  CASH_ON_DELIVERY = "Cash on Delivery",
+}
+
+export enum ShipmentStatus {
+  PENDING = "Pending",
+  SHIPPED = "Shipped",
+  DELIVERED = "Delivered",
+}
+
+export type Shipment = {
+  order: Order;
+  deliveredAt: string;
+  estimatedDeliveryDate: string;
+  shippingCarrier: string;
+  status: ShipmentStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TrackingOrder = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  currentAddress: string;
+  status: OrderStatus;
 };

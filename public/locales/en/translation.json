@@ -258,6 +258,12 @@
     "destination": "Destination",
     "estimated_delivery": "Estimated Delivery",
     "on_the_way": "On the way",
+    "live_tracking": "Live Tracking",
+    "live_tracking_description": "Track your order in real-time with our live tracking feature. Stay updated on the status of your shipment and get real-time notifications for any changes in the delivery process.",
+    "Credit Card": "Credit Card",
+    "PayPal": "PayPal",
+    "Bank Transfer": "Bank Transfer",
+    "Cash on Delivery": "Cash on Delivery"
   },
   "order_list": {
     "view_details": "View Details",
@@ -272,6 +278,7 @@
     "date": "Date",
     "total": "Total",
     "status": "Status",
-    "actions": "Actions"
+    "actions": "Actions",
+    "your_orders": "Your Orders"
   }
 }

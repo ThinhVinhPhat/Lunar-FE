@@ -2,8 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import {
   cancelOrder,
   createOrder,
+  createOrderShipment,
   deleteOrder,
   updateOrder,
+  updateOrderAddress,
   updateOrderStatus,
 } from "../../../../api/service/order.service";
 import { CreateOrderProps } from "../../../../types/order";
@@ -103,6 +105,53 @@ export const useDeleteOrder = () => {
     onError: (error) => {
       console.log(error);
       enqueueSnackbar("Order deleted failed", {
+        variant: "error",
+      });
+    },
+  });
+  return response;
+};
+
+export const useCreateOrderShipment = () => {
+  const response = useMutation({
+    mutationFn: async (data: {
+      orderId: string;
+      estimateDate: string;
+      deliveredDate: string;
+      shippingCarrier: string;
+    }) =>
+      await createOrderShipment(data.orderId, {
+        estimateDate: data.estimateDate,
+        deliveredDate: data.deliveredDate,
+        shippingCarrier: data.shippingCarrier,
+      }),
+    onSuccess: () => {
+      enqueueSnackbar("Order shipment created successfully", {
+        variant: "success",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      enqueueSnackbar("Order shipment created failed", {
+        variant: "error",
+      });
+    },
+  });
+  return response;
+};
+
+export const useUpdateOrderAddress = () => {
+  const response = useMutation({
+    mutationFn: async (data: { orderId: string; address: string }) =>
+      await updateOrderAddress(data.orderId, data.address),
+    onSuccess: () => {
+      enqueueSnackbar("Order address updated successfully", {
+        variant: "success",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      enqueueSnackbar("Order address updated failed", {
         variant: "error",
       });
     },

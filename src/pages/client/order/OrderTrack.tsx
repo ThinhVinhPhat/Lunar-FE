@@ -5,16 +5,36 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { AuthProps, isLoginAuth } from "../../../components/wrapper/withAuth";
 import IsLoadingWrapper from "../../../components/wrapper/isLoading";
 import { useTranslation } from "react-i18next";
-import { OrderDetail, OrderStatus } from "../../../types/order";
+import {
+  OrderDetail,
+  OrderStatus,
+  Shipment,
+  TrackingOrder,
+} from "../../../types/order";
 import clsx from "clsx";
 import { canTransition } from "../../../database/order";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { UseMapRender } from "../../../hooks/useMapRender";
 const OrderTrack: React.FC<AuthProps> = () => {
   const { id } = useParams();
   const { data: order, isLoading } = useGetOrderById(id);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const apiKey = "AIzaSyCVidQzt34dtv-iZKT_8UXviVSa0mNRl6s";
+
+  const latestShipment = order?.shipments?.sort(
+    (a: Shipment, b: Shipment) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )[0];
+
+  const latestTrackingOrder = order?.orderTracks?.sort(
+    (a: TrackingOrder, b: TrackingOrder) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )[0]
+    ? order?.orderTracks?.sort(
+        (a: TrackingOrder, b: TrackingOrder) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0]
+    : import.meta.env.VITE_SHIPPING_ADDRESS;
+
   return (
     <IsLoadingWrapper isLoading={isLoading}>
       <div className="container mx-auto px-4 py-8 mt-36">
@@ -188,9 +208,10 @@ const OrderTrack: React.FC<AuthProps> = () => {
                         {t("order_track.estimated_delivery")}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {new Date(
-                          Date.now() + 2 * 24 * 60 * 60 * 1000
-                        ).toLocaleDateString()}
+                        {latestShipment?.estimatedDeliveryDate.split("T")[1] +
+                          " giờ " +
+                          " ngày " +
+                          latestShipment?.estimatedDeliveryDate.split("T")[0]}
                       </p>
                     </div>
                   </div>
@@ -199,15 +220,17 @@ const OrderTrack: React.FC<AuthProps> = () => {
                   </div>
                 </div>
                 <div className="rounded-lg overflow-hidden shadow-md border border-[#E1D4A7] h-80 bg-white">
-                  <APIProvider apiKey={apiKey}>
-                    <Map
-                      style={{ width: "100vw", height: "100vh" }}
-                      defaultCenter={{ lat: 22.54992, lng: 0 }}
-                      defaultZoom={3}
-                      gestureHandling={"greedy"}
-                      disableDefaultUI={true}
+                  {order?.status === OrderStatus.SHIPPED ? (
+                    <UseMapRender
+                      origin={latestTrackingOrder?.currentAddress}
+                      destination={order?.shippingAddress}
                     />
-                  </APIProvider>
+                  ) : order?.status === OrderStatus.DELIVERED ? (
+                    <UseMapRender
+                      origin={order?.shippingAddress}
+                      destination={order?.shippingAddress}
+                    />
+                  ) : null}
                 </div>
                 <div className="mt-3 flex justify-between text-sm">
                   <div className="flex items-center">
@@ -243,7 +266,7 @@ const OrderTrack: React.FC<AuthProps> = () => {
                   {t("order_track.payment_method")}:
                 </p>
                 <p className="font-medium">
-                  {t("order_track.payment_method_cod")}
+                  {t(`order_track.${order?.payment?.method}`)}
                 </p>
               </div>
             </div>

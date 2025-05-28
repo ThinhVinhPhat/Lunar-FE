@@ -21,7 +21,7 @@ const Navigation = ({
       navigate: "/products/men",
     },
     {
-      title: t("navigation.women"),
+      title: t("navigation.women"), 
       navigate: "/products/women",
     },
     {
@@ -43,7 +43,7 @@ const Navigation = ({
   };
 
   return (
-    <div className="flex justify-center w-80 ml-20 bg-white">
+    <div className="flex justify-center w-full ml-12 bg-white">
       <div className="container mx-auto px-4">
         <nav className={`${isOpen ? "block" : "hidden"} md:block py-6`}>
           <ul className="flex flex-col md:flex-row md:justify-center gap-8">
@@ -56,15 +56,14 @@ const Navigation = ({
               >
                 <button
                   onClick={() => navigate(item.navigate ?? "")}
-                  className={`hover:text-gray-600 text-sm md:text-md font-medium uppercase tracking-wider transition-all duration-300`}
-                  style={{ width: `${item.title.length * 10}px` }}
+                  className={`hover:text-gray-600 text-sm md:text-md font-medium uppercase tracking-wider transition-all duration-300 whitespace-nowrap px-2`}
                 >
                   {item.title}
                 </button>
                 <div className="absolute h-0.5 bg-black w-0 group-hover:w-full transition-all duration-300 bottom-0"></div>
 
                 {item.subMenu && (
-                  <div    
+                  <div
                     className={`${
                       activeMenu === item.title
                         ? "opacity-100 visible"

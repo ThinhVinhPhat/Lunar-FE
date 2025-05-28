@@ -73,7 +73,11 @@ export const updateOrder = async (
   return response.data;
 };
 
-export const updateOrderStatus = async (orderId: string, status: string, description: string) => {
+export const updateOrderStatus = async (
+  orderId: string,
+  status: string,
+  description: string
+) => {
   const response = await instance.patch(`/order/update-status/${orderId}`, {
     status: status,
     description: description,
@@ -83,5 +87,28 @@ export const updateOrderStatus = async (orderId: string, status: string, descrip
 
 export const deleteOrder = async (orderId: string) => {
   const response = await instance.delete(`/order/${orderId}`);
+  return response.data;
+};
+
+export const createOrderShipment = async (
+  orderId: string,
+  data: {
+    estimateDate: string;
+    deliveredDate: string;
+    shippingCarrier: string;
+  }
+) => {
+  const response = await instance.post(`/order/shipment/${orderId}`, {
+    estimateDate: data.estimateDate,
+    deliveredDate: data.deliveredDate,
+    shippingCarrier: data.shippingCarrier,
+  });
+  return response.data;
+};
+
+export const updateOrderAddress = async (orderId: string, address: string) => {
+  const response = await instance.patch(`/order/update-address/${orderId}`, {
+    shippingAddress: address,
+  });
   return response.data;
 };

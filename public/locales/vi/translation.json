@@ -250,7 +250,13 @@
     "destination": "Điểm đến",
     "estimated_delivery": "Thời gian dự kiến giao hàng",
     "on_the_way": "Đang trên đường",
-    "delivered": "Đã giao hàng"
+    "delivered": "Đã giao hàng",
+    "live_tracking": "Theo dõi trực tiếp",
+    "live_tracking_description": "Theo dõi đơn hàng của bạn trực tiếp với tính năng theo dõi trực tiếp của chúng tôi. Cập nhật trạng thái của đơn hàng và nhận thông báo thời gian thực về bất kỳ thay đổi nào trong quá trình vận chuyển.",
+    "Credit Card": "Thẻ tín dụng",
+    "PayPal": "PayPal",
+    "Bank Transfer": "Chuyển khoản ngân hàng",
+    "Cash on Delivery": "Thanh toán khi giao hàng"
   },
   "order_list": {
     "view_details": "Xem chi tiết",
@@ -265,6 +271,7 @@
     "date": "Ngày",
     "total": "Tổng",
     "status": "Trạng thái",
-    "actions": "Hành động"
+    "actions": "Hành động",
+    "your_orders": "Đơn hàng của bạn"
   }
 }

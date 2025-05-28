@@ -4,7 +4,7 @@ import axios, { AxiosRequestHeaders } from "axios";
 import Cookies from "js-cookie";
 
 const instance = axios.create({
-  baseURL: "https://glasses-store-be.onrender.com" + "/api/v1/",
+  baseURL: import.meta.env.VITE_BASE_URL + "/api/v1/",
   // baseURL: "http://localhost:3100" + "/api/v1/",
 });
 

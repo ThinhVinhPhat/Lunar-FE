@@ -113,9 +113,9 @@ const ProductDetail = () => {
             /
             <span className="hover:text-[#C8A846] cursor-pointer">
               {" "}
-              {product?.productCategories[0]?.categoryDetails.name}
+              {product?.productCategories[0]?.categoryDetails?.name}
             </span>{" "}
-            /<span className="text-gray-700"> {product.name}</span>
+            /<span className="text-gray-700"> {product?.name}</span>
           </div>
         </div>
 
@@ -124,18 +124,18 @@ const ProductDetail = () => {
             <div>
               <div className="mb-4 relative group">
                 <img
-                  src={product.images[selectedImage]}
-                  alt={product.name}
+                  src={product?.images[selectedImage]}
+                  alt={product?.name}
                   className="w-full aspect-[1080/614] object-cover rounded-lg"
                 />
-                {product.isNew && (
+                {product?.isNew && (
                   <span className="absolute top-4 left-4 bg-[#C8A846] text-white px-3 py-1 text-sm rounded">
                     {t("product_detail.new_arrival")}
                   </span>
                 )}
               </div>
               <div className="grid grid-cols-5 gap-2">
-                {product.images.map((image: string, index: number) => (
+                {product?.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -159,13 +159,13 @@ const ProductDetail = () => {
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {product.name}
+                    {product?.name}
                   </h1>
                   <button
-                    onClick={() => handleFavoriteProduct(product.id)}
+                    onClick={() => handleFavoriteProduct(product?.id)}
                     className="p-2 rounded-full transition-all duration-300 shadow-md"
                     aria-label={
-                      product.isFavorite
+                      product?.isFavorite
                         ? "Remove from favorites"
                         : "Add to favorites"
                     }
@@ -173,8 +173,8 @@ const ProductDetail = () => {
                     <FontAwesomeIcon
                       icon={faHeart}
                       className={clsx("text-lg", {
-                        "text-red-500": product.isFavorite,
-                        "text-gray-400": !product.isFavorite,
+                        "text-red-500": product?.isFavorite,
+                        "text-gray-400": !product?.isFavorite,
                       })}
                     />
                   </button>
@@ -190,26 +190,26 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="flex items-baseline gap-4 mb-4">
-                  {product.discount_percentage > 0 ? (
+                  {product?.discount_percentage > 0 ? (
                     <>
                       <span className="text-2xl font-medium text-red-600">
                         $
                         {(
-                          Number(product.price) *
-                          (1 - product.discount_percentage / 100)
+                          Number(product?.price) *
+                          (1 - product?.discount_percentage / 100)
                         ).toFixed(2)}
                       </span>
                       <span className="text-xl text-gray-400 line-through">
-                        ${product.price}
+                        ${product?.price}
                       </span>
                       <span className="text-red-600 font-medium">
-                        {t("product_detail.save")} {product.discount_percentage}
+                        {t("product_detail.save")} {product?.discount_percentage}
                         %
                       </span>
                     </>
                   ) : (
                     <span className="text-2xl font-medium text-gray-900">
-                      ${product.price}
+                      ${product?.price}
                     </span>
                   )}
                 </div>
@@ -223,15 +223,15 @@ const ProductDetail = () => {
                   {product?.productCategories?.map((category: any) => (
                     <button
                       disabled
-                      key={category.categoryDetails?.id}
-                      onClick={() => handleCategoryChange(category.id)}
+                      key={category?.categoryDetails?.id}
+                      onClick={() => handleCategoryChange(category?.id)}
                       className={`px-4 py-2 border rounded-md transition-all ${
-                        category.id === selectedCategory
+                        category?.id === selectedCategory
                           ? "border-[#C8A846] bg-[#C8A846] bg-opacity-10"
                           : "border-gray-300 hover:border-gray-400"
                       }`}
                     >
-                      {category.categoryDetails?.name}
+                      {category?.categoryDetails?.name}
                     </button>
                   ))}
                 </div>
@@ -241,15 +241,15 @@ const ProductDetail = () => {
                 <FontAwesomeIcon
                   icon={faCheck}
                   className={
-                    product.stock > 0 ? "text-green-500" : "text-red-500"
+                    product?.stock > 0 ? "text-green-500" : "text-red-500"
                   }
                 />
                 <span
                   className={
-                    product.stock > 0 ? "text-green-500" : "text-red-500"
+                    product?.stock > 0 ? "text-green-500" : "text-red-500"
                   }
                 >
-                  {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                  {product?.stock > 0 ? "In Stock" : "Out of Stock"}
                 </span>
               </div>
 
@@ -269,7 +269,7 @@ const ProductDetail = () => {
                   <button
                     onClick={() => handleQuantityChange(1)}
                     className="px-3 py-2 hover:text-[#C8A846]"
-                    disabled={quantity >= product.stock}
+                    disabled={quantity >= product?.stock}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -277,11 +277,11 @@ const ProductDetail = () => {
               </div>
 
               <button
-                onClick={() => handleAddToCart(product.id)}
+                onClick={() => handleAddToCart(product?.id)}
                 className="w-full bg-[#C8A846] text-white py-4 text-lg font-medium rounded-md hover:bg-[#b69339] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                disabled={product.stock === 0}
+                disabled={product?.stock === 0}
               >
-                {product.stock === 0
+                {product?.stock === 0
                   ? t("product_detail.out_of_stock")
                   : t("product_detail.add_to_cart")}
               </button>
@@ -333,7 +333,7 @@ const ProductDetail = () => {
                   <h3 className="text-lg font-medium mb-4">
                     {t("product_detail.description")}
                   </h3>
-                  <p className="text-gray-600 mb-6">{product.description}</p>
+                  <p className="text-gray-600 mb-6">{product?.description}</p>
 
                   <div className="grid md:grid-cols-2 gap-8 mt-8">
                     <div>
