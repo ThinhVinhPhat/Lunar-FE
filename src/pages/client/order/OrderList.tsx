@@ -21,9 +21,11 @@ const OrderList: React.FC<AuthProps> = () => {
     data: orderList,
     isLoading: isOrderListLoading,
     refetch,
+    total,
   } = useGetOrderList(status, offset, 10);
   const { t } = useTranslation();
 
+  console.log(orderList);
   // Define column headers with their data keys and translation labels
   const columnHeaders = [
     { key: "id", label: t("order_list.order_id", "Order ID") },
@@ -86,7 +88,7 @@ const OrderList: React.FC<AuthProps> = () => {
               <thead className="bg-[#F5EFD9]">
                 <tr>
                   {columnHeaders.map((header) => (
-                    <th 
+                    <th
                       key={header.key}
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
@@ -96,10 +98,10 @@ const OrderList: React.FC<AuthProps> = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orderList?.orders?.length === 0 ? (
+                {orderList?.length === 0 ? (
                   <OrderEmpty />
                 ) : (
-                  orderList?.orders?.map((order: Order) => (
+                  orderList?.map((order: Order) => (
                     <tr key={order.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {order.id}
@@ -128,7 +130,10 @@ const OrderList: React.FC<AuthProps> = () => {
                             }
                           )}
                         >
-                          {t(`order_list.status_${order.status.toLowerCase()}`, order.status)}
+                          {t(
+                            `order_list.status_${order.status.toLowerCase()}`,
+                            order.status
+                          )}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -158,9 +163,9 @@ const OrderList: React.FC<AuthProps> = () => {
           </div>
         </div>
       )}
-      {orderList?.orders?.length > 10 && (
+      {orderList?.length > 10 && (
         <Pagination
-          productCount={orderList?.total}
+          productCount={total}
           currentPage={page}
           onSetPage={setPage}
         />

@@ -60,3 +60,8 @@ export const getFavoriteProducts = async () => {
   const response = await instance.get(`favorite/find-by-user`);
   return response.data;
 };
+
+export const getProductBySuggestion = async (suggestion: string) => {
+  const response = await instance.get(`product/find-by-suggestion?name=${suggestion}`);
+  return response.data;
+};

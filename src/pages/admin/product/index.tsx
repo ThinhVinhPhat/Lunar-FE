@@ -21,9 +21,9 @@ const AdminProduct: React.FC<AuthProps> = () => {
   const { mutateAsync: deleteProduct } = useDeleteProduct();
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 5;
-  const { products, isLoading, refetch } = useProductAction(offset, 5);
+  const { products, isLoading, refetch, total } = useProductAction(offset, 5);
 
-  const filteredProducts = products?.products?.filter(
+  const filteredProducts = products?.filter(
     (product: Product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.productCategories.some((category: any) =>
@@ -33,7 +33,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
       )
   );
   const totalProducts =
-    searchTerm === "" ? products?.data?.productCount : filteredProducts?.length;
+    searchTerm === "" ? total : filteredProducts?.length;
   const totalPages = Math.ceil(totalProducts / 5);
 
   const handleEdit = (product: Product) => {

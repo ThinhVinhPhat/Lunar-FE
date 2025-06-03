@@ -44,10 +44,7 @@ export default function UpdateOrderStatus({
     register: registerCurrentDelivery,
     handleSubmit: handleSubmitCurrentDelivery,
     reset: resetCurrentDelivery,
-    formState: {
-      errors: errorsCurrentDelivery,
-      isDirty: isDirtyCurrentDelivery,
-    },
+    formState: { isDirty: isDirtyCurrentDelivery },
   } = useForm({
     defaultValues: {
       currentDelivery: "",
@@ -73,10 +70,10 @@ export default function UpdateOrderStatus({
   }, [latestShipment, reset]);
 
   useEffect(() => {
-    reset({
+    resetCurrentDelivery({
       currentDelivery: currentTrackingOrder?.currentAddress,
     });
-  }, [currentTrackingOrder, reset]);
+  }, [currentTrackingOrder, resetCurrentDelivery]);
 
   const handleUpdateOrderStatus = async (status: string) => {
     if (

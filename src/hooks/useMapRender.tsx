@@ -20,7 +20,7 @@ function DirectionMap({ origin, destination }: MapRenderProps) {
   const [directionRenderer, setDirectionRenderer] =
     useState<google.maps.DirectionsRenderer | null>(null);
   const [routes, setRoutes] = useState<google.maps.DirectionsRoute[]>([]);
-  const [route, setRoute] = useState(0);
+  const [route] = useState(0);
   const selected = routes[route];
   const leg = selected?.legs[0];
 

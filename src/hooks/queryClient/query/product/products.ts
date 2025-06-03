@@ -10,12 +10,20 @@ type DataProp = {
 
 export const useProducts = (data?: DataProp) => {
   const response = useQuery({
-    queryKey: ["products", data?.category, data?.offset, data?.limit, data?.userId],
-    queryFn: () => getProducts(data?.category, data?.offset, data?.limit, data?.userId),
+    queryKey: [
+      "products",
+      data?.category,
+      data?.offset,
+      data?.limit,
+      data?.userId,
+    ],
+    queryFn: () =>
+      getProducts(data?.category, data?.offset, data?.limit, data?.userId),
   });
 
   return {
     ...response,
     products: response.data?.data || [],
+    total: response.data?.total || 0,
   };
 };

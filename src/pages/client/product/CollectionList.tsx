@@ -23,7 +23,7 @@ const CollectionList = () => {
       <div className="relative bg-gray-900 text-white">
         <img
           src={
-            filterCategories[type as keyof typeof filterCategories].image ||
+            filterCategories[type as keyof typeof filterCategories]?.image ||
             "https://shwoodshop.com/cdn/shop/collections/f0395074198cd18e070e805ac2f80682_99a27b1f-60f2-4f74-afe7-061d0b89fa36.jpg?v=1658366448&width=1920"
           }
           alt="Eyewear Collection"
@@ -32,7 +32,7 @@ const CollectionList = () => {
 
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {filterCategories[type as keyof typeof filterCategories].category}
+            {filterCategories[type as keyof typeof filterCategories]?.category}
           </h1>
           <p className="text-lg md:text-xl max-w-2xl">
             Discover our handcrafted frames made from sustainable materials
@@ -45,7 +45,7 @@ const CollectionList = () => {
             <section>
               <Filter
                 isLoading={isLoading}
-                filteredProducts={products.products}
+                filteredProducts={products}
                 onFilterChange={setCurrentFiltered}
                 type="collection"
               />

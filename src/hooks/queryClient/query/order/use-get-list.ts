@@ -13,5 +13,6 @@ export const useGetOrderList = (
   return {
     ...response,
     data: response?.data?.data || [],
+    total: response?.data?.total || 0,
   };
 };

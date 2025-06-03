@@ -273,5 +273,11 @@
     "status": "Trạng thái",
     "actions": "Hành động",
     "your_orders": "Đơn hàng của bạn"
+  },
+  "search": {
+    "no_results": "Không tìm thấy kết quả",
+    "search_products": "Tìm kiếm sản phẩm",
+    "search_placeholder": "Tìm kiếm sản phẩm...",
+    "popular_searches": "Tìm kiếm phổ biến"
   }
 }

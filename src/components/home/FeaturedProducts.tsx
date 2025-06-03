@@ -8,6 +8,8 @@ const FeaturedProducts = () => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { products, isLoading, handleFavoriteProduct } = useProductAction(0, 4);
 
+  console.log(products);
+
   return (
     <section className=" w-full">
       <div className="container mx-auto  w-full">
@@ -52,7 +54,7 @@ const FeaturedProducts = () => {
                   </div>
                 </div>
               ))
-            : products?.products?.map((product: Product) => (
+            : products?.map((product: Product) => (
                 <ProductItem
                   key={product.id}
                   product={product}

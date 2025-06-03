@@ -280,5 +280,11 @@
     "status": "Status",
     "actions": "Actions",
     "your_orders": "Your Orders"
+  },
+  "search": {
+    "search_products": "Search Products",
+    "search_placeholder": "Search for products...",
+    "no_results": "No results found",
+    "popular_searches": "Popular searches"
   }
 }

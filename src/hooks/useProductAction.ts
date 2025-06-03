@@ -9,7 +9,7 @@ export const useProductAction = (offset = 0, limit = 10, ...rest: any) => {
   const { data: user } = useGetUser();
   const navigate = useNavigate();
   const { category } = rest;
-  const { products, isLoading, refetch } = useProducts({
+  const { products, isLoading, refetch, total } = useProducts({
     offset,
     limit,
     userId: user?.id,
@@ -36,5 +36,6 @@ export const useProductAction = (offset = 0, limit = 10, ...rest: any) => {
     isLoadingCategories,
     handleFavoriteProduct,
     refetch,
+    total,
   };
 };

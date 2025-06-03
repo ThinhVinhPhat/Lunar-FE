@@ -4,7 +4,7 @@ import Navigation from "./Navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import SearchModal from "../ui/Search";
+import SearchModal from "../ui/Search/Search";
 import { useContextProvider } from "../../hooks/useContextProvider";
 import LanguageSelector from "../ui/LanguageSelector";
 import Text from "../wrapper/Text";
@@ -26,11 +26,11 @@ export const Header: React.FC = () => {
         <Text id="home.freeUSShippingOver99" />
       </div>
 
-      <div className="container mx-auto px-4 py-4 ml-[-20px] flex items-center justify-between">
+      <div className="container  mx-auto px-4 py-4 ml-[0px] flex items-center justify-between">
         <Logo />
         <Navigation isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-[200px] items-center gap-4">
           <button
             onClick={toggleSearch}
             className="hidden md:block hover:text-[#C8A846]"

@@ -18,7 +18,7 @@ const OrdersManagement: React.FC<AuthProps> = () => {
     refetch,
   } = useGetOrderList(currentStatus, 0, 10);
   const { mutateAsync: deleteOrder } = useDeleteOrder();
-  const filteredOrders = orders?.orders?.filter((order: Order) =>
+  const filteredOrders = orders?.filter((order: Order) =>
     order?.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -29,7 +29,6 @@ const OrdersManagement: React.FC<AuthProps> = () => {
   const closeModal = () => {
     setSelectedOrder(null);
   };
-  
 
   return (
     <IsLoadingWrapper isLoading={isLoading}>

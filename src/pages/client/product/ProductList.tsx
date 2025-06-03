@@ -10,7 +10,7 @@ const ProductList = () => {
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 10;
   const [currentFiltered, setCurrentFiltered] = useState<string[]>([]);
-  const { products, isLoading } = useProductAction(offset, 10, {
+  const { products, isLoading, total } = useProductAction(offset, 10, {
     category: currentFiltered,
   });
   return (
@@ -43,13 +43,13 @@ const ProductList = () => {
           <div className="max-w-7xl mx-auto px-4 py-8">
             <section>
               <Pagination
-                productCount={products.productCount}
+                productCount={total}
                 currentPage={page}
                 onSetPage={setPage}
               />
               <Filter
                 isLoading={isLoading}
-                filteredProducts={products.products}
+                filteredProducts={products}
                 onFilterChange={setCurrentFiltered}
                 type="product"
               />

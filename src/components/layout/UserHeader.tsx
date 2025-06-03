@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useContextProvider } from "../../hooks/useContextProvider";
-import SearchModal from "../ui/Search";
+import SearchModal from "../ui/Search/Search";
 import Cart from "../ui/Cart";
 import { useGetUser } from "../../hooks/queryClient/query/user";
 import { useAuthAction } from "../../hooks/useAuthAction";
