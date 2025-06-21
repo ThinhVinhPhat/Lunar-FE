@@ -1,12 +1,14 @@
 import { enqueueSnackbar } from "notistack";
 import { UserService } from "../../../../api/service/user.service";
 import { UserType } from "../../../../types/user";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (data: UserType) => UserService.updateUser(data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       enqueueSnackbar("User updated successfully", {
         variant: "success",
       });

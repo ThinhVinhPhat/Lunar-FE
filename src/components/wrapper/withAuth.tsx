@@ -29,7 +29,7 @@ export const isLoginAdminAuth = <P extends AuthProps>(
 ) => {
   return (props: P) => {
     const { data: user, isLoading } = useGetUser();
-    if (user?.role !== "Admin") {
+    if (user?.role !== "Engineer" && user?.role !== "Admin") {
       return <Navigate to="/admin/login" />;
     }
 
@@ -47,10 +47,12 @@ export const isAlreadyLoginAuth = <P extends AuthProps>(
   return (props: P) => {
     const { data: user, isLoading } = useGetUser();
 
-    
     const pathname = location.pathname;
 
-    if (pathname === "/admin/login" && user?.role === "Admin") {
+    if (
+      pathname === "/admin/login" &&
+      (user?.role === "Admin" || user?.role === "Engineer")
+    ) {
       return (
         <IsLoadingWrapper isLoading={isLoading}>
           <Navigate to="/admin/dashboard" />

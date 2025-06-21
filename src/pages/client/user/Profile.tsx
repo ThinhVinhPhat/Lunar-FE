@@ -45,7 +45,7 @@ const Profile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     user?.avatar ? user.avatar.toString() : null
   );
-  const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
+  const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -62,7 +62,7 @@ const Profile = () => {
   const onSubmit = async (data: any) => {
     try {
       if (isDirty) {
-        updateUser(data);
+        await updateUser(data);
         setIsEditing(false);
       }
     } catch (error) {

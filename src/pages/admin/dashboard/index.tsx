@@ -176,7 +176,7 @@ const Dashboard: React.FC<AuthProps> = ({ user }) => {
         </div>
 
         <div className="space-y-4">
-          {userOrder?.orders?.map((item: UserOrderType) => (
+          {userOrder?.map((item: UserOrderType) => (
             <div
               key={item.id}
               className="flex items-start p-3 hover:bg-gray-50 rounded-lg transition-colors"

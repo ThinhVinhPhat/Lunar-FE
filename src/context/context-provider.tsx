@@ -2,17 +2,21 @@ import { useGetUser } from "../hooks/queryClient/query/user";
 import { OrderDetail } from "@/types/order";
 import { Order } from "@/types/order";
 import { UserType } from "@/types/user";
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useRef, useState } from "react";
 import { useCreateOrder } from "../hooks/queryClient/mutator/order/order";
 import i18n from "../i18n";
+import Cookies from "js-cookie";
+import { Socket, io } from "socket.io-client";
 type ContextType = {
   isLogin: boolean | UserType;
   isAdmin: boolean;
+  user: UserType | undefined;
   currentLanguage: string;
   isOpenSearch: boolean;
   isOpenCart: boolean;
   cart: Order | undefined;
   cartItems: OrderDetail[];
+  socketRef: React.MutableRefObject<Socket | null>;
   setIsLogin: (value: boolean) => void;
   setIsAdmin: (value: boolean) => void;
   setCurrentLanguage: (value: string) => void;
@@ -38,6 +42,7 @@ export const ContextProvider = ({
   const { data: user } = useGetUser();
   const { data: order, mutateAsync: mutateOrder } = useCreateOrder();
   const [currentLanguage, setCurrentLanguage] = useState<string>(i18n.language);
+  const socketRef = useRef<Socket | null>(null);
   useEffect(() => {
     if (user?.firstName && user?.lastName) {
       setIsLogin(true);
@@ -67,14 +72,40 @@ export const ContextProvider = ({
     }
   }, [order]);
 
+  useEffect(() => {
+    const socket = io("http://localhost:3100", {
+      auth: { token: Cookies.get("accessToken") },
+      transports: ["websocket"],
+    });
+
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log("✅ Connected to server");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Connect error:", err.message);
+    });
+
+    return () => {
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
   const memorizedValue = useMemo(() => {
     return {
       isLogin,
       isAdmin,
+      socketRef,
       isOpenSearch,
       isOpenCart,
       cart,
       cartItems,
+      user,
       currentLanguage,
       setCurrentLanguage,
       setIsLogin,
@@ -91,6 +122,8 @@ export const ContextProvider = ({
     cart,
     cartItems,
     isLogin,
+    user,
+    socketRef,
     isAdmin,
     currentLanguage,
   ]);

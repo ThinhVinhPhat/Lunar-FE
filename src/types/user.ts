@@ -11,6 +11,7 @@ export type UserType = {
   avatar: File[] | null;
   status: string | boolean;
   createdAt: string;
+  isOnline: boolean;
 };
 
 export type AuthType = {

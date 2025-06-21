@@ -6,9 +6,11 @@ import { useProductAction } from "../../hooks/useProductAction";
 
 const FeaturedProducts = () => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const { products, isLoading, handleFavoriteProduct } = useProductAction(0, 4);
+  const { products, isLoading, handleFavoriteProduct } = useProductAction();
 
-  console.log(products);
+  const mostViewedProducts = products
+    ?.sort((a: Product, b: Product) => b.views - a.views)
+    .slice(0, 4);
 
   return (
     <section className=" w-full">
@@ -19,25 +21,6 @@ const FeaturedProducts = () => {
               <Text id="home.shopOurMostPopularStyles" />
             </h2>
           </div>
-          {/* <NavLink
-            to="/products"
-            className="text-[#2c2c2c] hover:text-[#C8A846] transition-colors duration-300 flex items-center gap-2"
-          >
-            View All
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </NavLink> */}
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
@@ -54,7 +37,7 @@ const FeaturedProducts = () => {
                   </div>
                 </div>
               ))
-            : products?.map((product: Product) => (
+            : mostViewedProducts?.map((product: Product) => (
                 <ProductItem
                   key={product.id}
                   product={product}

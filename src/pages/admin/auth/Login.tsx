@@ -37,7 +37,7 @@ const AdminLogin: React.FC<AuthProps> = () => {
     const user = await UserService.getUser();
     console.log(user);
     if (user) {
-      if (user.data.role === "Admin") {
+      if (user.data.role === "Admin" || user.data.role === "Engineer") {
         navigate("/admin/dashboard");
         enqueueSnackbar("Login Success", { variant: "success" });
       } else {

@@ -75,3 +75,8 @@ export const updateUserAdmin = async (data: any) => {
   });
   return response.data;
 };
+
+export const getUserById = async (id: string) => {
+  const response = await instance.get(`/users/${id}`);
+  return response.data;
+};

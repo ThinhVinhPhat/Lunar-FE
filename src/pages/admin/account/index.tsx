@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Search,
-  Edit,
-  Trash2,
-  UserPlus,
-  Lock,
-  User,
-} from "lucide-react";
+import { Search, Edit, Trash2, UserPlus, Lock, User } from "lucide-react";
 import { useFindUser } from "../../../hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
 import Pagination from "../../../components/admin/pagination";
@@ -34,7 +27,7 @@ const AdminAccount = () => {
 
   const queryList = {
     email: "",
-    role: currentRole,
+    role: [currentRole],
     offset: offset,
     limit: page * 10,
   };

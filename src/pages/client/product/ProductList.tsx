@@ -42,16 +42,16 @@ const ProductList = () => {
         <>
           <div className="max-w-7xl mx-auto px-4 py-8">
             <section>
-              <Pagination
-                productCount={total}
-                currentPage={page}
-                onSetPage={setPage}
-              />
               <Filter
                 isLoading={isLoading}
                 filteredProducts={products}
                 onFilterChange={setCurrentFiltered}
                 type="product"
+              />
+              <Pagination
+                productCount={total}
+                currentPage={page}
+                onSetPage={setPage}
               />
             </section>
 

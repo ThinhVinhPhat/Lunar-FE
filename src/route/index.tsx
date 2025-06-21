@@ -22,6 +22,7 @@ import Setting from "../pages/admin/Setting";
 import Order from "../pages/admin/Order";
 import VerifyRegister from "../pages/client/auth/VerifyRegister";
 import OrderTrack from "../pages/client/order/OrderTrack";
+import MessagePage from "../pages/admin/MessagePage";
 
 export const router = createBrowserRouter([
   {
@@ -113,6 +114,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/settings",
         element: <Setting />,
+      },
+      {
+        path: "/admin/message/:id",
+        element: <MessagePage />,
       },
     ],
   },
