@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -11,8 +11,7 @@ import Text from "../wrapper/Text";
 import IsLoadingWrapper from "../wrapper/isLoading";
 
 const Collections = () => {
-  const navigate = useNavigate(); 
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const { data: categories, isLoading: isLoadingCategories } =
     useGetCategoriesDetailByCateName("Material");
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -85,72 +84,68 @@ const Collections = () => {
               style={{ transform: `translateX(-${currentSlide}%)` }}
             >
               {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                <Link to={`/collections/${categories[slideIndex]?.name}`}>
-                  <div
-                    key={slideIndex}
-                    className="grid md:grid-cols-3 gap-7 min-w-full"
-                    style={{
-                      display: slideIndex === currentSlide ? "grid" : "none",
-                    }}
-                  >
-                    {getSlideItems(slideIndex)?.map(
-                      (category: CategoryDetail, index: number) => {
-                        const image = category?.image
-                          ?.replace(/[{}"]/g, "")
-                          .split(",");
-                        return (
-                          <div
-                            key={`${category.id}-${slideIndex}-${index}`}
-                            className="group relative overflow-hidden rounded-lg cursor-pointer transform transition-all duration-500 hover:-translate-y-2"
-                            onMouseEnter={() => setHoveredId(category.id)}
-                            onMouseLeave={() => setHoveredId(null)}
-                            onClick={() =>
-                              navigate(`/collections/${category.id}`)
-                            }
-                          >
-                            <div className="relative aspect-[4/5] overflow-hidden">
-                              <img
-                                src={
-                                  hoveredId === category?.id && image
-                                    ? image[0]
-                                    : image
-                                    ? image[1]
-                                    : ""
-                                }
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                alt={category.name}
-                              />
+                <div
+                  key={slideIndex}
+                  className="grid md:grid-cols-3 gap-7 min-w-full"
+                  style={{
+                    display: slideIndex === currentSlide ? "grid" : "none",
+                  }}
+                >
+                  {getSlideItems(slideIndex)?.map(
+                    (category: CategoryDetail, index: number) => {
+                      const images = category?.image
+                        ?.replace(/[{}"]/g, "")
+                        .split(",");
 
-                              <div className="absolute top-4 left-4 bg-[#C8A846] text-white text-xs px-3 py-1 rounded">
-                                {category.name}
-                              </div>
+                      return (
+                        <div
+                          key={`${category.id}-${slideIndex}-${index}`}
+                          className="group relative overflow-hidden rounded-lg cursor-pointer transform transition-all duration-500 hover:-translate-y-2"
+                          onClick={() =>
+                            navigate(`/collections/${category.name}`)
+                          }
+                        >
+                          <div className="relative aspect-[4/5] overflow-hidden">
+                            <img
+                              src={
+                                images?.length > 1
+                                  ? images[1]
+                                  : images?.[0] || ""
+                              }
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              alt={category.name}
+                            />
 
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute top-4 left-4 bg-[#C8A846] text-white text-xs px-3 py-1 rounded">
+                              {category.name}
                             </div>
 
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform duration-300">
-                              <h3 className="text-2xl font-bold mb-2">
-                                {category.name}
-                              </h3>
-                              <p className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                {category.description}
-                              </p>
-
-                              <button
-                                onClick={() =>
-                                  navigate(`/collections/${category.name}`)
-                                }
-                                className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 delay-150 hover:bg-[#b69339] transform group-hover:translate-y-0 translate-y-4"
-                              >
-                                <Text id="collections.exploreCollection" />
-                              </button>
-                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
-                        );
-                      }
-                    )}
-                  </div>
-                </Link>
+
+                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform duration-300">
+                            <h3 className="text-2xl font-bold mb-2">
+                              {category.name}
+                            </h3>
+                            <p className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                              {category.description}
+                            </p>
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/collections/${category.name}`);
+                              }}
+                              className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 delay-150 hover:bg-[#b69339] transform group-hover:translate-y-0 translate-y-4"
+                            >
+                              <Text id="collections.exploreCollection" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
               ))}
             </div>
           </div>

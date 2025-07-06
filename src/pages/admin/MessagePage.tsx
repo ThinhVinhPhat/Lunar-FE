@@ -14,7 +14,7 @@ import MessageBubble from "../../components/admin/ui/message/MessageBubble";
 import { useEffect, useRef, useState } from "react";
 import { useContextProvider } from "../../hooks/useContextProvider";
 import { useGetConversation } from "../../hooks/queryClient/query/message/getConverstation";
-import { Message } from "@/types/message";
+import { MessageType } from "../../types/message";
 
 const MessagePage = () => {
   const navigate = useNavigate();
@@ -181,7 +181,7 @@ const MessagePage = () => {
             </div>
           </div>
         ) : (
-          messages?.map((msg: Message) => (
+          messages?.map((msg: MessageType) => (
             <MessageBubble
               key={msg?.id}
               message={msg}

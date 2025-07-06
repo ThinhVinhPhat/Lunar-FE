@@ -23,6 +23,11 @@ import Order from "../pages/admin/Order";
 import VerifyRegister from "../pages/client/auth/VerifyRegister";
 import OrderTrack from "../pages/client/order/OrderTrack";
 import MessagePage from "../pages/admin/MessagePage";
+import AdminProfile from "../pages/admin/user/Profile";
+import NotificationPage from "../pages/admin/notification/NotificationPage";
+import { RequireRole } from "../components/wrapper/withAuth";
+import { Role } from "../types/notification";
+import Unauthorized from "../pages/admin/Unauthorized";
 
 export const router = createBrowserRouter([
   {
@@ -93,31 +98,79 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/admin/dashboard",
-        element: <AdminDashboard />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN]}>
+            <AdminDashboard />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/accounts",
-        element: <AdminAccount />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN]}>
+            <AdminAccount />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/categories",
-        element: <AdminCategory />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN, Role.ENGINEER]}>
+            <AdminCategory />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/products",
-        element: <AdminProduct />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN, Role.ENGINEER]}>
+            <AdminProduct />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/orders",
-        element: <Order />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN, Role.ENGINEER]}>
+            <Order />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/settings",
-        element: <Setting />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN]}>
+            <Setting />,
+          </RequireRole>
+        ),
       },
       {
         path: "/admin/message/:id",
-        element: <MessagePage />,
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN, Role.ENGINEER]}>
+            <MessagePage />,
+          </RequireRole>
+        ),
+      },
+      {
+        path: "/admin/profile",
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN, Role.ENGINEER]}>
+            <AdminProfile />,
+          </RequireRole>
+        ),
+      },
+      {
+        path: "/admin/notifications",
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN]}>
+            <NotificationPage />,
+          </RequireRole>
+        ),
+      },
+      {
+        path: "/admin/unauthorized",
+        element: <Unauthorized />,
       },
     ],
   },

@@ -8,6 +8,8 @@ const instance = axios.create({
   // baseURL: "http://localhost:3100" + "/api/v1/",
 });
 
+
+
 instance.interceptors.request.use(
   function (config) {
     const accessToken = Cookies.get("accessToken");

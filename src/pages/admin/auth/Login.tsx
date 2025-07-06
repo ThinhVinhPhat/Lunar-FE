@@ -12,6 +12,7 @@ import {
 import { login } from "../../../api/service/auth.service";
 import Cookies from "js-cookie";
 import { UserService } from "../../../api/service/user.service";
+import { Role } from "../../../types/notification";
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
   password: z.string().min(8, { message: "Password is required" }),
@@ -37,8 +38,10 @@ const AdminLogin: React.FC<AuthProps> = () => {
     const user = await UserService.getUser();
     console.log(user);
     if (user) {
-      if (user.data.role === "Admin" || user.data.role === "Engineer") {
-        navigate("/admin/dashboard");
+      if (user.data.role === Role.ADMIN || user.data.role === Role.ENGINEER) {
+        navigate(
+          user.data.role === Role.ADMIN ? "admin/dashboard" : "admin/products"
+        );
         enqueueSnackbar("Login Success", { variant: "success" });
       } else {
         Cookies.remove("accessToken");

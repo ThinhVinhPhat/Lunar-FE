@@ -3,6 +3,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import { useGetUser } from "../../../hooks/queryClient/query/user";
 import UserList from "../ui/user/UserList";
+import { Role } from "@/types/notification";
 
 type NavigationProps = {
   isSidebarOpen: boolean;
@@ -11,6 +12,7 @@ type NavigationProps = {
     title: string;
     path: string;
     icon: React.ReactNode;
+    roles: Role[];
   }[];
 };
 
@@ -47,23 +49,26 @@ function Navigation({
       <div className="flex-1 overflow-hidden flex flex-col">
         <nav className="flex-shrink-0 px-2 pt-4">
           <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
-                    location.pathname === item.path
-                      ? "bg-[#C8A846] text-white shadow-md"
-                      : "text-gray-600 hover:bg-[#f5ecd1] hover:text-[#C8A846]"
-                  }`}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {isSidebarOpen && (
-                    <span className="font-medium">{item.title}</span>
-                  )}
-                </Link>
-              </li>
-            ))}
+            {navItems.map(
+              (item) =>
+                item.roles.includes(user?.role) && (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+                        location.pathname === item.path
+                          ? "bg-[#C8A846] text-white shadow-md"
+                          : "text-gray-600 hover:bg-[#f5ecd1] hover:text-[#C8A846]"
+                      }`}
+                    >
+                      <span className="mr-3">{item.icon}</span>
+                      {isSidebarOpen && (
+                        <span className="font-medium">{item.title}</span>
+                      )}
+                    </Link>
+                  </li>
+                )
+            )}
           </ul>
         </nav>
 
@@ -93,7 +98,10 @@ function Navigation({
       <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
         <div className="relative cursor-pointer flex flex-row items-center justify-between group">
           {isSidebarOpen && (
-            <div className="flex items-center space-x-3 flex-1 min-w-0 transition-all duration-300 ease-in-out">
+            <div
+              onClick={() => navigate("/admin/profile")}
+              className="flex items-center space-x-3 flex-1 min-w-0 transition-all duration-300 ease-in-out"
+            >
               <div className="relative">
                 <div className="p-0.5 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 rounded-full shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <img

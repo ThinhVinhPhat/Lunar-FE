@@ -2,6 +2,7 @@ import { useGetUser } from "../../hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
 import { Navigate } from "react-router-dom";
 import IsLoadingWrapper from "./isLoading";
+import { Role } from "@/types/notification";
 
 export type AuthProps = {
   user?: UserType;
@@ -55,7 +56,9 @@ export const isAlreadyLoginAuth = <P extends AuthProps>(
     ) {
       return (
         <IsLoadingWrapper isLoading={isLoading}>
-          <Navigate to="/admin/dashboard" />
+          <Navigate
+            to={user?.role === "Admin" ? "/admin/dashboard" : "/admin/products"}
+          />
         </IsLoadingWrapper>
       );
     }
@@ -74,3 +77,20 @@ export const isAlreadyLoginAuth = <P extends AuthProps>(
     );
   };
 };
+
+type RequireRoleProps = {
+  allowedRoles: Role[];
+  children: React.ReactNode;
+};
+
+export function RequireRole({ allowedRoles, children }: RequireRoleProps) {
+  const { data: user, isLoading } = useGetUser();
+
+  if (isLoading == false) {
+    if (!allowedRoles.includes(user?.role)) {
+      return <Navigate to="/admin/unauthorized" replace />;
+    }
+  }
+
+  return children;
+}

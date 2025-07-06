@@ -2,11 +2,11 @@ import Hero from "../../../components/home/Hero";
 import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import Collections from "../../../components/home/Collections";
 import Reviews from "../../../components/home/Reviews";
-import { Button } from "../../../components/ui/Button";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import Text from "../../../components/wrapper/Text";
+import Banner from "../../../components/home/Banner";
 
 const Home = () => {
   const [query] = useSearchParams();
@@ -47,27 +47,7 @@ const Home = () => {
       </section>
 
       <section className="relative py-10 bg-[var(--primary-color)] text-white">
-        <div className="text-center mb-16">
-          <div className="flex justify-center m-1 align-middle w-100">
-            <img
-              className="w-[100rem] h-[40rem] object-cover"
-              src="https://shwoodshop.com/cdn/shop/files/Experiment-Desktop.jpg?v=1736452704&width=1920"
-            ></img>
-          </div>
-          <div className="absolute top-64 left-0 w-full h-full">
-            <h1 className="text-6xl font-bold mb-4 text-[#f1efef]">
-              <Text id="home.experimentingEveryday" />
-            </h1>
-            <div className="flex flex-col justify-center items-center w-1/2 mx-auto">
-              <p className="text-[#fff] mb-10 text-2xl text-left ml-10 flex flex-col justify-center items-center">
-                <Text id="home.boundariesPushed" />
-              </p>
-            </div>
-            <Button href="/explore" variant="secondary" size="medium">
-              <Text id="home.exploreProcess" />
-            </Button>
-          </div>
-        </div>
+        <Banner />
       </section>
 
       <section className="mb-10 bg-[var(--primary-color)] text-white">

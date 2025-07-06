@@ -1,9 +1,10 @@
-import { Message } from "@/types/message";
+import { MessageType } from "@/types/message";
 import { UserType } from "@/types/user";
+import { formatTime } from "../../../../ultis/formatDate";
 import { User } from "lucide-react";
 
 type MessageBubbleProps = {
-  message: Message;
+  message: MessageType;
   isOwn: boolean;
   sender: UserType | undefined;
   receiver: UserType | undefined;
@@ -15,13 +16,6 @@ const MessageBubble = ({
   sender,
   receiver,
 }: MessageBubbleProps) => {
-  const formatTime = (timestamp: Date) => {
-    return new Date(timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const messageAuthor = isOwn ? sender : receiver;
 
   return (

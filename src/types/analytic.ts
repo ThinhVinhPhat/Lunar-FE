@@ -37,3 +37,12 @@ export interface UserOrderType {
   total_price: number;
   timeSinceOrder: string;
 }
+
+interface DeviceInfoItem {
+  name: string;
+  value: string;
+}
+
+export interface SystemAPI {
+  getDeviceInfo: () => Promise<DeviceInfoItem[]>;
+}

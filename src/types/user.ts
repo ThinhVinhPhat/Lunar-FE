@@ -1,3 +1,5 @@
+import { Role } from "./notification";
+
 export type UserType = {
   id?: string;
   email: string;
@@ -6,7 +8,7 @@ export type UserType = {
   company: string;
   address: string;
   city: string;
-  role: string;
+  role: Role;
   phone: string;
   avatar: File[] | null;
   status: string | boolean;

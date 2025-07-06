@@ -7,7 +7,7 @@ export type Conversation = {
   createdAt: Date;
 };
 
-export type Message = {
+export type MessageType = {
   id: string;
   content: string;
   isRead: boolean;

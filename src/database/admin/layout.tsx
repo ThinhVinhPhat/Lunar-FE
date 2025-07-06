@@ -1,3 +1,4 @@
+import { Role } from "../../types/notification";
 import { OrderStatus } from "../../types/order";
 import {
   Settings,
@@ -6,29 +7,50 @@ import {
   Package,
   Tags,
   PackageSearch,
+  Bell,
 } from "lucide-react";
 export const navItems = [
   {
     title: "Dashboard",
     path: "/admin/dashboard",
     icon: <LayoutDashboard size={20} />,
+    roles: [Role.ADMIN],
   },
-  { title: "Products", path: "/admin/products", icon: <Package size={20} /> },
+  {
+    title: "Products",
+    path: "/admin/products",
+    icon: <Package size={20} />,
+    roles: [Role.ADMIN, Role.ENGINEER],
+  },
   {
     title: "Categories",
     path: "/admin/categories",
     icon: <Tags size={20} />,
+    roles: [Role.ADMIN, Role.ENGINEER],
   },
-  { title: "Accounts", path: "/admin/accounts", icon: <Users size={20} /> },
+  {
+    title: "Accounts",
+    path: "/admin/accounts",
+    icon: <Users size={20} />,
+    roles: [Role.ADMIN],
+  },
   {
     title: "Orders",
     path: "/admin/orders",
     icon: <PackageSearch size={20} />,
+    roles: [Role.ADMIN, Role.ENGINEER],
+  },
+  {
+    title: "Notifications",
+    path: "/admin/notifications",
+    icon: <Bell size={20} />,
+    roles: [Role.ADMIN],
   },
   {
     title: "Settings",
     path: "/admin/settings",
     icon: <Settings size={20} />,
+    roles: [Role.ADMIN],
   },
 ];
 

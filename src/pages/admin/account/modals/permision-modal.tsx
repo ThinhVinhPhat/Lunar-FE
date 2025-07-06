@@ -1,3 +1,4 @@
+import { Role } from "../../../../types/notification";
 import { UserType } from "@/types/user";
 import { Lock } from "lucide-react";
 type PermissionModalProps = {
@@ -58,7 +59,6 @@ function PermissionModal({
                     </div>
 
                     <div className="space-y-4">
-                      {/* Dashboard Permissions */}
                       <div className="border border-gray-200 rounded-md p-4">
                         <h4 className="font-medium text-gray-800 mb-2">
                           Dashboard
@@ -119,7 +119,7 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator"
+                                currentAccount?.role === Role.ADMIN
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />
@@ -127,7 +127,6 @@ function PermissionModal({
                         </div>
                       </div>
 
-                      {/* Categories Permissions */}
                       <div className="border border-gray-200 rounded-md p-4">
                         <h4 className="font-medium text-gray-800 mb-2">
                           Categories
@@ -170,7 +169,7 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator"
+                                currentAccount?.role === Role.ADMIN
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />
@@ -178,7 +177,6 @@ function PermissionModal({
                         </div>
                       </div>
 
-                      {/* User Management Permissions */}
                       <div className="border border-gray-200 rounded-md p-4">
                         <h4 className="font-medium text-gray-800 mb-2">
                           User Management
@@ -201,8 +199,8 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator" ||
-                                currentAccount?.role === "Manager"
+                                currentAccount?.role === Role.ADMIN ||
+                                currentAccount?.role === Role.ENGINEER
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />
@@ -214,8 +212,8 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator" ||
-                                currentAccount?.role === "Manager"
+                                currentAccount?.role === Role.ADMIN ||
+                                currentAccount?.role === Role.ENGINEER
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />
@@ -227,7 +225,7 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator"
+                                currentAccount?.role === Role.ADMIN
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />
@@ -239,7 +237,7 @@ function PermissionModal({
                             <input
                               type="checkbox"
                               defaultChecked={
-                                currentAccount?.role === "Administrator"
+                                currentAccount?.role === Role.ADMIN
                               }
                               className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846] border-gray-300 rounded"
                             />

@@ -10,9 +10,9 @@ function ForgotPassword() {
   const [step, setStep] = useState<"email" | "code" | "newPassword">("email");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { mutate: mutateForgotPassword, statusResponse: statusForgotPassword } =
+  const { mutateAsync: mutateForgotPassword, statusResponse: statusForgotPassword } =
     useForgotPassword();
-  const { mutate: mutateUpdatePassword, statusResponse: statusUpdatePassword } =
+  const { mutateAsync: mutateUpdatePassword, statusResponse: statusUpdatePassword } =
     useUpdatePassword();
   const [message, setMessage] = useState<{
     type: "success" | "error";
@@ -66,7 +66,7 @@ function ForgotPassword() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    mutateForgotPassword(email);
+    await mutateForgotPassword(email);
 
     setTimeout(() => {
       if (statusForgotPassword) {
@@ -99,7 +99,7 @@ function ForgotPassword() {
       isCodeVerified &&
       email
     ) {
-      mutateUpdatePassword({
+      await mutateUpdatePassword({
         email,
         code: verificationCode.join(""),
         password: newPassword,
