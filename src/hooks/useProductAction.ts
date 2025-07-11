@@ -5,12 +5,12 @@ import { useFavoriteProduct } from "./queryClient/mutator/product/favorite-produ
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 
-export const useProductAction = (offset = 0, limit = 10, ...rest: any) => {
+export const useProductAction = (page = 1, limit = 10, ...rest: any) => {
   const { data: user } = useGetUser();
   const navigate = useNavigate();
   const { category } = rest;
   const { products, isLoading, refetch, total } = useProducts({
-    offset,
+    page,
     limit,
     userId: user?.id,
     category: category || [],

@@ -13,6 +13,13 @@ export interface Product {
   video: string;
   images: string[];
   isFreeShip: boolean;
+  color: string;
+  allColors: {
+    id: string;
+    slug: string;
+    color: string;
+    image: string;
+  }[];
   isNew: boolean;
   isFeatured: boolean;
   isFavorite: boolean;

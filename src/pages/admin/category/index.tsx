@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AddCategoryModal from "./modals/AddCategory";
-import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
-import { useGetCategories } from "../../../hooks/queryClient/query/category";
-import SearchComponent from "../../../components/admin/ui/Search";
+import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
+import { useGetCategories } from "@/hooks/queryClient/query/category";
+import SearchComponent from "@/components/admin/ui/Search";
 import { Category, CategoryDetail } from "@/types/category";
-import Pagination from "../../../components/admin/pagination";
+import Pagination from "@/components/admin/pagination";
 import AddCategoryDetail from "./modals/AddCategoryDetail";
 import {
   AuthProps,
   isLoginAdminAuth,
-} from "../../../components/wrapper/withAuth";
-import { useDeleteDetail } from "../../../hooks/queryClient/mutator/category/categoryDetail/delete-detail";
-import { useDeleteCategory } from "../../../hooks/queryClient/mutator/category/delete-category";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+} from "@/components/wrapper/withAuth";
+import { useDeleteDetail } from "@/hooks/queryClient/mutator/category/categoryDetail/delete-detail";
+import { useDeleteCategory } from "@/hooks/queryClient/mutator/category/delete-category";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const AdminCategory: React.FC<AuthProps> = () => {
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,11 +24,14 @@ const AdminCategory: React.FC<AuthProps> = () => {
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [currentCategoryDetail, setCurrentCategoryDetail] =
     useState<CategoryDetail | null>(null);
-  const { data: categories, isLoading, refetch } = useGetCategories();
-  const [page, setPage] = useState(1);
+  const {
+    data: categories,
+    total,
+    isLoading,
+    refetch,
+  } = useGetCategories(searchTerm, 10, page);
   const { mutateAsync: deleteCategory } = useDeleteCategory();
   const { mutateAsync: deleteDetail } = useDeleteDetail();
-  // const offset = (page - 1) * 10;
 
   const filteredCategories = categories.filter((category: Category) =>
     category?.categoryDetails?.some((item: CategoryDetail) =>
@@ -175,9 +179,9 @@ const AdminCategory: React.FC<AuthProps> = () => {
 
         <Pagination
           filteredProducts={filteredCategories}
-          products={categories}
           setPage={setPage}
           page={page}
+          totalItems={total}
           totalPages={totalPages}
         />
 

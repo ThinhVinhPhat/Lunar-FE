@@ -1,15 +1,15 @@
 import {
   AuthProps,
   isLoginAdminAuth,
-} from "../../../components/wrapper/withAuth";
-import FormProfile from "../../../components/form/form-profile";
+} from "@/components/wrapper/withAuth";
+import FormProfile from "@/components/form/form-profile";
 import {
   getDeviceInfo,
   inboxMessages,
   notifications,
-} from "../../../database/admin/profile";
-import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
+} from "@/database/admin/profile";
+import { useUpdateUser } from "@/hooks/queryClient/mutator/user/update";
+import { useGetUser } from "@/hooks/queryClient/query/user";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";

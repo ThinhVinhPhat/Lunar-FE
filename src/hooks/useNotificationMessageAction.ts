@@ -24,7 +24,8 @@ export default function useNotificationMessageAction(
     useUpdateNotificationStatus();
   const { socketRef } = useContextProvider();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const [page, setPage] = useState(1);
+  const [notifiTotalItem, setNotifiTotalItem] = useState(0);
   const [groupedNotifications, setGroupedNotifications] = useState<
     GroupedNotification[]
   >([]);
@@ -93,7 +94,7 @@ export default function useNotificationMessageAction(
     if (!socketRef.current) return;
     setIsLoadingNotification(true);
     socketRef.current.emit("get_notifications_by_user", {
-      offset: 0,
+      page: page,
       limit: 10,
     });
   };
@@ -104,8 +105,11 @@ export default function useNotificationMessageAction(
     refetchNotifications();
 
     const handleNotifications = (data: any) => {
+      console.log(data);
+
       setNotifications(data.data);
       setUserNotifications(data.userNotification);
+      setNotifiTotalItem(data.meta.total);
       setIsLoadingNotification(false);
     };
 
@@ -152,8 +156,8 @@ export default function useNotificationMessageAction(
 
       audio.play().catch(console.error);
     });
-    return () =>  {
-      socketRef.current?.off("receive_message")
+    return () => {
+      socketRef.current?.off("receive_message");
     };
   }, [socketRef]);
 
@@ -195,7 +199,10 @@ export default function useNotificationMessageAction(
     isLoading,
     isLoadingNotification,
     dropdownRef,
+    notifiTotalItem,
+    page,
     toggleDropdown,
+    setPage,
     handleUpdateNotification,
     isRead,
     refetchNotifications,

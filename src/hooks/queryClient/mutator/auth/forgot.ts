@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { forgotPassword } from "../../../../api/service/auth.service";
+import { forgotPassword } from "@/api/service/auth.service";
 import { enqueueSnackbar } from "notistack";
 import { useRef } from "react";
 export const useForgotPassword = () => {

@@ -1,4 +1,4 @@
-import { updateNotification } from "../../../../api/service/notification.service";
+import { updateNotification } from "@/api/service/notification.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 

@@ -1,5 +1,5 @@
 import { AuthType } from "@/types/user";
-import { register } from "../../../../../src/api/service/auth.service";
+import { register } from "@/api/service/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 export const useRegister = () => {
@@ -22,11 +22,10 @@ export const useRegister = () => {
     onSuccess: () => {
       enqueueSnackbar("Đăng ký thành công!", { variant: "success" });
     },
-    onError: (error) => {
-      enqueueSnackbar("Đăng ký thất bại do email đã tồn tại!", {
+    onError: (error: any) => {
+      enqueueSnackbar(error.response.data.message.message[0], {
         variant: "error",
       });
-      console.log(error);
     },
   });
   return {

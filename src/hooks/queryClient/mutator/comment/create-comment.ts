@@ -1,4 +1,4 @@
-import { createComment } from "../../../../api/service/comment.service";
+import { createComment } from "@/api/service/comment.service";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 

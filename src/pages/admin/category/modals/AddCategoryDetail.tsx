@@ -1,9 +1,9 @@
-import { FormField } from "../../../../components/form/form-register";
+import { FormField } from "@/components/form/form-register";
 import { useForm } from "react-hook-form";
 import { Category, CategoryDetail } from "@/types/category";
-import { useAddDetail } from "../../../../hooks/queryClient/mutator/category/categoryDetail/add-detail";
-import { useEditDetail } from "../../../../hooks/queryClient/mutator/category/categoryDetail/edit-detail";
-import { useGetCategoriesDetail } from "../../../../hooks/queryClient/query/category";
+import { useAddDetail } from "@/hooks/queryClient/mutator/category/categoryDetail/add-detail";
+import { useEditDetail } from "@/hooks/queryClient/mutator/category/categoryDetail/edit-detail";
+import { useGetCategoriesDetail } from "@/hooks/queryClient/query/category";
 type AddCategoryDetailProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;

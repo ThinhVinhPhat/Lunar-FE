@@ -1,5 +1,5 @@
 import { enqueueSnackbar } from "notistack";
-import { verifyRegister } from "../../../../api/service/auth.service";
+import { verifyRegister } from "@/api/service/auth.service";
 import { useMutation } from "@tanstack/react-query";
 
 export const useVerifyRegister = () => {

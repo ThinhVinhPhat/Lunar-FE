@@ -1,14 +1,14 @@
-import { useGetCommentProduct } from "../../../hooks/queryClient/query/comment/get-comment-product";
+import { useGetCommentProduct } from "@/hooks/queryClient/query/comment/get-comment-product";
 import ProductReviews from "./ProductReview";
-import { CommentSort, CommentType } from "../../../types/review";
-import CommentModal from "../../modal/AddComment";
+import { CommentSort, CommentType } from "@/types/review";
+import CommentModal from "@/components/modal/AddComment";
 import { useEffect, useState } from "react";
 import { StartReviews } from "./StarReviews";
-import { renderStars } from "../../../ultis/renderStar";
-import { useCreateComment } from "../../../hooks/queryClient/mutator/comment/create-comment";
-import { calculateStar } from "../../../ultis/calculateStar";
-import Pagination from "../../admin/pagination";
-import { useDeleteComment } from "../../../hooks/queryClient/mutator/comment/delete-comment";
+import { renderStars } from "@/ultis/renderStar";
+import { useCreateComment } from "@/hooks/queryClient/mutator/comment/create-comment";
+import { calculateStar } from "@/ultis/calculateStar";
+import Pagination from "@/components/admin/pagination";
+import { useDeleteComment } from "@/hooks/queryClient/mutator/comment/delete-comment";
 
 type ReviewType = {
   productId: string;
@@ -17,19 +17,20 @@ type ReviewType = {
 };
 
 function ReviewList({ productId, setIsOpen, isOpen }: ReviewType) {
+  const [page, setPage] = useState(1);
   const [sort, setSort] = useState(CommentSort.NEWEST);
   const { mutateAsync: createComment } = useCreateComment();
   const { mutateAsync: deleteComment } = useDeleteComment();
-  const { data: reviews, refetch: refetchComment } = useGetCommentProduct(
-    productId || "",
-    {
-      limit: 10,
-      offset: 0,
-      sort: sort,
-    }
-  );
+  const {
+    data: reviews,
+    refetch: refetchComment,
+    total,
+  } = useGetCommentProduct(productId || "", {
+    limit: 10,
+    page: page,
+    sort: sort,
+  });
   const { averageRating } = calculateStar(reviews);
-  const [page, setPage] = useState(1);
   const totalPages = Math.ceil(reviews.length / 10);
 
   useEffect(() => {
@@ -95,16 +96,16 @@ function ReviewList({ productId, setIsOpen, isOpen }: ReviewType) {
         </div>
       </div>
       <div className="space-y-6">
-        {reviews.map((review: CommentType) => (
+        {reviews?.map((review: CommentType) => (
           <ProductReviews review={review} onDelete={handleDeleteComment} />
         ))}
       </div>
       <Pagination
-        products={reviews}
         filteredProducts={reviews}
         setPage={setPage}
         page={page}
         totalPages={totalPages}
+        totalItems={total}
       />
 
       <CommentModal

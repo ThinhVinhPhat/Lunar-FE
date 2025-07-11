@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getCommentByProduct } from "../../../../api/service/comment.service";
+import { getCommentByProduct } from "@/api/service/comment.service";
 
 export const useGetCommentProduct = (id: string, data: any) => {
   const response = useQuery({
@@ -11,5 +11,6 @@ export const useGetCommentProduct = (id: string, data: any) => {
   return {
     ...response,
     data: response.data?.data || [],
+    total: response.data?.meta.total || 0,
   };
 };

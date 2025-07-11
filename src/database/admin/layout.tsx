@@ -1,5 +1,5 @@
-import { Role } from "../../types/notification";
-import { OrderStatus } from "../../types/order";
+import { Role } from "@/types/notification";
+import { OrderStatus } from "@/types/order";
 import {
   Settings,
   Users,

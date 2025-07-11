@@ -1,7 +1,7 @@
 import {
   getProduct,
   getProductBySuggestion,
-} from "../../../../api/service/product.service";
+} from "@/api/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 

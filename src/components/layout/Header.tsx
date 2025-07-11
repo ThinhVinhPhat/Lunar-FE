@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import SearchModal from "../ui/Search/Search";
-import { useContextProvider } from "../../hooks/useContextProvider";
+import { useContextProvider } from "@/hooks/useContextProvider";
 import LanguageSelector from "../ui/LanguageSelector";
 import Text from "../wrapper/Text";
 

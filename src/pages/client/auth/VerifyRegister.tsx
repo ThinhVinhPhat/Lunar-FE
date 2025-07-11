@@ -1,11 +1,11 @@
 import {
   AuthProps,
   isAlreadyLoginAuth,
-} from "../../../components/wrapper/withAuth";
+} from "@/components/wrapper/withAuth";
 import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CodeForm from "../../../components/ui/CodeForm";
-import { useVerifyRegister } from "../../../hooks/queryClient/mutator/auth/verify";
+import CodeForm from "@/components/ui/CodeForm";
+import { useVerifyRegister } from "@/hooks/queryClient/mutator/auth/verify";
 
 const VerifyRegister: React.FC<AuthProps> = () => {
   const [verificationCode, setVerificationCode] = useState([

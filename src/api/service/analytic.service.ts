@@ -19,12 +19,12 @@ export const getRevenue = async () => {
 };
 
 export const getUserOrder = async (
-  offset: number,
+  page: number,
   limit: number,
   sort: OrderFilterEnum
 ) => {
   const response = await instance.get(
-    `/statistic/user-orders?offset=${offset}&limit=${limit}&filter=${sort}`
+    `/statistic/user-orders?page=${page}&limit=${limit}&filter=${sort}`
   );
   return response.data;
 };

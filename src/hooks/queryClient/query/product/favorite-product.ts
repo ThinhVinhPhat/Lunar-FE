@@ -1,4 +1,4 @@
-import { getFavoriteProducts } from "../../../../api/service/product.service";
+import { getFavoriteProducts } from "@/api/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetFavoriteProducts = () => {

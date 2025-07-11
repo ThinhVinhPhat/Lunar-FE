@@ -1,18 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserOrder } from "../../../../api/service/analytic.service";
-import { OrderFilterEnum } from "../../../../types/analytic";
+import { getUserOrder } from "@/api/service/analytic.service";
+import { OrderFilterEnum } from "@/types/analytic";
 
 export const useGetUserOrder = (
-  offset: number,
+  page: number,
   limit: number,
   sort: OrderFilterEnum
 ) => {
   const response = useQuery({
-    queryKey: ["user-order", offset, limit, sort],
-    queryFn: () => getUserOrder(offset, limit, sort),
+    queryKey: ["user-order", page, limit, sort],
+    queryFn: () => getUserOrder(page, limit, sort),
   });
   return {
     ...response,
-    data: response.data?.data || [],
+    data: response.data || [],
   };
 };

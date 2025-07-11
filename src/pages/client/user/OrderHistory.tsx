@@ -1,11 +1,13 @@
-import { Order } from "../../../types/order";
-import Text from "../../../components/wrapper/Text";
+import { Order } from "@/types/order";
+import Text from "@/components/wrapper/Text";
 import { useState } from "react";
-import { Pagination } from "../../../components/ui/Pagination";
-function OrderHistory({ orderList }: { orderList: any }) {
+import { Pagination } from "@/components/ui/Pagination";
+import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+
+function OrderHistory() {
   const [page, setPage] = useState(1);
   const offset = (page - 1) * 5;
-  console.log(orderList);
+  const { data: orderList } = useGetOrderList("Confirmed", page, 10);
 
   const orderListInPage = orderList?.orders?.slice(offset, offset + 5) || [];
   return (
@@ -19,10 +21,11 @@ function OrderHistory({ orderList }: { orderList: any }) {
             productCount={orderList?.orders?.length}
             currentPage={page}
             onSetPage={setPage}
+            limit={10}
           />
         </div>
       </div>
-      {orderList && orderList.orders && orderList.orders.length > 0 ? (
+      {orderList && orderList.length > 0 ? (
         <div className="space-y-4">
           {orderListInPage.map((order: Order, index: number) => (
             <div

@@ -5,13 +5,15 @@ type PaginationProps = {
   productCount: number;
   currentPage: number;
   onSetPage: (page: any) => void;
+  limit: number;
 };
 export const Pagination = ({
   productCount,
   currentPage,
   onSetPage,
+  limit,
 }: PaginationProps) => {
-  const totalPages = Math.ceil(productCount / 10);
+  const totalPages = Math.ceil(productCount / limit);
   const { t } = useTranslation();
   return (
     <div className="flex justify-end items-center gap-2 mt-5 ">
@@ -31,9 +33,6 @@ export const Pagination = ({
             onClick={() => {
               onSetPage(() => index + 1);
               window.scrollTo({ top: 50, behavior: "smooth" });
-              console.log(index + 1);
-              console.log(currentPage);
-              console.log(currentPage === index + 1);
             }}
           >
             {index + 1}

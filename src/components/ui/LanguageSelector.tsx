@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useContextProvider } from "../../hooks/useContextProvider";
-import i18n from "../../i18n";
+import { useContextProvider } from "@/hooks/useContextProvider";
+import i18n from "@/i18n";
 
 const LanguageSelector = () => {
   const { currentLanguage, setCurrentLanguage } = useContextProvider();

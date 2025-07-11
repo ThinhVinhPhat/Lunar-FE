@@ -1,4 +1,4 @@
-import { getUserComment } from "../../../../api/service/comment.service";
+import { getUserComment } from "@/api/service/comment.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetCommentUser = (data: any) => {
@@ -6,7 +6,7 @@ export const useGetCommentUser = (data: any) => {
     queryKey: ["comment-user", data],
     queryFn: () =>
       getUserComment({
-        offset: data.offset,
+        page: data.page,
         limit: data.limit,
         sort: data.sort,
       }),
@@ -14,5 +14,6 @@ export const useGetCommentUser = (data: any) => {
   return {
     ...response,
     data: response.data?.data || [],
+    total: response.data?.meta.total || 0,
   };
 };

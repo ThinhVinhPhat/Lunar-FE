@@ -17,8 +17,14 @@ export const deleteCategory = async (id: string) => {
   return response.data;
 };
 
-export const getCategories = async () => {
-  const response = await instance.get(`/category`);
+export const getCategories = async (
+  page: number,
+  limit: number,
+  name: string
+) => {
+  const response = await instance.get(
+    `/category?name=${name}&page=${page}&limit=${limit}`
+  );
   return response.data;
 };
 

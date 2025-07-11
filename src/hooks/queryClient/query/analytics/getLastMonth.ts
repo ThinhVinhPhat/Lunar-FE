@@ -1,5 +1,5 @@
 import { SummaryType } from "@/types/analytic";
-import { getCompareLastMonth } from "../../../../api/service/analytic.service";
+import { getCompareLastMonth } from "@/api/service/analytic.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetCompareLastMonth = (summary: SummaryType) => {

@@ -9,20 +9,20 @@ import {
   Filter,
   Search,
 } from "lucide-react";
-import { useGetAllNotification } from "../../../hooks/queryClient/query/notification/find-all";
+import { useGetAllNotification } from "@/hooks/queryClient/query/notification/find-all";
 import {
   NotificationTemplate,
   NotificationType,
-} from "../../../types/notification";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
-import Pagination from "../../../components/admin/pagination";
+} from "@/types/notification";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import Pagination from "@/components/admin/pagination";
 import { AddNotificationModal } from "./modals/AddNotification";
-import { useCreateNotification } from "../../../hooks/queryClient/mutator/notification/create-notification";
-import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
-import { useUpdateNotification } from "../../../hooks/queryClient/mutator/notification/update-notification";
-import { useDeleteNotification } from "../../../hooks/queryClient/mutator/notification/delete-notification";
-import { formatDate } from "../../../ultis/formatDate";
-import useNotificationMessageAction from "../../../hooks/useNotificationMessageAction";
+import { useCreateNotification } from "@/hooks/queryClient/mutator/notification/create-notification";
+import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
+import { useUpdateNotification } from "@/hooks/queryClient/mutator/notification/update-notification";
+import { useDeleteNotification } from "@/hooks/queryClient/mutator/notification/delete-notification";
+import { formatDate } from "@/ultis/formatDate";
+import useNotificationMessageAction from "@/hooks/useNotificationMessageAction";
 
 const NotificationPage = () => {
   const {
@@ -33,10 +33,10 @@ const NotificationPage = () => {
   const { mutateAsync: updateNotification } = useUpdateNotification();
   const { mutateAsync: deleteNotification } = useDeleteNotification();
   const { mutateAsync: createNotification } = useCreateNotification();
-  const { refetchNotifications } = useNotificationMessageAction();
+  const { refetchNotifications, setPage, page, notifiTotalItem } =
+    useNotificationMessageAction();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("ALL");
-  const [page, setPage] = useState(1);
   const itemsPerPage = 5;
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -252,10 +252,10 @@ const NotificationPage = () => {
 
       <Pagination
         filteredProducts={filteredNotifications}
-        products={notifications}
         setPage={setPage}
         page={page}
         totalPages={totalPages}
+        totalItems={notifiTotalItem}
       />
 
       {showAddModal && (

@@ -1,28 +1,27 @@
-import { Pagination } from "../../../components/ui/Pagination";
+import { Pagination } from "@/components/ui/Pagination";
 import clsx from "clsx";
 import { useState } from "react";
 import OrderModal from "./OrderModal";
-import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-list";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Order } from "@/types/order";
-import { AuthProps, isLoginAuth } from "../../../components/wrapper/withAuth";
+import { AuthProps, isLoginAuth } from "@/components/wrapper/withAuth";
 import OrderEmpty from "./OrderEmpty";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const OrderList: React.FC<AuthProps> = () => {
-  const [status, setStatus] = useState("ALL_ORDER");
+  const [status, setStatus] = useState("All Order");
   const [isOpen, setIsOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
-  const offset = (page - 1) * 10;
   const navigate = useNavigate();
   const {
     data: orderList,
     isLoading: isOrderListLoading,
     refetch,
     total,
-  } = useGetOrderList(status, offset, 10);
+  } = useGetOrderList(status, page, 10);
   const { t } = useTranslation();
 
   console.log(orderList);
@@ -168,6 +167,7 @@ const OrderList: React.FC<AuthProps> = () => {
           productCount={total}
           currentPage={page}
           onSetPage={setPage}
+          limit={10}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useMutation } from "@tanstack/react-query";
-import { deleteComment } from "../../../../api/service/comment.service";
+import { deleteComment } from "@/api/service/comment.service";
 import { enqueueSnackbar } from "notistack";
 
 export const useDeleteComment = () => {

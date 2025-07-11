@@ -1,4 +1,4 @@
-import { Role } from "../../../../types/notification";
+import { Role } from "@/types/notification";
 import { UserType } from "@/types/user";
 import { Lock } from "lucide-react";
 type PermissionModalProps = {

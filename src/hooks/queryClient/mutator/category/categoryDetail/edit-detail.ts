@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateCategoryDetail } from "../../../../../api/service/category.service";
+import { updateCategoryDetail } from "@/api/service/category.service";
 import { enqueueSnackbar } from "notistack";
 
 export const useEditDetail = () => {

@@ -1,4 +1,4 @@
-import { createPayment } from "../../../../api/service/payment.service";
+import { createPayment } from "@/api/service/payment.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useCreatePayment = (orderId: string | undefined) => {

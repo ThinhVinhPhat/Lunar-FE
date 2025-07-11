@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { favoriteProduct } from "../../../../api/service/product.service";
+import { favoriteProduct } from "@/api/service/product.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 
@@ -22,6 +22,3 @@ export const useFavoriteProduct = () => {
 
   return response;
 };
-
-
-

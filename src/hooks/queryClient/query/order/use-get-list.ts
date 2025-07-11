@@ -1,18 +1,19 @@
-import { getOrdersByStatus } from "../../../../api/service/order.service";
+import { getOrdersByStatus } from "@/api/service/order.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetOrderList = (
   status: string,
-  offset: number,
+  page: number,
   limit: number
 ) => {
   const response = useQuery({
-    queryKey: ["order", status, offset, limit],
-    queryFn: () => getOrdersByStatus(status, offset, limit),
+    queryKey: ["order", status, page, limit],
+    queryFn: () => getOrdersByStatus(status, page, limit),
   });
   return {
     ...response,
     data: response?.data?.data || [],
-    total: response?.data?.total || 0,
+    total: response?.data?.meta?.total || 0,
+    totalPage: response?.data?.meta?.totalPages || 0,
   };
 };

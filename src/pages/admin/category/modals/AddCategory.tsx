@@ -1,9 +1,9 @@
-import { FormField } from "../../../../components/form/form-register";
+import { FormField } from "@/components/form/form-register";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAddCategory } from "../../../../hooks/queryClient/mutator/category/add-category";
-import { useGetCategories } from "../../../../hooks/queryClient/query/category";
+import { useAddCategory } from "@/hooks/queryClient/mutator/category/add-category";
+import { useGetCategories } from "@/hooks/queryClient/query/category";
 type AddCategoryProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;

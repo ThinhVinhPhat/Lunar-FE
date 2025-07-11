@@ -1,4 +1,4 @@
-import { deleteCategoryDetail } from "../../../../../api/service/category.service";
+import { deleteCategoryDetail } from "@/api/service/category.service";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import Filter from "../../../components/product/Filter/Filter";
+import Filter from "@/components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
-import { filterCategories } from "../../../database/filter";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+import { useProducts } from "@/hooks/queryClient/query/product/products";
+import { filterCategories } from "@/database/filter";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const CollectionList = () => {
   const { type } = useParams();

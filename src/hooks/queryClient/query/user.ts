@@ -1,9 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  findUser,
-  getUserById,
-  UserService,
-} from "../../../api/service/user.service";
+import { findUser, getUserById, UserService } from "@/api/service/user.service";
 import Cookies from "js-cookie";
 
 export const useGetUser = () => {
@@ -44,5 +40,6 @@ export const useFindUser = (data: any) => {
   return {
     ...response,
     data: response.data?.data || [],
+    total: response.data?.meta.total || 0,
   };
 };

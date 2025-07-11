@@ -1,10 +1,10 @@
-import { useCreateUser } from "../../../../hooks/queryClient/mutator/user/create";
-import { useUpdateUserAdmin } from "../../../../hooks/queryClient/mutator/user/update-admin";
+import { useCreateUser } from "@/hooks/queryClient/mutator/user/create";
+import { useUpdateUserAdmin } from "@/hooks/queryClient/mutator/user/update-admin";
 import { UserType } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormField } from "../../../../components/form/form-register";
+import { FormField } from "@/components/form/form-register";
 import { useEffect } from "react";
 
 type AddModalProps = {

@@ -2,11 +2,11 @@ import instance from "..";
 
 export const getProducts = async (
   category?: string[],
-  offset: number = 0,
+  page: number = 0,
   limit: number = 20,
   userId?: string
 ) => {
-  let query = `product?offset=${offset}&limit=${limit}`;
+  let query = `product?page=${page}&limit=${limit}`;
 
   if (category && category?.length > 0) {
     category.forEach((item) => {

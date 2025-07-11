@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { updatePassword } from "../../../../api/service/user.service";
+import { updatePassword } from "@/api/service/user.service";
 import { enqueueSnackbar } from "notistack";
 import { useRef } from "react";
 export const useUpdatePassword = () => {

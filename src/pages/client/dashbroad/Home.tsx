@@ -1,12 +1,12 @@
-import Hero from "../../../components/home/Hero";
-import FeaturedProducts from "../../../components/home/FeaturedProducts";
-import Collections from "../../../components/home/Collections";
-import Reviews from "../../../components/home/Reviews";
+import Hero from "@/components/home/Hero";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
+import Collections from "@/components/home/Collections";
+import Reviews from "@/components/home/Reviews";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
-import Text from "../../../components/wrapper/Text";
-import Banner from "../../../components/home/Banner";
+import Text from "@/components/wrapper/Text";
+import Banner from "@/components/home/Banner";
 
 const Home = () => {
   const [query] = useSearchParams();

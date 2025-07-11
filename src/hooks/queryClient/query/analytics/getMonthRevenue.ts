@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRevenue } from "../../../../api/service/analytic.service";
+import { getRevenue } from "@/api/service/analytic.service";
 
 export const useGetMonthRevenue = () => {
   const response = useQuery({

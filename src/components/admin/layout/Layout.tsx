@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { navItems } from "../../../database/admin/layout";
+import { navItems } from "@/database/admin/layout";
 import Navigation from "./Navigation";
 import Header from "./Header";
 

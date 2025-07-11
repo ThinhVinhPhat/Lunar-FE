@@ -7,8 +7,8 @@ import {
   updateOrder,
   updateOrderAddress,
   updateOrderStatus,
-} from "../../../../api/service/order.service";
-import { CreateOrderProps } from "../../../../types/order";
+} from "@/api/service/order.service";
+import { CreateOrderProps } from "@/types/order";
 import { enqueueSnackbar } from "notistack";
 
 export const useCreateOrder = () => {

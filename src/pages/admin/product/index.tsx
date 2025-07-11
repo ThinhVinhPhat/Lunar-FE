@@ -1,17 +1,17 @@
 import { Product } from "@/types/product";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
-import Pagination from "../../../components/admin/pagination";
-import SearchComponent from "../../../components/admin/ui/Search";
-import { useDeleteProduct } from "../../../hooks/queryClient/mutator/product/delete-product";
+import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
+import Pagination from "@/components/admin/pagination";
+import SearchComponent from "@/components/admin/ui/Search";
+import { useDeleteProduct } from "@/hooks/queryClient/mutator/product/delete-product";
 import { AddProductModal } from "./modals/AddProduct";
 import {
   AuthProps,
   isLoginAdminAuth,
-} from "../../../components/wrapper/withAuth";
-import { useProductAction } from "../../../hooks/useProductAction";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+} from "@/components/wrapper/withAuth";
+import { useProductAction } from "@/hooks/useProductAction";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const AdminProduct: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,8 +20,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const { mutateAsync: deleteProduct } = useDeleteProduct();
   const [page, setPage] = useState(1);
-  const offset = (page - 1) * 5;
-  const { products, isLoading, refetch, total } = useProductAction(offset, 5);
+  const { products, isLoading, refetch, total } = useProductAction(page, 5);
 
   const filteredProducts = products?.filter(
     (product: Product) =>
@@ -176,9 +175,9 @@ const AdminProduct: React.FC<AuthProps> = () => {
 
       <Pagination
         filteredProducts={filteredProducts}
-        products={products}
         setPage={setPage}
         page={page}
+        totalItems={total}
         totalPages={totalPages}
       />
 

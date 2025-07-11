@@ -1,7 +1,7 @@
-import { useGetCategoriesDetail } from "../../../../hooks/queryClient/query/category";
+import { useGetCategoriesDetail } from "@/hooks/queryClient/query/category";
 import { Controller, useForm } from "react-hook-form";
-import { FormField } from "../../../../components/form/form-register";
-import { useAddProduct } from "../../../../hooks/queryClient/mutator/product/add-product";
+import { FormField } from "@/components/form/form-register";
+import { useAddProduct } from "@/hooks/queryClient/mutator/product/add-product";
 import clsx from "clsx";
 import { Product } from "@/types/product";
 import { CategoryDetail } from "@/types/category";

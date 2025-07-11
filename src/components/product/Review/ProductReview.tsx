@@ -1,6 +1,6 @@
 import { CommentType } from "@/types/review";
-import { renderStars } from "../../../ultis/renderStar";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { renderStars } from "@/ultis/renderStar";
+import { useGetUser } from "@/hooks/queryClient/query/user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 

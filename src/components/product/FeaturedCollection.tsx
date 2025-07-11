@@ -1,4 +1,4 @@
-import { Category } from "../../types/category";
+import { Category } from "@/types/category";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
@@ -13,6 +13,7 @@ type FeaturedCollectionProps = {
 
 function FeaturedCollection({ categories }: FeaturedCollectionProps) {
   const navigate = useNavigate();
+
   return (
     <div className="max-w-[1500px] ml-24 mx-auto px-4 py-12">
       <section className="mb-16 relative">
@@ -49,7 +50,9 @@ function FeaturedCollection({ categories }: FeaturedCollectionProps) {
           className="collection-swiper"
         >
           {categories?.map((category: any) => {
-            const image = category?.image?.replace(/[{}"]/g, "").split(",");
+            const image = category?.image?.map((item: string) =>
+              item.replace(/[{}"]/g, "")
+            );
             return (
               <Link to={`/collections/${category.name}`} key={category.id}>
                 <SwiperSlide key={category.id}>

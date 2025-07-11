@@ -1,6 +1,6 @@
 import { MessageType } from "@/types/message";
 import { UserType } from "@/types/user";
-import { formatTime } from "../../../../ultis/formatDate";
+import { formatTime } from "@/ultis/formatDate";
 import { User } from "lucide-react";
 
 type MessageBubbleProps = {

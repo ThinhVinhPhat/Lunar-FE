@@ -2,11 +2,11 @@ import { Product } from "@/types/product";
 import { FiFilter } from "react-icons/fi";
 import ProductItem from "../ProductItem";
 import FilterItem from "./FitlerItem";
-import { filterOptions } from "../../../database/filter";
-import { useFilter } from "../../../hooks/useFilter";
-import Text from "../../wrapper/Text";
-import { useProductAction } from "../../../hooks/useProductAction";
-import IsLoadingWrapper from "../../wrapper/isLoading";
+import { filterOptions } from "@/database/filter";
+import { useFilter } from "@/hooks/useFilter";
+import Text from "@/components/wrapper/Text";
+import { useProductAction } from "@/hooks/useProductAction";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 type FilterProps = {
   isLoading: boolean;
   filteredProducts: Product[];

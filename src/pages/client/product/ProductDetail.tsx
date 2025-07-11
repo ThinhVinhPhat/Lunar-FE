@@ -10,27 +10,27 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { RelatedProduct } from "../../../components/product/RelatedProduct";
-import { Profit } from "../../../components/product/Profit";
-import { Tabs } from "../../../components/product/Tabs";
-import { useProduct } from "../../../hooks/queryClient/query/product/product";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
-import { useContextProvider } from "../../../hooks/useContextProvider";
-import { useOrderDetail } from "../../../hooks/queryClient/mutator/order/order-detail";
+import { RelatedProduct } from "@/components/product/RelatedProduct";
+import { Profit } from "@/components/product/Profit";
+import { Tabs } from "@/components/product/Tabs";
+import { useProduct } from "@/hooks/queryClient/query/product/product";
+import { useProducts } from "@/hooks/queryClient/query/product/products";
+import { useContextProvider } from "@/hooks/useContextProvider";
+import { useOrderDetail } from "@/hooks/queryClient/mutator/order/order-detail";
 import { enqueueSnackbar } from "notistack";
 import {
   features,
   fitDetails,
   included,
-} from "../../../database/product/feature";
-import { useGetOrderDetail } from "../../../hooks/queryClient/query/order/use-get-detail";
-import { calculateStar } from "../../../ultis/calculateStar";
-import ReviewList from "../../../components/product/Review/ReviewList";
+} from "@/database/product/feature";
+import { useGetOrderDetail } from "@/hooks/queryClient/query/order/use-get-detail";
+import { calculateStar } from "@/ultis/calculateStar";
+import ReviewList from "@/components/product/Review/ReviewList";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
-import { useFavoriteProduct } from "../../../hooks/queryClient/mutator/product/favorite-product";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+import { useGetUser } from "@/hooks/queryClient/query/user";
+import { useFavoriteProduct } from "@/hooks/queryClient/mutator/product/favorite-product";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -134,6 +134,7 @@ const ProductDetail = () => {
                   </span>
                 )}
               </div>
+
               <div className="grid grid-cols-5 gap-2">
                 {product?.images.map((image: string, index: number) => (
                   <button
@@ -203,14 +204,42 @@ const ProductDetail = () => {
                         ${product?.price}
                       </span>
                       <span className="text-red-600 font-medium">
-                        {t("product_detail.save")} {product?.discount_percentage}
-                        %
+                        {t("product_detail.save")}{" "}
+                        {product?.discount_percentage}%
                       </span>
                     </>
                   ) : (
                     <span className="text-2xl font-medium text-gray-900">
                       ${product?.price}
                     </span>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-sm font-medium text-gray-900 mb-3">
+                  {t("product_detail.color")}
+                </h2>
+                <div className="flex justify-start ">
+                  {product?.allColors && (
+                    <div className="flex justify-center gap-2 bg-white bg-opacity-90 px-4 py-2 rounded-full shadow">
+                      {product.allColors.map((variant: any) => (
+                        <button
+                          key={variant.id}
+                          onClick={() => navigate(`/product/${variant.slug}`)}
+                          className={clsx(
+                            "w-6 h-6 rounded-full border-2 transition-all",
+                            variant.id === product.id
+                              ? "border-[#C8A846] scale-110"
+                              : "border-gray-300 hover:scale-110"
+                          )}
+                          style={{
+                            backgroundColor:
+                              variant.color?.toLowerCase() || "#ccc",
+                          }}
+                        />
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

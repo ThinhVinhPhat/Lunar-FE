@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMessagesByUserId } from "../../../../api/service/message.service";
+import { getMessagesByUserId } from "@/api/service/message.service";
 
 export default function useGetMessageByUser() {
   const response = useQuery({

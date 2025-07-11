@@ -1,5 +1,5 @@
 import { enqueueSnackbar } from "notistack";
-import { addCategory } from "../../../../api/service/category.service";
+import { addCategory } from "@/api/service/category.service";
 import { useMutation } from "@tanstack/react-query";
 
 export const useAddCategory = () => {

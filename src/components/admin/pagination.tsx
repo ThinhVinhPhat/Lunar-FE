@@ -2,16 +2,16 @@ import { Product } from "@/types/product";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
-  filteredProducts: Product[];
-  products: Product[];
+  filteredProducts?: Product[];
   setPage: (page: number) => void;
   page: number;
+  totalItems: number;
   totalPages: number;
 }
 
 function Pagination({
-  filteredProducts,
-  products,
+  filteredProducts = [],
+  totalItems,
   setPage,
   page,
   totalPages,
@@ -22,8 +22,10 @@ function Pagination({
         <div>
           <p className="text-sm text-gray-700">
             Showing <span className="font-medium">1</span> to{" "}
-            <span className="font-medium">{filteredProducts?.length}</span> of{" "}
-            <span className="font-medium">{products?.length}</span> results
+            <span className="font-medium">
+              {filteredProducts?.length == 0 ? totalItems : 0}
+            </span>{" "}
+            of <span className="font-medium">{totalItems}</span> results
           </p>
         </div>
         <div>

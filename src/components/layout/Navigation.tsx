@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FeaturedCollection from "../product/FeaturedCollection";
-import { useGetCategoriesDetailByCateName } from "../../hooks/queryClient/query/category";
+import { useGetCategoriesDetailByCateName } from "@/hooks/queryClient/query/category";
 import { useTranslation } from "react-i18next";
 
 const Navigation = ({
@@ -15,13 +15,14 @@ const Navigation = ({
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
+
   const menuItems = [
     {
       title: t("navigation.men"),
       navigate: "/products/men",
     },
     {
-      title: t("navigation.women"), 
+      title: t("navigation.women"),
       navigate: "/products/women",
     },
     {

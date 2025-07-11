@@ -1,9 +1,10 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import clsx from "clsx";
-import { Product } from "../../types/product";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { Product } from "@/types/product";
 
 type ProductItemProps = {
   product: Product;
@@ -11,6 +12,7 @@ type ProductItemProps = {
   setHoveredId: (id: string | null) => void;
   handleFavoriteProduct: (id: string) => void;
 };
+
 function ProductItem({
   product,
   hoveredId,
@@ -18,10 +20,22 @@ function ProductItem({
   handleFavoriteProduct,
 }: ProductItemProps) {
   const navigate = useNavigate();
-  const colors = product.productCategories.filter(
-    (item) => item.categoryDetails.name === "Color"
-  );
   const { t } = useTranslation();
+  const [activeVariant, setActiveVariant] = useState(product);
+
+  const handleVariantClick = (variantId: string) => {
+    const selected = product?.allColors?.find((v) => v.id === variantId);
+
+    if (selected) {
+      setActiveVariant({
+        ...product,
+        id: selected.id,
+        slug: selected.slug,
+        images: selected.image ? [selected.image] : product.images,
+        color: selected.color,
+      });
+    }
+  };
 
   return (
     <div
@@ -33,28 +47,33 @@ function ProductItem({
       <div className="relative aspect-[1080/614] overflow-hidden">
         <img
           src={
-            hoveredId === product.id && product.images[1]
-              ? product.images[1]
-              : product.images[0]
+            hoveredId === activeVariant.id && activeVariant.images[1]
+              ? activeVariant.images[1]
+              : activeVariant.images[0]
           }
-          alt={product.name}
+          alt={activeVariant.name}
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
         />
+
         {product.isNew && (
           <span className="absolute top-6 left-6 bg-[#C8A846] text-white px-3 py-1 rounded">
             {t("product_item.new")}
           </span>
         )}
+
         {product.discount_percentage > 0 && (
           <span className="absolute top-6 right-6 bg-red-500 text-white px-3 py-1 rounded">
             {t("product_item.save")} {product.discount_percentage}%
           </span>
         )}
+
         <button
           onClick={() => handleFavoriteProduct(product.id)}
           className="absolute bottom-6 right-6 p-2 rounded-full transition-all duration-300 shadow-md"
           aria-label={
-            product.isFavorite ? t("product_item.remove_from_favorites") : t("product_item.add_to_favorites")
+            product.isFavorite
+              ? t("product_item.remove_from_favorites")
+              : t("product_item.add_to_favorites")
           }
         >
           <FontAwesomeIcon
@@ -72,37 +91,47 @@ function ProductItem({
           ></span>
         </button>
 
-        <div className="absolute  bottom-0 left-0 right-0 bg-black bg-opacity-0 group-hover:bg-opacity-20  transition-all duration-300">
+        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300">
           <div className="p-6 flex flex-col gap-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button
-              onClick={() => navigate(`/product/${product.slug}`)}
+              onClick={() => navigate(`/product/${activeVariant.slug}`)}
               className="w-full bg-white text-black py-3 rounded-md hover:bg-[#C8A846] hover:text-white transition-colors duration-300"
             >
               {t("product_item.quick_shop")}
             </button>
             <button
-              onClick={() => handleFavoriteProduct(product.id)}
+              onClick={() => handleFavoriteProduct(activeVariant.id)}
               className="w-full bg-white text-black py-3 rounded-md hover:bg-[#C8A846] hover:text-white transition-colors duration-300"
             >
-              {product.isFavorite ? t("product_item.remove_from_favorites") : t("product_item.add_to_favorites")}
+              {product.isFavorite
+                ? t("product_item.remove_from_favorites")
+                : t("product_item.add_to_favorites")}
             </button>
           </div>
         </div>
       </div>
 
       <div className="pt-4 text-center">
-        <h3 className="text-lg font-medium mb-1 text-[#2c2c2c] group-hover:text-[#C8A846] transition-colors duration-300">
-          {product.name}
-        </h3>
         <div className="flex justify-center gap-2 mb-2">
-          {colors?.map((colorItem) => (
-            <div
-              key={colorItem.id}
-              className="w-4 h-4 rounded-full border border-gray-300 hover:scale-110 transition-transform duration-200"
-              style={{ backgroundColor: colorItem.categoryDetails.name }}
-            />
+          {product.allColors?.map((variant) => (
+            <button
+              key={variant.id}
+              onClick={() => handleVariantClick(variant.id)}
+              className={clsx(
+                "w-6 h-6 rounded-full border-2 transition-transform duration-200",
+                {
+                  "border-black scale-110": activeVariant.id === variant.id,
+                  "border-gray-300": activeVariant.id !== variant.id,
+                }
+              )}
+              style={{ backgroundColor: variant.color || "#ccc" }}
+            ></button>
           ))}
         </div>
+        <h3 className="text-md font-medium mb-1 text-[#2c2c2c] group-hover:text-[#C8A846] transition-colors duration-300">
+          {product.name}
+        </h3>
+
         <div className="flex items-center justify-center gap-2">
           {product.discount_percentage > 0 ? (
             <>

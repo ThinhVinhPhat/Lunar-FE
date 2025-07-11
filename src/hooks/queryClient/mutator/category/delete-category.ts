@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { deleteCategory } from "../../../../api/service/category.service";
+import { deleteCategory } from "@/api/service/category.service";
 import { enqueueSnackbar } from "notistack";
 
 export const useDeleteCategory = () => {

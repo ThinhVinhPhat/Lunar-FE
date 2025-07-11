@@ -1,16 +1,15 @@
 import { useState } from "react";
-import Filter from "../../../components/product/Filter/Filter";
+import Filter from "@/components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
-import { Pagination } from "../../../components/ui/Pagination";
-import Text from "../../../components/wrapper/Text";
-import { useProductAction } from "../../../hooks/useProductAction";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+import { Pagination } from "@/components/ui/Pagination";
+import Text from "@/components/wrapper/Text";
+import { useProductAction } from "@/hooks/useProductAction";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 const ProductList = () => {
   const { type } = useParams();
   const [page, setPage] = useState(1);
-  const offset = (page - 1) * 10;
   const [currentFiltered, setCurrentFiltered] = useState<string[]>([]);
-  const { products, isLoading, total } = useProductAction(offset, 10, {
+  const { products, isLoading, total } = useProductAction(page, 20, {
     category: currentFiltered,
   });
   return (
@@ -52,6 +51,7 @@ const ProductList = () => {
                 productCount={total}
                 currentPage={page}
                 onSetPage={setPage}
+                limit={20}
               />
             </section>
 

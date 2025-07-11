@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
-import { useUpdateUser } from "../../../hooks/queryClient/mutator/user/update";
+import { useUpdateUser } from "@/hooks/queryClient/mutator/user/update";
 import { useForm } from "react-hook-form";
-import { useGetOrderList } from "../../../hooks/queryClient/query/order/use-get-list";
 import OrderHistory from "./OrderHistory";
 import UserProduct from "./UserProduct";
-import { useGetUser } from "../../../hooks/queryClient/query/user";
+import { useGetUser } from "@/hooks/queryClient/query/user";
 import { useNavigate } from "react-router-dom";
-import FormProfile from "../../../components/form/form-profile";
+import FormProfile from "@/components/form/form-profile";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { data: user } = useGetUser();
   const navigate = useNavigate();
-  const { data: orderList } = useGetOrderList("Confirmed", 0, 10);
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const {
     register,
@@ -65,7 +63,7 @@ const Profile = () => {
             isUpdating={isUpdating}
             setIsEditing={setIsEditing}
           />
-          <OrderHistory orderList={orderList} />
+          <OrderHistory />
           <UserProduct />
         </div>
 

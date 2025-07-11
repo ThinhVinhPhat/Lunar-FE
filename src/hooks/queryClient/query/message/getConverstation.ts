@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getConversation } from "../../../../api/service/message.service";
+import { getConversation } from "@/api/service/message.service";
 
 export const useGetConversation = (senderId: string) => {
   const response = useQuery({

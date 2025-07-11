@@ -1,4 +1,4 @@
-import { useGetUser } from "../../hooks/queryClient/query/user";
+import { useGetUser } from "@/hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
 import { Navigate } from "react-router-dom";
 import IsLoadingWrapper from "./isLoading";

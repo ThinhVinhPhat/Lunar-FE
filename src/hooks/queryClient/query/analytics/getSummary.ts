@@ -1,4 +1,4 @@
-import { getSummary } from "../../../../api/service/analytic.service";
+import { getSummary } from "@/api/service/analytic.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetSummary = () => {

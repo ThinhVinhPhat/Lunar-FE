@@ -1,9 +1,9 @@
-import { getProducts } from "../../../../api/service/product.service";
+import { getProducts } from "@/api/service/product.service";
 import { useQuery } from "@tanstack/react-query";
 
 type DataProp = {
   category?: string[];
-  offset?: number;
+  page?: number;
   limit?: number;
   userId?: string;
 };
@@ -13,17 +13,17 @@ export const useProducts = (data?: DataProp) => {
     queryKey: [
       "products",
       data?.category,
-      data?.offset,
+      data?.page,
       data?.limit,
       data?.userId,
     ],
     queryFn: () =>
-      getProducts(data?.category, data?.offset, data?.limit, data?.userId),
+      getProducts(data?.category, data?.page, data?.limit, data?.userId),
   });
 
   return {
     ...response,
     products: response.data?.data || [],
-    total: response.data?.total || 0,
+    total: response.data?.meta.total || 0,
   };
 };

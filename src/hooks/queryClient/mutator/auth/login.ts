@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from "notistack";
-import { login } from "../../../../api/service/auth.service";
-import { ILogin } from "../../../../types/login";
+import { login } from "@/api/service/auth.service";
+import { ILogin } from "@/types/login";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 

@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { FormField } from "../../../components/form/form-register";
+import { FormField } from "@/components/form/form-register";
 import {
   AuthProps,
   isAlreadyLoginAuth,
-} from "../../../components/wrapper/withAuth";
-import { login } from "../../../api/service/auth.service";
+} from "@/components/wrapper/withAuth";
+import { login } from "@/api/service/auth.service";
 import Cookies from "js-cookie";
-import { UserService } from "../../../api/service/user.service";
-import { Role } from "../../../types/notification";
+import { UserService } from "@/api/service/user.service";
+import { Role } from "@/types/notification";
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
   password: z.string().min(8, { message: "Password is required" }),

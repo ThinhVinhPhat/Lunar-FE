@@ -1,13 +1,13 @@
-import { getNotificationByUser } from "../../../../api/service/notification.service";
+import { getNotificationByUser } from "@/api/service/notification.service";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetNotificationByUser = (
-  offset: number = 0,
+  page: number = 1,
   limit: number = 5
 ) => {
   const response = useQuery({
     queryKey: ["notifications", "user"],
-    queryFn: () => getNotificationByUser(offset, limit),
+    queryFn: () => getNotificationByUser(page, limit),
   });
 
   return {

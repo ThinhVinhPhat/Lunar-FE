@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from "notistack";
-import { UserService } from "../../../../api/service/user.service";
-import { UserType } from "../../../../types/user";
+import { UserService } from "@/api/service/user.service";
+import { UserType } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useUpdateUser = () => {

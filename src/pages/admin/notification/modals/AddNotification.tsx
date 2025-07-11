@@ -4,7 +4,7 @@ import {
   NotificationType,
   NotificationTemplate,
   Role,
-} from "../../../../types/notification";
+} from "@/types/notification";
 import { useEffect } from "react";
 
 type AddNotificationModalProps = {

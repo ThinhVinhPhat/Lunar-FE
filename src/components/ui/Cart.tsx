@@ -1,15 +1,15 @@
 import { enqueueSnackbar } from "notistack";
-import { deleteOrderDetail } from "../../api/service/order.service";
-import { useContextProvider } from "../../hooks/useContextProvider";
-import { OrderDetail } from "../../types/order";
+import { deleteOrderDetail } from "@/api/service/order.service";
+import { useContextProvider } from "@/hooks/useContextProvider";
+import { OrderDetail } from "@/types/order";
 import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import { createPayment } from "../../api/service/payment.service";
-import { useGetUser } from "../../../src/hooks/queryClient/query/user";
+import { createPayment } from "@/api/service/payment.service";
+import { useGetUser } from "@/hooks/queryClient/query/user";
 import CartContent from "../cart/CartContent";
 import CartButton from "../cart/CartButton";
-import { useGetOrderDetail } from "../../hooks/queryClient/query/order/use-get-detail";
-import { useUpdateOrder } from "../../hooks/queryClient/mutator/order/order";
+import { useGetOrderDetail } from "@/hooks/queryClient/query/order/use-get-detail";
+import { useUpdateOrder } from "@/hooks/queryClient/mutator/order/order";
 import Text from "../wrapper/Text";
 
 type CartProps = {

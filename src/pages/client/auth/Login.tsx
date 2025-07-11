@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
-import { useContextProvider } from "../../../../src/hooks/useContextProvider";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useContextProvider } from "@/hooks/useContextProvider";
 import { useForm } from "react-hook-form";
 import { AuthType } from "@/types/user";
-import { FormField } from "../../../components/form/form-register";
-import { useLogin } from "../../../hooks/queryClient/mutator/auth/login";
+import { FormField } from "@/components/form/form-register";
+import { useLogin } from "@/hooks/queryClient/mutator/auth/login";
 import SocialLogin from "./SocialLogin";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AuthProps,
   isAlreadyLoginAuth,
-} from "../../../components/wrapper/withAuth";
+} from "@/components/wrapper/withAuth";
 
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),

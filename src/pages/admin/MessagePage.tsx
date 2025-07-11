@@ -1,4 +1,4 @@
-import { useGetUserById } from "../../hooks/queryClient/query/user";
+import { useGetUserById } from "@/hooks/queryClient/query/user";
 import {
   ArrowLeft,
   Phone,
@@ -10,11 +10,11 @@ import {
   User,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import MessageBubble from "../../components/admin/ui/message/MessageBubble";
+import MessageBubble from "@/components/admin/ui/message/MessageBubble";
 import { useEffect, useRef, useState } from "react";
-import { useContextProvider } from "../../hooks/useContextProvider";
-import { useGetConversation } from "../../hooks/queryClient/query/message/getConverstation";
-import { MessageType } from "../../types/message";
+import { useContextProvider } from "@/hooks/useContextProvider";
+import { useGetConversation } from "@/hooks/queryClient/query/message/getConverstation";
+import { MessageType } from "@/types/message";
 
 const MessagePage = () => {
   const navigate = useNavigate();

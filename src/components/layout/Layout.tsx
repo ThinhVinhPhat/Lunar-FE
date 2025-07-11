@@ -1,9 +1,9 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Outlet } from "react-router-dom";
-import { useContextProvider } from "../../../src/hooks/useContextProvider";
+import { useContextProvider } from "@/hooks/useContextProvider";
 import { UserHeader } from "./UserHeader";
-import ScrollToTop from "../../../src/ultis/ScrollToTop";
+import ScrollToTop from "@/ultis/ScrollToTop";
 
 export const Layout = () => {
   const { isLogin } = useContextProvider();

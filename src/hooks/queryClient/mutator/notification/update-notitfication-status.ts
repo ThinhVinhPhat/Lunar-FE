@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateNotificationStatus } from "../../../../api/service/notification.service";
+import { updateNotificationStatus } from "@/api/service/notification.service";
 import { enqueueSnackbar } from "notistack";
 
 export default function useUpdateNotificationStatus() {

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Search, Edit, Trash2, UserPlus, Lock, User } from "lucide-react";
-import { useFindUser } from "../../../hooks/queryClient/query/user";
+import { useFindUser } from "@/hooks/queryClient/query/user";
 import { UserType } from "@/types/user";
-import Pagination from "../../../components/admin/pagination";
+import Pagination from "@/components/admin/pagination";
 import PermissionModal from "./modals/permision-modal";
 import AddModal from "./modals/add-modal";
-import { DeleteConfirmModal } from "../../../components/admin/modal/DeleteConfirm";
-import { useDeleteUser } from "../../../hooks/queryClient/mutator/user/delete";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
+import { useDeleteUser } from "@/hooks/queryClient/mutator/user/delete";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 enum Role {
   Customer = "Customer",
@@ -32,7 +32,7 @@ const AdminAccount = () => {
     limit: page * 10,
   };
 
-  const { data: accounts, isLoading, refetch } = useFindUser(queryList);
+  const { data: accounts, isLoading, refetch, total } = useFindUser(queryList);
   const totalPages = Math.ceil(accounts.length / 10);
 
   const filteredAccounts = accounts.filter(
@@ -209,10 +209,10 @@ const AdminAccount = () => {
             </div>
             <Pagination
               filteredProducts={filteredAccounts}
-              products={accounts}
               setPage={setPage}
               page={page}
               totalPages={totalPages}
+              totalItems={total}
             />
             <AddModal
               showAddModal={showAddModal}

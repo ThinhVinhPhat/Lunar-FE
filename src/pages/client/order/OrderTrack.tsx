@@ -1,19 +1,19 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useGetOrderById } from "../../../hooks/queryClient/query/order/use-get-order-by-id";
+import { useGetOrderById } from "@/hooks/queryClient/query/order/use-get-order-by-id";
 import { useNavigate, useParams } from "react-router-dom";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { AuthProps, isLoginAuth } from "../../../components/wrapper/withAuth";
-import IsLoadingWrapper from "../../../components/wrapper/isLoading";
+import { AuthProps, isLoginAuth } from "@/components/wrapper/withAuth";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
 import { useTranslation } from "react-i18next";
 import {
   OrderDetail,
   OrderStatus,
   Shipment,
   TrackingOrder,
-} from "../../../types/order";
+} from "@/types/order";
 import clsx from "clsx";
-import { canTransition } from "../../../database/order";
-import { UseMapRender } from "../../../hooks/useMapRender";
+import { canTransition } from "@/database/order";
+import { UseMapRender } from "@/hooks/useMapRender";
 const OrderTrack: React.FC<AuthProps> = () => {
   const { id } = useParams();
   const { data: order, isLoading } = useGetOrderById(id);

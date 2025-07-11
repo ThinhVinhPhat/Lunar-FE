@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
 import { Product } from "@/types/product";
-import { useDebounce } from "../../../hooks/useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
-import { useProductBySuggestion } from "../../../hooks/queryClient/query/product/product";
-import IsLoadingWrapper from "../../wrapper/isLoading";
-import { useProducts } from "../../../hooks/queryClient/query/product/products";
+import { useProductBySuggestion } from "@/hooks/queryClient/query/product/product";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { useProducts } from "@/hooks/queryClient/query/product/products";
 import ProductSearch from "./ProductSearch";
 import { useNavigate } from "react-router-dom";
 

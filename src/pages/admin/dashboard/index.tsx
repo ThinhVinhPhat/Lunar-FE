@@ -11,19 +11,16 @@ import {
   Legend,
 } from "chart.js";
 import { Eye, ShoppingBag } from "lucide-react";
-import {
-  AuthProps,
-  isLoginAdminAuth,
-} from "../../../components/wrapper/withAuth";
-import { useGetSummary } from "../../../hooks/queryClient/query/analytics/getSummary";
-import { useGetCompareLastMonth } from "../../../hooks/queryClient/query/analytics/getLastMonth";
-import { transFormCard, transFormRevenue } from "../../../ultis/transFormCard";
-import { Product } from "../../../types/product";
-import { useGetMonthRevenue } from "../../../hooks/queryClient/query/analytics/getMonthRevenue";
-import { useGetUserOrder } from "../../../hooks/queryClient/query/analytics/getUserOrder";
-import { OrderFilterEnum, UserOrderType } from "../../../types/analytic";
+import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
+import { useGetSummary } from "@/hooks/queryClient/query/analytics/getSummary";
+import { useGetCompareLastMonth } from "@/hooks/queryClient/query/analytics/getLastMonth";
+import { transFormCard, transFormRevenue } from "@/ultis/transFormCard";
+import { Product } from "@/types/product";
+import { useGetMonthRevenue } from "@/hooks/queryClient/query/analytics/getMonthRevenue";
+import { useGetUserOrder } from "@/hooks/queryClient/query/analytics/getUserOrder";
+import { OrderFilterEnum, UserOrderType } from "@/types/analytic";
 import { useState } from "react";
-import { Pagination } from "../../../components/ui/Pagination";
+import { Pagination } from "@/components/ui/Pagination";
 
 ChartJS.register(
   CategoryScale,
@@ -38,14 +35,13 @@ ChartJS.register(
 
 const Dashboard: React.FC<AuthProps> = ({ user }) => {
   const { data: summary } = useGetSummary();
-  const [page, setPage] = useState(0);
-  const offset = page * 10;
+  const [page, setPage] = useState(1);
   const limit = 10;
   const { data: compareLastMonth } = useGetCompareLastMonth(summary);
   const [orderFilter, setOrderFilter] = useState<OrderFilterEnum>(
     OrderFilterEnum.RECENT
   );
-  const { data: userOrder } = useGetUserOrder(offset, limit, orderFilter);
+  const { data: userOrder } = useGetUserOrder(page, limit, orderFilter);
   const statsCards = transFormCard(summary, compareLastMonth);
   const { data: revenue } = useGetMonthRevenue();
   const revenueData = transFormRevenue(revenue);
@@ -176,7 +172,7 @@ const Dashboard: React.FC<AuthProps> = ({ user }) => {
         </div>
 
         <div className="space-y-4">
-          {userOrder?.map((item: UserOrderType) => (
+          {userOrder?.data?.map((item: UserOrderType) => (
             <div
               key={item.id}
               className="flex items-start p-3 hover:bg-gray-50 rounded-lg transition-colors"
@@ -203,7 +199,8 @@ const Dashboard: React.FC<AuthProps> = ({ user }) => {
         <Pagination
           currentPage={page}
           onSetPage={setPage}
-          productCount={userOrder?.length}
+          productCount={userOrder?.meta?.totalItems}
+          limit={10}
         />
       </div>
     </>

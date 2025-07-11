@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { deleteProduct } from "../../../../api/service/product.service";
+import { deleteProduct } from "@/api/service/product.service";
 import { enqueueSnackbar } from "notistack";
 
 export const useDeleteProduct = () => {

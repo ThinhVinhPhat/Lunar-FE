@@ -1,4 +1,4 @@
-import { deleteNotification } from "../../../../api/service/notification.service";
+import { deleteNotification } from "@/api/service/notification.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 

@@ -1,8 +1,8 @@
 import instance from "..";
-import { CreateOrderProps } from "../../types/order";
+import { CreateOrderProps } from "@/types/order";
 
-export const getOrders = async () => {
-  const response = await instance.get("/order", {});
+export const getOrders = async (page: number, limit: number) => {
+  const response = await instance.get(`/order?page=${page}&limit=${limit}`);
   return response.data;
 };
 export const createOrder = async (order: CreateOrderProps) => {
@@ -41,11 +41,11 @@ export const deleteOrderDetail = async (orderId: string) => {
 
 export const getOrdersByStatus = async (
   status: string,
-  offset: number,
+  page: number,
   limit: number
 ) => {
   const response = await instance.get(
-    `/order?status=${status}&offset=${offset}&limit=${limit}`,
+    `/order?status=${status}&page=${page}&limit=${limit}`,
     {}
   );
   return response.data;

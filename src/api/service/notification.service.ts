@@ -1,9 +1,9 @@
 import { Role } from "@/types/notification";
 import instance from "..";
 
-export const getNotificationByUser = async (offset: number, limit: number) => {
+export const getNotificationByUser = async (page: number, limit: number) => {
   const response = await instance.get(
-    `/notifications/me?offset=${offset}&limit=${limit}`
+    `/notifications/me?page=${page}&limit=${limit}`
   );
   return response.data;
 };
@@ -49,12 +49,12 @@ export const updateNotificationStatus = async (id: string) => {
 
 export const getAllNotification = async (
   name: string,
-  offset: number,
+  page: number,
   limit: number,
   roles: string[]
 ) => {
   const response = await instance.get(
-    `/notifications?offset=${offset}&limit=${limit}&name=${name}&roles=${roles.join(
+    `/notifications?page=${page}&limit=${limit}&name=${name}&roles=${roles.join(
       ","
     )}`
   );

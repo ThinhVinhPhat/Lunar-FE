@@ -1,6 +1,6 @@
-import CodeForm from "../../../components/ui/CodeForm";
-import { useForgotPassword } from "../../../hooks/queryClient/mutator/auth/forgot";
-import { useUpdatePassword } from "../../../hooks/queryClient/mutator/auth/update-password";
+import CodeForm from "@/components/ui/CodeForm";
+import { useForgotPassword } from "@/hooks/queryClient/mutator/auth/forgot";
+import { useUpdatePassword } from "@/hooks/queryClient/mutator/auth/update-password";
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 

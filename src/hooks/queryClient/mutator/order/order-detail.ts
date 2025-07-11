@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { createOrderDetail } from "../../../../api/service/order.service";
+import { createOrderDetail } from "@/api/service/order.service";
 
 export const useOrderDetail = () => {
   const response = useMutation({

@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "../ui/Button";
 import Text from "../wrapper/Text";
 import { useState, useRef, useEffect } from "react";
-import { heroSlides } from "../../database/home";
+import { heroSlides } from "@/database/home";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -143,7 +143,7 @@ const Hero = () => {
                   <Button
                     href={slide.buttonLink}
                     variant="secondary"
-                    className="animate-bounce-subtle hover:animate-none"
+                    size="medium"
                   >
                     <Text id={slide.buttonText} />
                   </Button>

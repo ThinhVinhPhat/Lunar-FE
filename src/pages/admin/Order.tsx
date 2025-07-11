@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import { Search, Edit, Trash } from "lucide-react";
-import { isLoginAdminAuth, AuthProps } from "../../components/wrapper/withAuth";
-import { Order } from "../../types/order";
-import { useGetOrderList } from "../../hooks/queryClient/query/order/use-get-list";
-import IsLoadingWrapper from "../../components/wrapper/isLoading";
-import { useDeleteOrder } from "../../hooks/queryClient/mutator/order/order";
-import UpdateOrderStatus from "../../components/order/UpdateOrderStatus";
+import { isLoginAdminAuth, AuthProps } from "@/components/wrapper/withAuth";
+import { Order } from "@/types/order";
+import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { useDeleteOrder } from "@/hooks/queryClient/mutator/order/order";
+import UpdateOrderStatus from "@/components/order/UpdateOrderStatus";
+import Pagination from "@/components/admin/pagination";
 
 const OrdersManagement: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentStatus, setCurrentStatus] = useState("Confirmed");
-
+  const [page, setPage] = useState(1);
   const {
     data: orders,
+    total,
+    totalPage,
     isLoading,
     refetch,
-  } = useGetOrderList(currentStatus, 0, 10);
+  } = useGetOrderList(currentStatus, 1, 10);
   const { mutateAsync: deleteOrder } = useDeleteOrder();
   const filteredOrders = orders?.filter((order: Order) =>
     order?.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,6 +64,7 @@ const OrdersManagement: React.FC<AuthProps> = () => {
               onChange={(e) => setCurrentStatus(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A846] focus:border-transparent"
             >
+              <option value="All Order">All Order</option>
               <option value="Pending">Pending</option>
               <option value="Confirmed">Confirmed</option>
               <option value="Shipped">Shipped</option>
@@ -258,6 +262,13 @@ const OrdersManagement: React.FC<AuthProps> = () => {
           </div>
         </div>
       )}
+
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalItems={total}
+        totalPages={totalPage}
+      />
     </IsLoadingWrapper>
   );
 };

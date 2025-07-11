@@ -113,7 +113,8 @@
     "included": "Included",
     "fit_details": "Fit Details",
     "features": "Features",
-    "add_to_cart": "Add to Cart"
+    "add_to_cart": "Add to Cart",
+    "color": "Color"
   },
   "profile_fields": {
     "firstName": "First Name",
