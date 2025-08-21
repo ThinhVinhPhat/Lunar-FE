@@ -6,9 +6,9 @@ import {
   updateDiscount,
   applyDiscount,
   deleteDiscountFromOrder,
+  CreateDiscountInterface,
 } from "@/lib/api/service/discount.service";
 import { enqueueSnackbar } from "notistack";
-import { CreateDiscountInterface } from "@/types/discount";
 
 export const useCreateDiscount = () => {
   const response = useMutation({

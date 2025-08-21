@@ -75,7 +75,7 @@ const DiscountVoucherPage = () => {
             new Date(a.expireAt).getTime() - new Date(b.expireAt).getTime()
           );
         case "usage":
-          return b.userDiscounts?.length - a.userDiscounts?.length;
+          return (b.userDiscounts?.length || 0) - (a.userDiscounts?.length || 0);
         default:
           return new Date(b.startAt).getTime() - new Date(a.startAt).getTime();
       }
@@ -362,7 +362,7 @@ const DiscountVoucherPage = () => {
                         style={{
                           background: `linear-gradient(90deg, ${PRIMARY_COLOR} 0%, ${PRIMARY_COLOR_LIGHT} 100%)`,
                           width: `${Math.min(
-                            (discount.userDiscounts?.length /
+                            (discount.userDiscounts?.length || 0 /
                               discount.usageLimit) *
                               100,
                             100

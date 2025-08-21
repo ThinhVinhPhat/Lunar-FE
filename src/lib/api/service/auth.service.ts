@@ -1,6 +1,6 @@
 import { API_URL } from "@/lib/config/api.config";
 import instance from "../index";
-import { Role } from "@/types/notification";
+import { Role } from "@/types";
 
 export interface LoginInterface {
   email: string;

@@ -1,3 +1,5 @@
+import { Role } from ".";
+
 export enum NotificationType {
   NEW_MESSAGE = "NEW_MESSAGE",
   NEW_ORDER = "NEW_ORDER",
@@ -6,11 +8,7 @@ export enum NotificationType {
   NEW_THREAD = "NEW_THREAD",
 }
 
-export enum Role {
-  ADMIN = "Admin",
-  CUSTOMER = "Customer",
-  ENGINEER = "Engineer",
-}
+
 
 export interface userNotification {
   notification: NotificationTemplate;

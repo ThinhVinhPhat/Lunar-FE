@@ -115,7 +115,7 @@ export const ContextProvider = ({
       setCart,
       setCartItems,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [
     isOpenSearch,
     isOpenCart,

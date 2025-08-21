@@ -1,10 +1,11 @@
 import { UserType } from "@/types/user";
 import instance from "..";
 import { API_URL } from "@/lib/config/api.config";
+import { Role } from "@/types";
 
 export type FindUserParams = {
   email?: string;
-  role?: string[];
+  role?: Role[];
   page?: number;
   limit?: number;
 };
@@ -22,6 +23,7 @@ export type CreateUserParams = {
   email: string;
   password: string;
   role: string;
+  status?: boolean | string;
 };
 
 export const UserService = {

@@ -77,7 +77,7 @@ function AddModal({
   const onSubmit = async (data: CreateUserParams | UpdateUserAdminParams) => {
     const result: CreateUserParams | UpdateUserAdminParams = {
       ...data,
-      status: data.status === "Active" ? true : false,
+      status: data?.status === "Active" ? true : false,
     };
 
     if (currentAccount) {

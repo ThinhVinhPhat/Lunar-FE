@@ -8,11 +8,7 @@ import AddModal from "./modals/add-modal";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
 import { useDeleteUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
-
-enum Role {
-  Customer = "Customer",
-  Admin = "Admin",
-}
+import { Role } from "@/types";
 
 const AdminAccount = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,8 +17,7 @@ const AdminAccount = () => {
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<UserType | null>(null);
   const [page, setPage] = useState(1);
-  const [currentRole, setCurrentRole] = useState(Role.Customer);
-  const offset = (page - 1) * 10;
+  const [currentRole, setCurrentRole] = useState(Role.CUSTOMER);
   const { mutate: deleteUser } = useDeleteUser();
   const {
     data: accounts,
@@ -31,11 +26,11 @@ const AdminAccount = () => {
     total,
   } = useFindUser({
     email: "",
-    role: currentRole,
-    offset: offset,
+    role: [currentRole],
+    page: page,
     limit: page * 10,
   });
-  const totalPages = Math.ceil(accounts.length / 10);
+  const totalPages = Math.ceil(total / (page * 10));
 
   const filteredAccounts = accounts.filter(
     (account: UserType) =>

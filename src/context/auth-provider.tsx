@@ -1,7 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import instance from "../api";
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
+
+import { AxiosResponse } from "axios";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import instance from "@/lib/api";
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 type AuthContextType = {
   isAdmin: boolean;
@@ -17,8 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!accessToken && refreshToken) {
       instance
-        .post("/auth/refresh-token", { refreshToken })
-        .then((res) => {
+        .post<RefreshTokenResponse>("/auth/refresh-token", { refreshToken })
+        .then((res: AxiosResponse<RefreshTokenResponse>) => {
           Cookies.set("accessToken", res.data.accessToken, {
             expires: 1,
             secure: true,

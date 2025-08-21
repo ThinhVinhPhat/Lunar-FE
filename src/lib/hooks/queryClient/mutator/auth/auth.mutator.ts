@@ -15,6 +15,8 @@ import { useRef } from "react";
 import { updatePassword } from "@/lib/api/service/user.service";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { ErrorResponse } from "@/types";
+
 export const useForgotPassword = () => {
   const status = useRef(true);
   const response = useMutation({
@@ -87,8 +89,9 @@ export const useRegister = () => {
     onSuccess: () => {
       enqueueSnackbar("Đăng ký thành công!", { variant: "success" });
     },
-    onError: (error: AxiosError) => {
-      enqueueSnackbar(error.response?.data.message.message[0], {
+    onError: (error: AxiosError<ErrorResponse>) => {
+      const errorMessage = error.response?.data?.message?.message?.[0] || "Create comment failed";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
       });
     },
@@ -132,11 +135,11 @@ export const useVerifyRegister = () => {
         variant: "success",
       });
     },
-    onError: (error: AxiosError) => {
-      enqueueSnackbar(error.response?.data.message.message[0], {
+    onError: (error: AxiosError<ErrorResponse>) => {
+      const errorMessage = error.response?.data?.message?.message?.[0] || "Create comment failed";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
       });
-      console.log(error);
     },
   });
   return response;

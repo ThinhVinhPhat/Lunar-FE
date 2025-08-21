@@ -8,6 +8,7 @@ import {
 } from "@/lib/api/service/category.service";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { ErrorResponse } from "@/types";
 
 export const useAddDetail = () => {
   const response = useMutation({
@@ -23,9 +24,9 @@ export const useAddDetail = () => {
         variant: "success",
       });
     },
-    onError: (err: AxiosError) => {
-      console.log(err);
-      enqueueSnackbar(err.response?.data.message.message[0], {
+    onError: (err: AxiosError<ErrorResponse>) => {
+      const errorMessage = err.response?.data?.message?.message?.[0] || "Create comment failed";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
       });
     },
@@ -42,9 +43,9 @@ export const useDeleteDetail = () => {
         variant: "success",
       });
     },
-    onError: (err: AxiosError) => {
-      console.log(err);
-      enqueueSnackbar(err.response?.data.message.message[0], {
+    onError: (err: AxiosError<ErrorResponse>) => {
+      const errorMessage = err.response?.data?.message?.message?.[0] || "Create comment failed";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
       });
     },
@@ -67,9 +68,9 @@ export const useEditDetail = () => {
         variant: "success",
       });
     },
-    onError: (err: AxiosError) => {
-      console.log(err);
-      enqueueSnackbar(err.response?.data.message.message[0], {
+    onError: (err: AxiosError<ErrorResponse>) => {
+      const errorMessage = err.response?.data?.message?.message?.[0] || "Create comment failed";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
       });
     },

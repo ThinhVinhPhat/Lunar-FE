@@ -1,4 +1,4 @@
-import { Role } from "@/types/notification";
+import { Role } from "@/types";
 import { OrderStatus } from "@/types/order";
 import {
   Settings,

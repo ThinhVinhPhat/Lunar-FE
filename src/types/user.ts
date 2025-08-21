@@ -1,4 +1,4 @@
-import { Role } from "./notification";
+import { Role } from ".";
 
 export type UserType = {
   id?: string;

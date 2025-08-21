@@ -83,7 +83,7 @@ export default function useNotificationMessageAction(
         {}
       );
 
-      const groupedArray = Object.values(grouped).sort(
+      const groupedArray = (Object.values(grouped) as GroupedNotification[]).sort(
         (a: GroupedNotification, b: GroupedNotification) =>
           new Date(b.latestTime).getTime() - new Date(a.latestTime).getTime()
       );

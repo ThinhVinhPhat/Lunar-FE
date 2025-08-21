@@ -15,6 +15,7 @@ import { useProductAction } from "@/lib/hooks/useProductAction";
 import { Product } from "@/types/product";
 import { UserType } from "@/types/user";
 import { CreateDiscountInterface } from "@/lib/api/service/discount.service";
+import { Role } from "@/types";
 
 type AddDiscountModalProps = {
   showAddModal: boolean;
@@ -61,7 +62,7 @@ function AddDiscountModal({
   const [userPage, setUserPage] = useState(1);
   const { products } = useProductAction(productPage, 10, { category: null });
   const { data: users } = useFindUser({
-    role: ["Customer"],
+    role: [Role.CUSTOMER],
     page: userPage,
     limit: 10,
   });

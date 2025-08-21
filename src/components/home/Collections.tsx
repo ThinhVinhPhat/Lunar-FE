@@ -9,7 +9,7 @@ import { useGetCategoriesDetailByCateName } from "@/lib/hooks/queryClient/query/
 import { CategoryDetail } from "@/types/category";
 import Text from "../wrapper/Text";
 import IsLoadingWrapper from "../wrapper/isLoading";
-import { Box, Grid, Typography, IconButton, Button, Chip } from "@mui/material";
+import { Box, Typography, IconButton, Button, Chip } from "@mui/material";
 
 const Collections = () => {
   const navigate = useNavigate();

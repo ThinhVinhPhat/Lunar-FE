@@ -9,7 +9,7 @@ import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
 import { login } from "@/lib/api/service/auth.service";
 import Cookies from "js-cookie";
 import { UserService } from "@/lib/api/service/user.service";
-import { Role } from "@/types/notification";
+import { Role } from "@/types";
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
   password: z.string().min(8, { message: "Password is required" }),
@@ -27,7 +27,10 @@ const AdminLogin: React.FC<AuthProps> = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    const response = await login(data.email, data.password);
+    const response = await login({
+      email: data.email,
+      password: data.password,
+    });
 
     Cookies.set("accessToken", response.accessToken);
     Cookies.set("refreshToken", response.refreshToken);

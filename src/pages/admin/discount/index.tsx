@@ -30,7 +30,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [_, setShowAddProductModal] = useState(false);
   const [currentDiscount, setCurrentDiscount] =
     useState<DiscountInterface | null>(null);
   const [currentDiscountProduct, setCurrentDiscountProduct] =
