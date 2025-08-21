@@ -8,6 +8,7 @@ import {
   Tags,
   PackageSearch,
   Bell,
+  PercentCircle,
 } from "lucide-react";
 export const navItems = [
   {
@@ -44,6 +45,12 @@ export const navItems = [
     title: "Notifications",
     path: "/admin/notifications",
     icon: <Bell size={20} />,
+    roles: [Role.ADMIN],
+  },
+  {
+    title: "Discounts",
+    path: "/admin/discounts",
+    icon: <PercentCircle size={20} />,
     roles: [Role.ADMIN],
   },
   {

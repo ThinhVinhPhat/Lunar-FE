@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import instance from "../api";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
 type AuthContextType = {
   isAdmin: boolean;

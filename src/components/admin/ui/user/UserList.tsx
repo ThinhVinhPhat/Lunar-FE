@@ -1,8 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import {
-  useFindUser,
-  useGetUser,
-} from "@/hooks/queryClient/query/user";
+import { useFindUser, useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import UserListItem from "./UserListItem";
 import { UserType } from "@/types/user";
 

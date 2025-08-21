@@ -2,7 +2,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import clsx from "clsx";
 import { useState } from "react";
 import OrderModal from "./OrderModal";
-import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Order } from "@/types/order";
 import { AuthProps, isLoginAuth } from "@/components/wrapper/withAuth";
@@ -25,6 +25,7 @@ const OrderList: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
 
   console.log(orderList);
+
   // Define column headers with their data keys and translation labels
   const columnHeaders = [
     { key: "id", label: t("order_list.order_id", "Order ID") },

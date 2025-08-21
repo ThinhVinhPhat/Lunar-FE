@@ -1,5 +1,5 @@
 import { Order } from "@/types/order";
-import { useCancelOrder } from "@/hooks/queryClient/mutator/order/order";
+import { useCancelOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import html2pdf from "html2pdf.js";
@@ -22,8 +22,6 @@ function OrderModal({
   const orderTemplate = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const handleCancelOrder = async () => {
-    console.log(currentOrder?.id);
-
     if (confirm("Are you want to reject this order?")) {
       const response = await cancelOrder(currentOrder?.id);
       if (response.status == 200) {

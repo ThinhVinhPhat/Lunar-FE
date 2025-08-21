@@ -5,10 +5,11 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { useGetCategoriesDetailByCateName } from "@/hooks/queryClient/query/category";
+import { useGetCategoriesDetailByCateName } from "@/lib/hooks/queryClient/query/category/category.query";
 import { CategoryDetail } from "@/types/category";
 import Text from "../wrapper/Text";
 import IsLoadingWrapper from "../wrapper/isLoading";
+import { Box, Grid, Typography, IconButton, Button, Chip } from "@mui/material";
 
 const Collections = () => {
   const navigate = useNavigate();
@@ -71,118 +72,253 @@ const Collections = () => {
   };
 
   return (
-    <div
-      className="relative"
+    <Box
+      sx={{ position: 'relative' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <IsLoadingWrapper isLoading={isLoadingCategories}>
         <>
-          <div className="overflow-hidden">
-            <div
-              className="transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide}%)` }}
+          <Box sx={{ overflow: 'hidden' }}>
+            <Box
+              sx={{
+                transition: 'transform 500ms ease-in-out',
+                transform: `translateX(-${currentSlide}%)`
+              }}
             >
               {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                <div
-                  key={slideIndex}
-                  className="grid md:grid-cols-3 gap-7 min-w-full"
-                  style={{
-                    display: slideIndex === currentSlide ? "grid" : "none",
-                  }}
-                >
-                  {getSlideItems(slideIndex)?.map(
-                    (category: CategoryDetail, index: number) => {
-                      const image = category?.image?.map((item: string) =>
-                        item.replace(/[{}"]/g, "")
-                      );
-                      return (
-                        <div
-                          key={`${category.id}-${slideIndex}-${index}`}
-                          className="group relative overflow-hidden rounded-lg cursor-pointer transform transition-all duration-500 hover:-translate-y-2"
-                          onClick={() =>
-                            navigate(`/collections/${category.name}`)
-                          }
-                        >
-                          <div className="relative aspect-[4/5] overflow-hidden">
-                            <img
-                              src={
-                                image?.length > 1 ? image[1] : image?.[0] || ""
-                              }
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              alt={category.name}
-                            />
+  <Box
+    key={slideIndex}
+    sx={{
+      minWidth: '100%',
+      display: slideIndex === currentSlide ? 'flex' : 'none',
+      gap: 6,
+      flexWrap: 'wrap',
+      justifyContent: 'center'
+    }}
+  >
+    {getSlideItems(slideIndex)?.map((category: CategoryDetail, index: number) => {
+      const image = category?.image?.map((item: string) =>
+        item.replace(/[{}"]/g, "")
+      );
 
-                            <div className="absolute top-4 left-4 bg-[#C8A846] text-white text-xs px-3 py-1 rounded">
-                              {category.name}
-                            </div>
+      return (
+        <Box
+          key={`${category.id}-${slideIndex}-${index}`}
+          sx={{
+            flex: '1 1 calc(33.333% - 32px)', // 3 cột
+            maxWidth: 'calc(33.333% - 32px)',
+            minWidth: '250px'
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: 2,
+              cursor: 'pointer',
+              transition: 'all 500ms',
+              '&:hover': {
+                transform: 'translateY(-8px)'
+              },
+              '&:hover .overlay': {
+                opacity: 1
+              },
+              '&:hover .content': {
+                transform: 'translateY(0)'
+              },
+              '&:hover .description': {
+                opacity: 1
+              },
+              '&:hover .button': {
+                opacity: 1,
+                transform: 'translateY(0)'
+              },
+              '&:hover .image': {
+                transform: 'scale(1.05)'
+              }
+            }}
+            onClick={() => navigate(`/collections/${category.name}`)}
+          >
+            <Box sx={{ position: 'relative', aspectRatio: '4/5', overflow: 'hidden' }}>
+              <Box
+                component="img"
+                src={image?.length > 1 ? image[1] : image?.[0] || ""}
+                alt={category.name}
+                className="image"
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transition: 'transform 700ms'
+                }}
+              />
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          </div>
+              <Chip
+                label={category.name}
+                sx={{
+                  position: 'absolute',
+                  top: 16,
+                  left: 16,
+                  bgcolor: '#C8A846',
+                  color: 'white',
+                  fontSize: '0.75rem'
+                }}
+              />
 
-                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-2xl font-bold mb-2">
-                              {category.name}
-                            </h3>
-                            <p className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                              {category.description}
-                            </p>
+              <Box
+                className="overlay"
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+                  opacity: 0,
+                  transition: 'opacity 300ms'
+                }}
+              />
+            </Box>
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/collections/${category.name}`);
-                              }}
-                              className="mt-4 px-6 py-2 bg-[#C8A846] text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 delay-150 hover:bg-[#b69339] transform group-hover:translate-y-0 translate-y-4"
-                            >
-                              <Text id="collections.exploreCollection" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+            <Box
+              className="content"
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                p: 6,
+                color: 'white',
+                transform: 'translateY(24px)',
+                transition: 'transform 300ms'
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  mb: 2
+                }}
+              >
+                {category.name}
+              </Typography>
+              <Typography
+                className="description"
+                variant="body2"
+                sx={{
+                  fontSize: '0.875rem',
+                  opacity: 0,
+                  transition: 'opacity 300ms',
+                  transitionDelay: '100ms'
+                }}
+              >
+                {category.description}
+              </Typography>
+
+              <Button
+                className="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/collections/${category.name}`);
+                }}
+                sx={{
+                  mt: 4,
+                  px: 6,
+                  py: 2,
+                  bgcolor: '#C8A846',
+                  color: 'white',
+                  borderRadius: 1,
+                  opacity: 0,
+                  transform: 'translateY(16px)',
+                  transition: 'all 300ms',
+                  transitionDelay: '150ms',
+                  '&:hover': {
+                    bgcolor: '#b69339'
+                  }
+                }}
+              >
+                <Text id="collections.exploreCollection" />
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      );
+    })}
+  </Box>
+))}
+
+            </Box>
+          </Box>
 
           {totalSlides > 1 && (
             <>
-              <button
+              <IconButton
                 onClick={prevSlide}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all duration-300"
+                sx={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  bgcolor: 'rgba(255,255,255,0.8)',
+                  color: 'gray.800',
+                  boxShadow: 2,
+                  zIndex: 10,
+                  transition: 'all 300ms',
+                  '&:hover': {
+                    bgcolor: 'white'
+                  }
+                }}
                 aria-label="Previous slide"
               >
                 <FontAwesomeIcon icon={faChevronLeft} />
-              </button>
-              <button
+              </IconButton>
+              <IconButton
                 onClick={nextSlide}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all duration-300"
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translate(50%, -50%)',
+                  bgcolor: 'rgba(255,255,255,0.8)',
+                  color: 'gray.800',
+                  boxShadow: 2,
+                  zIndex: 10,
+                  transition: 'all 300ms',
+                  '&:hover': {
+                    bgcolor: 'white'
+                  }
+                }}
                 aria-label="Next slide"
               >
                 <FontAwesomeIcon icon={faChevronRight} />
-              </button>
+              </IconButton>
 
-              <div className="flex justify-center mt-6 gap-2">
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6, gap: 2 }}>
                 {Array.from({ length: totalSlides }).map((_, index) => (
-                  <button
+                  <Box
                     key={index}
+                    component="button"
                     onClick={() => setCurrentSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      currentSlide === index
-                        ? "bg-[#C8A846] w-6"
-                        : "bg-gray-300 hover:bg-gray-400"
-                    }`}
+                    sx={{
+                      width: currentSlide === index ? 24 : 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 300ms',
+                      bgcolor: currentSlide === index ? '#C8A846' : '#d1d5db',
+                      '&:hover': {
+                        bgcolor: currentSlide === index ? '#C8A846' : '#9ca3af'
+                      }
+                    }}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
-              </div>
+              </Box>
             </>
           )}
         </>
       </IsLoadingWrapper>
-    </div>
+    </Box>
   );
 };
 

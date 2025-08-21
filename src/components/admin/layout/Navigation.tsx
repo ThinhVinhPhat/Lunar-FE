@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, Menu, X } from "lucide-react";
-import { useAuthAction } from "@/hooks/useAuthAction";
-import { useGetUser } from "@/hooks/queryClient/query/user";
+import { useAuthAction } from "@/lib/hooks/useAuthAction";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import UserList from "../ui/user/UserList";
 import { Role } from "@/types/notification";
 

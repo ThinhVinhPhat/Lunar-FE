@@ -2,8 +2,9 @@ import { FormField } from "@/components/form/form-register";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAddCategory } from "@/hooks/queryClient/mutator/category/add-category";
-import { useGetCategories } from "@/hooks/queryClient/query/category";
+import { useAddCategory } from "@/lib/hooks/queryClient/mutator/category/category.mutator";
+import { useGetCategories } from "@/lib/hooks/queryClient/query/category/category.query";
+import { CreateCategoryInterface } from "@/lib/api/service/category.service";
 type AddCategoryProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;
@@ -27,12 +28,10 @@ function AddCategory({ showAddModal, setShowAddModal }: AddCategoryProps) {
   const { mutateAsync: addCategory, isPending } = useAddCategory();
   const { refetch } = useGetCategories();
 
-  const onSubmit = async (data: any) => {
-    const response = await addCategory(data);
-    if (response.status === 200) {
-      setShowAddModal(false);
-      refetch();
-    }
+  const onSubmit = async (data: CreateCategoryInterface) => {
+    await addCategory(data);
+    setShowAddModal(false);
+    refetch();
   };
 
   return (
@@ -60,7 +59,7 @@ function AddCategory({ showAddModal, setShowAddModal }: AddCategoryProps) {
                       <div>
                         <FormField
                           label="Category Name"
-                          error={errors.name?.message as any}
+                          error={errors.name?.message as string}
                           placeholder="Enter category name"
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("name")}

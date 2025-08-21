@@ -84,7 +84,38 @@
   "user_options": {
     "my_orders": "My Orders",
     "sign_out": "Sign Out",
-    "my_profile": "My Profile"
+    "my_profile": "My Profile",
+    "my_discount": "My Discount"
+  },
+
+  "discount": {
+    "all": "All",
+    "discountProduct": "Discount Product", 
+    "freeShip": "Free Ship",
+    "voucherCode": "Voucher Code",
+    "enter_voucher_code": "Enter voucher code",
+    "save": "Save",
+    "expiringSoon": "Expiring Soon",
+    "popular": "Popular",
+    "highestValue": "Highest Value",
+    "discountVoucher": "Discount Voucher",
+    "findMoreVoucher": "Find More Voucher",
+    "viewHistoryVoucher": "View History Voucher",
+    "learnMore": "Learn More",
+    "newest": "Newest",
+    "expiry": "Expiry",
+    "usage": "Usage",
+    "discountManagement": "Discount Management",
+    "manageProductDiscounts": "Manage your product discounts and promotions",
+    "addDiscount": "Add Discount",
+    "searchDiscounts": "Search discounts",
+    "use_now": "Use Now",
+    "allProducts": "All Products",
+    "apply": "Apply",
+    "available_discounts": "Available Discounts",
+    "min_spend": "Min spend",
+    "expires": "Expires",
+    "delete": "Delete"
   },
 
   "profile": {
@@ -134,7 +165,13 @@
     "remove": "Remove",
     "youve_qualified_for_free_us_shipping": "🎉 You've qualified for free U.S. Shipping!",
     "away_from_free_us_shipping": "away from free U.S. Shipping",
-    "please_update_your_address_and_phone_number_to_proceed_with_the_order": "Please update your address and phone number to proceed with the order."
+    "please_update_your_address_and_phone_number_to_proceed_with_the_order": "Please update your address and phone number to proceed with the order.",
+    "available_discounts": "Available Discounts",
+    "no_discounts_available": "No discounts available",
+    "subtotal": "Subtotal",
+    "shipping_and_taxes_calculated_at_checkout": "Shipping and taxes calculated at checkout.",
+    "checkout": "Checkout",
+    "final_total": "Final Total"
   },
   "collections": {
     "exploreCollection": "Explore Collection"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Filter from "@/components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
-import { useProducts } from "@/hooks/queryClient/query/product/products";
+import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
 import { filterCategories } from "@/database/filter";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 

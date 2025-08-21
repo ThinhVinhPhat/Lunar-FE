@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   getFailedPayment,
   getSuccessPayment,
-} from "@/api/service/payment.service";
+} from "@/lib/api/service/payment.service";
 
 type PaymentResultProps = {
   status: "success" | "failed";

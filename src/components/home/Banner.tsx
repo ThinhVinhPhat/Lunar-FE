@@ -1,12 +1,17 @@
 import Text from "../wrapper/Text";
 import { Button } from "../ui/Button";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export default function Banner() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
   const [isInView, setIsInView] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const bannerRef = useRef(null);
+  const images = [
+    "https://shwoodshop.com/cdn/shop/files/Experiment-Desktop.jpg?v=1736452704&width=1920",
+    "https://shwoodshop.com/cdn/shop/files/Experiment-Mobile.jpg?v=1736452704&width=768",
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -39,6 +44,15 @@ export default function Banner() {
     };
   }, [isInView]);
 
+  const handleSlide = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  }, [images]);
+
+  useEffect(() => {
+    const intervalId = setInterval(handleSlide, 5000);
+    return () => clearInterval(intervalId);
+  }, [handleSlide]);
+
   return (
     <div ref={bannerRef} className="relative text-center mb-16 overflow-hidden">
       <div className="relative flex justify-center m-1 align-middle w-100 overflow-hidden">
@@ -46,128 +60,110 @@ export default function Banner() {
           className={`w-[100rem] h-[40rem] object-cover transition-all duration-[3000ms] ease-out transform ${
             isLoaded ? "scale-110" : "scale-100"
           }`}
-          src="https://shwoodshop.com/cdn/shop/files/Experiment-Desktop.jpg?v=1736452704&width=1920"
+          src={images[currentIndex]}
           alt="Experimenting Everyday"
         />
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30"></div>
-
-        <div className="absolute inset-0 opacity-20">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-2 h-2 bg-white rounded-full animate-pulse transition-all duration-[2000ms] ${
-                isLoaded ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 2}s`,
-              }}
-            />
-          ))}
-        </div>
       </div>
-
       <div className="absolute top-64 left-0 w-full h-full">
-        <h1
-          className={`text-6xl font-bold mb-4 text-[#f1efef] transition-all duration-1000 transform ${
-            textVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0"
-          }`}
-        >
-          <span
-            className={`inline-block transition-all duration-700 transform ${
-              textVisible
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0"
-            }`}
-            style={{ transitionDelay: "0.2s" }}
-          >
-            <Text id="home.experimentingEveryday" />
-          </span>
-        </h1>
+  <h1
+    className={`text-6xl font-bold mb-4 text-[#f1efef] transition-all duration-1000 transform ${
+      textVisible
+        ? "translate-y-0 opacity-100"
+        : "translate-y-8 opacity-0"
+    }`}
+  >
+    <span
+      className={`inline-block transition-all duration-700 transform ${
+        textVisible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-4 opacity-0"
+      }`}
+      style={{ transitionDelay: "0.2s" }}
+    >
+      <Text id="home.experimentingEveryday" />
+    </span>
+  </h1>
 
-        <div className="flex flex-col justify-center items-center w-1/2 mx-auto">
-          <p
-            className={`text-[#fff] mb-10 text-2xl text-left ml-10 flex flex-col justify-center items-center transition-all duration-1000 transform ${
-              textVisible
-                ? "translate-y-0 opacity-100"
-                : "translate-y-8 opacity-0"
-            }`}
-            style={{ transitionDelay: "0.6s" }}
-          >
-            <Text id="home.boundariesPushed" />
-          </p>
-        </div>
+  <div className="flex flex-col justify-center items-center w-1/2 mx-auto">
+    <p
+      className={`text-[#fff] mb-10 text-2xl text-left ml-10 flex flex-col justify-center items-center transition-all duration-1000 transform ${
+        textVisible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-8 opacity-0"
+      }`}
+      style={{ transitionDelay: "0.6s" }}
+    >
+      <Text id="home.boundariesPushed" />
+    </p>
+  </div>
 
-        <div
-          className={`transition-all duration-1000 transform ${
-            textVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0"
-          }`}
-          style={{ transitionDelay: "1s" }}
-        >
-          <Button
-            href="/explore"
-            variant="secondary"
-            size="medium"
-          >
-            <Text id="home.exploreProcess" />
-          </Button>
-        </div>
+  <div
+    className={`transition-all duration-1000 transform ${
+      textVisible
+        ? "translate-y-0 opacity-100"
+        : "translate-y-8 opacity-0"
+    }`}
+    style={{ transitionDelay: "1s" }}
+  >
+    <Button
+      href="/explore"
+      variant="secondary"
+      size="medium"
+    >
+      <Text id="home.exploreProcess" />
+    </Button>
+  </div>
 
-        <div className="absolute top-20 left-10 w-32 h-1 bg-white/30 transform origin-left">
-          <div
-            className={`h-full bg-white transition-all duration-1500 ${
-              textVisible ? "w-full" : "w-0"
-            }`}
-            style={{ transitionDelay: "0.4s" }}
-          ></div>
-        </div>
+  <div className="absolute top-20 left-10 w-32 h-1 bg-white/30 transform origin-left">
+    <div
+      className={`h-full bg-white transition-all duration-1500 ${
+        textVisible ? "w-full" : "w-0"
+      }`}
+      style={{ transitionDelay: "0.4s" }}
+    ></div>
+  </div>
 
-        <div className="absolute bottom-20 right-10 w-32 h-1 bg-white/30 transform origin-right">
-          <div
-            className={`h-full bg-white transition-all duration-1500 ${
-              textVisible ? "w-full" : "w-0"
-            }`}
-            style={{ transitionDelay: "1.2s" }}
-          ></div>
-        </div>
-      </div>
+  <div className="absolute bottom-20 right-10 w-32 h-1 bg-white/30 transform origin-right">
+    <div
+      className={`h-full bg-white transition-all duration-1500 ${
+        textVisible ? "w-full" : "w-0"
+      }`}
+      style={{ transitionDelay: "1.2s" }}
+    ></div>
+  </div>
+</div>
 
-      <style>{`
-        @keyframes bounce-subtle {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-4px);
-          }
-        }
+<style>{`
+  @keyframes bounce-subtle {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
 
-        .animate-bounce-subtle {
-          animation: bounce-subtle 2s ease-in-out infinite;
-        }
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
 
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+`}</style>
     </div>
   );
 }

@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { X, Upload, Star } from "lucide-react";
 import Text from "../wrapper/Text";
+import { CreateCommentInterface } from "@/lib/api/service/comment.service";
 
 type CommentModalProps = {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: CreateCommentInterface) => void;
   isOpen: boolean;
   onClose: () => void;
 };
@@ -27,14 +28,14 @@ const CommentModal = ({ onSubmit, isOpen, onClose }: CommentModalProps) => {
   } = useForm({
     defaultValues: {
       rate: 0,
-      content: "",
+      comment: "",
       images: [],
     },
   });
   const rating = watch("rate");
 
-  const handleImageChange = (e: any) => {
-    const files = Array.from(e.target.files);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       const newPreviews = files.map((file) => ({
         file,
@@ -50,10 +51,10 @@ const CommentModal = ({ onSubmit, isOpen, onClose }: CommentModalProps) => {
     );
   };
 
-  const submitForm = async (data: any) => {
+  const submitForm = async (data: CreateCommentInterface) => {
     onSubmit({
       ...data,
-      images: previewImages.map((image) => image.file),
+      images: previewImages.map((image) => image.file as unknown as string),
     });
     setPreviewImages([]);
     reset();
@@ -124,15 +125,15 @@ const CommentModal = ({ onSubmit, isOpen, onClose }: CommentModalProps) => {
               Your Review
             </label>
             <textarea
-              {...register("content", {
+              {...register("comment", {
                 required: "Review comment is required",
               })}
               rows={5}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
-            {errors.content && (
+            {errors.comment && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.content.message}
+                {errors.comment.message}
               </p>
             )}
           </div>

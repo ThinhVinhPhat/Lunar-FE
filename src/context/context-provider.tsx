@@ -1,12 +1,12 @@
-import { useGetUser } from "../hooks/queryClient/query/user";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { OrderDetail } from "@/types/order";
 import { Order } from "@/types/order";
 import { UserType } from "@/types/user";
 import { createContext, useEffect, useMemo, useRef, useState } from "react";
-import { useCreateOrder } from "../hooks/queryClient/mutator/order/order";
-import i18n from "../i18n";
 import Cookies from "js-cookie";
 import { Socket, io } from "socket.io-client";
+import { useCreateOrder } from "@/lib/hooks/queryClient/mutator/order/order";
+import i18n from "@/i18n";
 type ContextType = {
   isLogin: boolean | UserType;
   isAdmin: boolean;

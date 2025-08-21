@@ -1,17 +1,14 @@
-import { AuthType } from "@/types/user";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { enqueueSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormField } from "@/components/form/form-register";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useRegister } from "@/hooks/queryClient/mutator/auth/register";
-import {
-  AuthProps,
-  isAlreadyLoginAuth,
-} from "@/components/wrapper/withAuth";
+import { useRegister } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
+import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { RegisterInterface } from "@/lib/api/service/auth.service";
 
 const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -67,23 +64,18 @@ const Register: React.FC<AuthProps> = () => {
 
   const [isRevealPassword, setIsRevealPassword] = useState(false);
   const navigate = useNavigate();
-  const { mutateAsync: registerUser, isPending: isPendingRegister } = useRegister();
+  const { mutateAsync: registerUser, isPending: isPendingRegister } =
+    useRegister();
   const passwordValue = watch("password");
   const passwordStrength = useMemo(
     () => calculatePasswordStrength(passwordValue),
     [passwordValue]
   );
 
-  const onSubmit = async (data: AuthType) => {
-    if (data.password !== data.confirmPassword) {
-      enqueueSnackbar("Passwords do not match", { variant: "error" });
-      return;
-    }
-    const response = await registerUser(data);
-    if (response) {
-      reset();
-      navigate(`/verify-register/${data.email}`);
-    }
+  const onSubmit = async (data: RegisterInterface) => {
+    await registerUser(data);
+    reset();
+    navigate(`/verify-register/${data.email}`);
   };
 
   return (
@@ -98,59 +90,67 @@ const Register: React.FC<AuthProps> = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {["firstName", "lastName", "email", "password", "confirmPassword"].map(
-                (field) => (
-                  <div key={field}>
-                    <label
-                      htmlFor={field}
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      {field.charAt(0).toUpperCase() + field.slice(1)}
-                    </label>
-                    <FormField
-                      label={field}
-                      type={
-                        field === "password" || field === "confirmPassword"
-                          ? isRevealPassword
-                            ? "text"
-                            : "password"
-                          : field === "email"
-                          ? "email"
-                          : "text"
-                      }
-                      isPassword={field === "password" || field === "confirmPassword"}
-                      onClick={() =>
-                        field === "password" || field === "confirmPassword"
-                          ? setIsRevealPassword(!isRevealPassword)
-                          : null
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-                      {...register(
-                        field as
-                          | "email"
-                          | "password"
-                          | "confirmPassword"
-                          | "firstName"
-                          | "lastName"
-                      )}
-                    />
-                    {field === "password" && (
-                      <div className="mt-2 h-2 w-full bg-gray-200 rounded-md overflow-hidden">
-                        <div
-                          className={`h-full ${getStrengthColor(passwordStrength)} transition-all duration-300`}
-                          style={{ width: `${(passwordStrength / 4) * 100}%` }}
-                        />
-                      </div>
+              {[
+                "firstName",
+                "lastName",
+                "email",
+                "password",
+                "confirmPassword",
+              ].map((field) => (
+                <div key={field}>
+                  <label
+                    htmlFor={field}
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <FormField
+                    label={field}
+                    type={
+                      field === "password" || field === "confirmPassword"
+                        ? isRevealPassword
+                          ? "text"
+                          : "password"
+                        : field === "email"
+                        ? "email"
+                        : "text"
+                    }
+                    isPassword={
+                      field === "password" || field === "confirmPassword"
+                    }
+                    onClick={() =>
+                      field === "password" || field === "confirmPassword"
+                        ? setIsRevealPassword(!isRevealPassword)
+                        : null
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                    {...register(
+                      field as
+                        | "email"
+                        | "password"
+                        | "confirmPassword"
+                        | "firstName"
+                        | "lastName"
                     )}
+                  />
+                  {field === "password" && (
+                    <div className="mt-2 h-2 w-full bg-gray-200 rounded-md overflow-hidden">
+                      <div
+                        className={`h-full ${getStrengthColor(
+                          passwordStrength
+                        )} transition-all duration-300`}
+                        style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                      />
+                    </div>
+                  )}
 
-                    {errors[field as keyof typeof errors] && (
-                      <p className="text-red-700 text-sm mt-1">
-                        {errors[field as keyof typeof errors]?.message}
-                      </p>
-                    )}
-                  </div>
-                )
-              )}
+                  {errors[field as keyof typeof errors] && (
+                    <p className="text-red-700 text-sm mt-1">
+                      {errors[field as keyof typeof errors]?.message}
+                    </p>
+                  )}
+                </div>
+              ))}
 
               <button
                 type="submit"

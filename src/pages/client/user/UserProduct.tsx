@@ -1,13 +1,15 @@
-import { useGetFavoriteProducts } from "@/hooks/queryClient/query/product/favorite-product";
+import { useGetFavoriteProducts } from "@/lib/hooks/queryClient/query/product/product.query";
 import Text from "@/components/wrapper/Text";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { CommentSort, CommentType } from "@/types/review";
-import { useGetCommentUser } from "@/hooks/queryClient/query/comment/get-comment-user";
+import { useGetCommentUser } from "@/lib/hooks/queryClient/query/comment/comment.query";
 import { useState } from "react";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 import { Pagination } from "@/components/ui/Pagination";
+import { FavoriteProductInterface } from "@/types/product";
+
 
 function UserProduct() {
   const { data: favoriteProducts, isLoading } = useGetFavoriteProducts();
@@ -36,7 +38,7 @@ function UserProduct() {
               {favoriteProducts && favoriteProducts.length > 0 ? (
                 <div className="col-span-full overflow-hidden w-[880px]">
                   <div className="flex overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-                    {favoriteProducts.map((item: any) => (
+                    {favoriteProducts.map((item: FavoriteProductInterface) => (
                       <div
                         key={item.product.id}
                         className="group p-4 relative overflow-hidden rounded-lg border border-gray-200 min-w-[280px] mr-4 snap-start"

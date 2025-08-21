@@ -1,11 +1,8 @@
-import {
-  AuthProps,
-  isAlreadyLoginAuth,
-} from "@/components/wrapper/withAuth";
+import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
 import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CodeForm from "@/components/ui/CodeForm";
-import { useVerifyRegister } from "@/hooks/queryClient/mutator/auth/verify";
+import { useVerifyRegister } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
 
 const VerifyRegister: React.FC<AuthProps> = () => {
   const [verificationCode, setVerificationCode] = useState([
@@ -69,12 +66,11 @@ const VerifyRegister: React.FC<AuthProps> = () => {
       return;
     }
 
-    const response = await verifyRegister({
+    await verifyRegister({
       email: email.email as string,
       code: verificationCode.join(""),
     });
 
-    if (response.status === 200) {
       setMessage({
         type: "success",
         text: "Registration verified successfully!",
@@ -82,12 +78,6 @@ const VerifyRegister: React.FC<AuthProps> = () => {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } else {
-      setMessage({
-        type: "error",
-        text: "Failed to verify registration!",
-      });
-    }
   };
 
   return (

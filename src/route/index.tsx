@@ -28,6 +28,8 @@ import NotificationPage from "../pages/admin/notification/NotificationPage";
 import { RequireRole } from "../components/wrapper/withAuth";
 import { Role } from "../types/notification";
 import Unauthorized from "../pages/admin/Unauthorized";
+import WAdminDiscount from "@/pages/admin/discount";
+import DiscountPage from "@/pages/client/user/DiscountPage";
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path: "/order/track/:id",
         element: <OrderTrack />,
+      },
+      {
+        path: "/discount",
+        element: <DiscountPage />,
       },
     ],
   },
@@ -165,6 +171,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole allowedRoles={[Role.ADMIN]}>
             <NotificationPage />,
+          </RequireRole>
+        ),
+      },
+      {
+        path: "/admin/discounts",
+        element: (
+          <RequireRole allowedRoles={[Role.ADMIN]}>
+            <WAdminDiscount />,
           </RequireRole>
         ),
       },

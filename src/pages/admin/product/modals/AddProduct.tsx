@@ -1,7 +1,7 @@
-import { useGetCategoriesDetail } from "@/hooks/queryClient/query/category";
+import { useGetCategoriesDetail } from "@/lib/hooks/queryClient/query/category/category.query";
 import { Controller, useForm } from "react-hook-form";
 import { FormField } from "@/components/form/form-register";
-import { useAddProduct } from "@/hooks/queryClient/mutator/product/add-product";
+import { useAddProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
 import clsx from "clsx";
 import { Product } from "@/types/product";
 import { CategoryDetail } from "@/types/category";
@@ -20,10 +20,18 @@ type AddProductForm = {
   discount: number;
   description: string;
   categoryId: string[];
-  images: (string | File)[];
+  images: string[];
   isFreeShip: boolean;
   isFeatured: boolean;
   isNew: boolean;
+};
+
+type ProductCategory = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  quantity: number;
+  categoryDetails: CategoryDetail;
 };
 
 export const AddProductModal = ({
@@ -54,7 +62,7 @@ export const AddProductModal = ({
       discount: Number(product?.discount_percentage) || 0,
       categoryId:
         product?.productCategories?.map(
-          (category: any) => category.categoryDetails.id
+          (category: ProductCategory) => category.categoryDetails.id
         ) || [],
       images: product?.images || [],
       isFreeShip: product?.isFreeShip,
@@ -66,10 +74,12 @@ export const AddProductModal = ({
   const { data: categoriesDetails } = useGetCategoriesDetail();
   const { mutateAsync: addProduct, isPending: isAdding } = useAddProduct();
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: AddProductForm) => {
     if (!isDirty) return;
-    const res = await addProduct(data);
+    const res = await addProduct({
+      ...data,
+      images: data.images.map((image) => image.toString()),
+    });
     if (res.status === 201) {
       reset();
       setShowAddModal(false);
@@ -80,7 +90,7 @@ export const AddProductModal = ({
     if (e.target.files && e.target.files.length > 0) {
       const currentImages = getValues("images") || [];
       const newFiles = Array.from(e.target.files);
-      setValue("images", [...currentImages, ...newFiles]);
+      setValue("images", [...currentImages, ...newFiles.map((file) => file.toString())]);
     }
   };
 
@@ -114,7 +124,7 @@ export const AddProductModal = ({
                           label="Product Name"
                           value={product?.name}
                           placeholder="Enter product name"
-                          error={errors.name?.message as any}
+                          error={errors.name?.message as string}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("name")}
                         />
@@ -136,17 +146,17 @@ export const AddProductModal = ({
                                   render={({ field }) => (
                                     <input
                                       type="checkbox"
-                                      value={category.id}
+                                      value={category.name}
                                       checked={product?.productCategories?.some(
-                                        (productCategory: any) =>
+                                        (productCategory: ProductCategory) =>
                                           productCategory.categoryDetails.id ===
                                           category.id
                                       )}
                                       onChange={(e) => {
                                         const newValue = e.target.checked
-                                          ? [...field.value, category.id]
+                                          ? [...field.value, category.name]
                                           : field.value.filter(
-                                              (id) => id !== category.id
+                                              (name) => name !== category.name
                                             );
                                         field.onChange(newValue);
                                       }}
@@ -178,7 +188,7 @@ export const AddProductModal = ({
                             value={product?.price}
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter price"
-                            error={errors.price?.message as any}
+                            error={errors.price?.message as string}
                             {...register("price")}
                           />
                         </div>
@@ -193,7 +203,7 @@ export const AddProductModal = ({
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter stock"
                             {...register("stock")}
-                            error={errors.stock?.message as any}
+                            error={errors.stock?.message as string}
                           />
                         </div>
                         <div>
@@ -207,7 +217,7 @@ export const AddProductModal = ({
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter discount"
                             {...register("discount")}
-                            error={errors.discount?.message as any}
+                            error={errors.discount?.message as string}
                           />
                         </div>
                       </div>

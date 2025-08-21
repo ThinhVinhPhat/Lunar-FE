@@ -3,7 +3,7 @@ import Filter from "@/components/product/Filter/Filter";
 import { useParams } from "react-router-dom";
 import { Pagination } from "@/components/ui/Pagination";
 import Text from "@/components/wrapper/Text";
-import { useProductAction } from "@/hooks/useProductAction";
+import { useProductAction } from "@/lib/hooks/useProductAction";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 const ProductList = () => {
   const { type } = useParams();
@@ -12,6 +12,7 @@ const ProductList = () => {
   const { products, isLoading, total } = useProductAction(page, 20, {
     category: currentFiltered,
   });
+
   return (
     <div className="bg-white min-h-screen pt-20">
       <div className="relative bg-gray-900 text-white">
@@ -51,7 +52,7 @@ const ProductList = () => {
                 productCount={total}
                 currentPage={page}
                 onSetPage={setPage}
-                limit={20}
+                limit={12}
               />
             </section>
 

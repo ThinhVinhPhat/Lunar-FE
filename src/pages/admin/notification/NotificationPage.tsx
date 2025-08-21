@@ -9,27 +9,27 @@ import {
   Filter,
   Search,
 } from "lucide-react";
-import { useGetAllNotification } from "@/hooks/queryClient/query/notification/find-all";
-import {
-  NotificationTemplate,
-  NotificationType,
-} from "@/types/notification";
+import { useGetAllNotification } from "@/lib/hooks/queryClient/query/notification/notification.query";
+import { NotificationTemplate, NotificationType } from "@/types/notification";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 import Pagination from "@/components/admin/pagination";
 import { AddNotificationModal } from "./modals/AddNotification";
-import { useCreateNotification } from "@/hooks/queryClient/mutator/notification/create-notification";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
-import { useUpdateNotification } from "@/hooks/queryClient/mutator/notification/update-notification";
-import { useDeleteNotification } from "@/hooks/queryClient/mutator/notification/delete-notification";
-import { formatDate } from "@/ultis/formatDate";
-import useNotificationMessageAction from "@/hooks/useNotificationMessageAction";
+import { formatDate } from "@/lib/ultis/formatDate";
+import useNotificationMessageAction from "@/lib/hooks/useNotificationMessageAction";
+import {
+  useCreateNotification,
+  useDeleteNotification,
+  useUpdateNotification,
+} from "@/lib/hooks/queryClient/mutator/notification/notification.mutator";
+import { CreateNotificationParams, UpdateNotificationParams } from "@/lib/api/service/notification.service";
 
 const NotificationPage = () => {
   const {
     data: notifications,
     isLoading,
     refetch,
-  } = useGetAllNotification("", 0, 5);
+  } = useGetAllNotification("", 1, 5);
   const { mutateAsync: updateNotification } = useUpdateNotification();
   const { mutateAsync: deleteNotification } = useDeleteNotification();
   const { mutateAsync: createNotification } = useCreateNotification();
@@ -43,7 +43,7 @@ const NotificationPage = () => {
   const [currentNotification, setCurrentNotification] =
     useState<NotificationTemplate | null>(null);
 
-  const handleSubmitNotification = async (data: NotificationTemplate) => {
+  const handleSubmitNotification = async (data: CreateNotificationParams) => {
     try {
       const isCreated = await createNotification(data);
       if (isCreated) {
@@ -65,7 +65,7 @@ const NotificationPage = () => {
     }
   };
 
-  const handleUpdateNotification = async (data: NotificationTemplate) => {
+  const handleUpdateNotification = async (data: UpdateNotificationParams) => {
     if (currentNotification) {
       await updateNotification({ id: currentNotification.id, data });
       refetch();

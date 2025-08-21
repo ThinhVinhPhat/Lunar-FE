@@ -4,13 +4,10 @@ import { useState } from "react";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
 import Pagination from "@/components/admin/pagination";
 import SearchComponent from "@/components/admin/ui/Search";
-import { useDeleteProduct } from "@/hooks/queryClient/mutator/product/delete-product";
+import { useDeleteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
 import { AddProductModal } from "./modals/AddProduct";
-import {
-  AuthProps,
-  isLoginAdminAuth,
-} from "@/components/wrapper/withAuth";
-import { useProductAction } from "@/hooks/useProductAction";
+import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
+import { useProductAction } from "@/lib/hooks/useProductAction";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const AdminProduct: React.FC<AuthProps> = () => {
@@ -31,8 +28,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
           .includes(searchTerm.toLowerCase())
       )
   );
-  const totalProducts =
-    searchTerm === "" ? total : filteredProducts?.length;
+  const totalProducts = searchTerm === "" ? total : filteredProducts?.length;
   const totalPages = Math.ceil(totalProducts / 5);
 
   const handleEdit = (product: Product) => {
@@ -72,6 +68,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
           <SearchComponent
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            placeholder="Search products..."
           />
         </div>
       </div>

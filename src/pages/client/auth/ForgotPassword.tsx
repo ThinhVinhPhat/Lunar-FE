@@ -1,6 +1,8 @@
 import CodeForm from "@/components/ui/CodeForm";
-import { useForgotPassword } from "@/hooks/queryClient/mutator/auth/forgot";
-import { useUpdatePassword } from "@/hooks/queryClient/mutator/auth/update-password";
+import {
+  useForgotPassword,
+  useUpdatePassword,
+} from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,10 +12,14 @@ function ForgotPassword() {
   const [step, setStep] = useState<"email" | "code" | "newPassword">("email");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { mutateAsync: mutateForgotPassword, statusResponse: statusForgotPassword } =
-    useForgotPassword();
-  const { mutateAsync: mutateUpdatePassword, statusResponse: statusUpdatePassword } =
-    useUpdatePassword();
+  const {
+    mutateAsync: mutateForgotPassword,
+    statusResponse: statusForgotPassword,
+  } = useForgotPassword();
+  const {
+    mutateAsync: mutateUpdatePassword,
+    statusResponse: statusUpdatePassword,
+  } = useUpdatePassword();
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -66,7 +72,7 @@ function ForgotPassword() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    await mutateForgotPassword(email);
+    await mutateForgotPassword({ email });
 
     setTimeout(() => {
       if (statusForgotPassword) {

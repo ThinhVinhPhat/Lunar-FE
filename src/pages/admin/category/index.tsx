@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AddCategoryModal from "./modals/AddCategory";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
-import { useGetCategories } from "@/hooks/queryClient/query/category";
+import { useGetCategories } from "@/lib/hooks/queryClient/query/category/category.query";
 import SearchComponent from "@/components/admin/ui/Search";
 import { Category, CategoryDetail } from "@/types/category";
 import Pagination from "@/components/admin/pagination";
 import AddCategoryDetail from "./modals/AddCategoryDetail";
-import {
-  AuthProps,
-  isLoginAdminAuth,
-} from "@/components/wrapper/withAuth";
-import { useDeleteDetail } from "@/hooks/queryClient/mutator/category/categoryDetail/delete-detail";
-import { useDeleteCategory } from "@/hooks/queryClient/mutator/category/delete-category";
+import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
+import { useDeleteDetail } from "@/lib/hooks/queryClient/mutator/category/categoryDetail/categoryDetail.mutator";
+import { useDeleteCategory } from "@/lib/hooks/queryClient/mutator/category/category.mutator";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const AdminCategory: React.FC<AuthProps> = () => {
@@ -86,6 +83,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
           <SearchComponent
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            placeholder="Search categories..."
           />
         </div>
         <div className="space-y-8 mb-6">

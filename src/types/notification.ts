@@ -27,4 +27,5 @@ export interface NotificationTemplate {
   targetRoles?: Role[];
   createdAt: string;
   updatedAt: string;
+  status: boolean;
 }

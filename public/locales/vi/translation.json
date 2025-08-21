@@ -89,7 +89,13 @@
     "remove": "Xóa",
     "youve_qualified_for_free_us_shipping": "🎉 Bạn đã đạt được vận chuyển miễn phí tại Mỹ!",
     "away_from_free_us_shipping": "cách vận chuyển miễn phí tại Mỹ",
-    "please_update_your_address_and_phone_number_to_proceed_with_the_order": "Vui lòng cập nhật địa chỉ và số điện thoại của bạn để tiếp tục đặt hàng."
+    "please_update_your_address_and_phone_number_to_proceed_with_the_order": "Vui lòng cập nhật địa chỉ và số điện thoại của bạn để tiếp tục đặt hàng.",
+    "available_discounts": "Ưu đãi có sẵn",
+    "no_discounts_available": "Không có ưu đãi nào có sẵn",
+    "subtotal": "Tổng tiền sản phẩm",
+    "shipping_and_taxes_calculated_at_checkout": "Phí vận chuyển và thuế được tính tại thời điểm thanh toán.",
+    "checkout": "Thanh toán",
+    "final_total": "Tổng tiền"
   },
   "order_history": {
     "order_history": "Lịch sử đơn hàng",
@@ -150,7 +156,8 @@
   "user_options": {
     "my_orders": "Đơn hàng của tôi",
     "sign_out": "Đăng xuất",
-    "my_profile": "Hồ sơ của tôi"
+    "my_profile": "Hồ sơ của tôi",
+    "my_discount": "Ưu đãi của tôi"
   },
   "collections": {
     "exploreCollection": "Khám phá bộ sưu tập"
@@ -282,5 +289,34 @@
     "search_products": "Tìm kiếm sản phẩm",
     "search_placeholder": "Tìm kiếm sản phẩm...",
     "popular_searches": "Tìm kiếm phổ biến"
+  },
+  "discount": {
+    "discountVoucher": "Kho Voucher",
+    "findMoreVoucher": "Tìm thêm Voucher",
+    "viewHistoryVoucher": "Xem lịch sử Voucher",
+    "learnMore": "Tìm hiểu",
+    "newest": "Mới nhất",
+    "expiry": "Sắp hết hạn",
+    "usage": "Phổ biến",
+    "highestValue": "Giá trị cao",
+    "all": "Tất cả",
+    "discountProduct": "Giảm giá sản phẩm",
+    "freeShip": "Miễn phí vận chuyển",
+    "voucherCode": "Mã Voucher",
+    "enterVoucherCode": "Nhập mã voucher tại đây",
+    "save": "Lưu",
+    "expiringSoon": "Sắp hết hạn",
+    "popular": "Phổ biến",
+    "discountManagement": "Quản lý ưu đãi",
+    "manageProductDiscounts": "Quản lý ưu đãi sản phẩm",
+    "addDiscount": "Thêm ưu đãi",
+    "searchDiscounts": "Tìm kiếm ưu đãi",
+    "useNow": "Dùng Ngay",
+    "allProducts": "Tất cả sản phẩm",
+    "apply": "Áp dụng",
+    "available_discounts": "Ưu đãi có sẵn",
+    "min_spend": "Giá trị tối thiểu",
+    "expires": "Hết hạn",
+    "delete": "Xóa"
   }
 }

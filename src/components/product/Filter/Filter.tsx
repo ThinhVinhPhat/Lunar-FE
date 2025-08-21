@@ -3,9 +3,9 @@ import { FiFilter } from "react-icons/fi";
 import ProductItem from "../ProductItem";
 import FilterItem from "./FitlerItem";
 import { filterOptions } from "@/database/filter";
-import { useFilter } from "@/hooks/useFilter";
+import { useFilter } from "@/lib/hooks/useFilter";
 import Text from "@/components/wrapper/Text";
-import { useProductAction } from "@/hooks/useProductAction";
+import { useProductAction } from "@/lib/hooks/useProductAction";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 type FilterProps = {
   isLoading: boolean;

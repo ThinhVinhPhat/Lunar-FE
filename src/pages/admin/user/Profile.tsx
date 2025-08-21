@@ -1,18 +1,18 @@
-import {
-  AuthProps,
-  isLoginAdminAuth,
-} from "@/components/wrapper/withAuth";
+import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
 import FormProfile from "@/components/form/form-profile";
 import {
   getDeviceInfo,
   inboxMessages,
   notifications,
 } from "@/database/admin/profile";
-import { useUpdateUser } from "@/hooks/queryClient/mutator/user/update";
-import { useGetUser } from "@/hooks/queryClient/query/user";
+import { useUpdateUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { UserType } from "@/types/user";
+
+type DeviceInfoType = { name: string; value: string };
 
 const AdminProfile: React.FC<AuthProps> = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -63,7 +63,7 @@ const AdminProfile: React.FC<AuthProps> = () => {
     }
   }, [user]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: UserType) => {
     try {
       if (isDirty) {
         await updateUser(data);
@@ -154,7 +154,7 @@ const AdminProfile: React.FC<AuthProps> = () => {
                 Trạng thái hệ thống
               </h3>
               <div className="space-y-3">
-                {deviceInfo?.map((item: any, index: number) => (
+                {deviceInfo?.map((item: DeviceInfoType, index: number) => (
                   <div
                     key={index}
                     className="flex justify-between items-center"

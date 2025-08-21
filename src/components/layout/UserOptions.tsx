@@ -39,6 +39,15 @@ function UserOptions({
           <button
             onClick={() => {
               setIsProfileOpen(false);
+              navigate("/discount");
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            <Text id="user_options.my_discount" />
+          </button>
+          <button
+            onClick={() => {
+              setIsProfileOpen(false);
               handleSignOut();
             }}
             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"

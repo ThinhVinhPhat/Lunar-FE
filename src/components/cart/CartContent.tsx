@@ -12,7 +12,6 @@ type CartType = {
     quantity: number
   ) => void;
   cartItems: OrderDetail[];
-  toggleCart: () => void;
   removeItem: (id: string) => void;
   onClose: () => void;
 };

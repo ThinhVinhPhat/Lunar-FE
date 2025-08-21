@@ -5,13 +5,10 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormField } from "@/components/form/form-register";
-import {
-  AuthProps,
-  isAlreadyLoginAuth,
-} from "@/components/wrapper/withAuth";
-import { login } from "@/api/service/auth.service";
+import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { login } from "@/lib/api/service/auth.service";
 import Cookies from "js-cookie";
-import { UserService } from "@/api/service/user.service";
+import { UserService } from "@/lib/api/service/user.service";
 import { Role } from "@/types/notification";
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
@@ -36,7 +33,6 @@ const AdminLogin: React.FC<AuthProps> = () => {
     Cookies.set("refreshToken", response.refreshToken);
 
     const user = await UserService.getUser();
-    console.log(user);
     if (user) {
       if (user.data.role === Role.ADMIN || user.data.role === Role.ENGINEER) {
         navigate(

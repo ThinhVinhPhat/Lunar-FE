@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useUpdateUser } from "@/hooks/queryClient/mutator/user/update";
+import { useUpdateUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
 import { useForm } from "react-hook-form";
 import OrderHistory from "./OrderHistory";
 import UserProduct from "./UserProduct";
-import { useGetUser } from "@/hooks/queryClient/query/user";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { useNavigate } from "react-router-dom";
 import FormProfile from "@/components/form/form-profile";
+import { UserType } from "@/types/user";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -37,7 +38,7 @@ const Profile = () => {
     }
   }, [user]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: UserType) => {
     try {
       if (isDirty) {
         await updateUser(data);

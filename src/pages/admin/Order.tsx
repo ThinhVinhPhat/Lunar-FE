@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Search, Edit, Trash } from "lucide-react";
 import { isLoginAdminAuth, AuthProps } from "@/components/wrapper/withAuth";
 import { Order } from "@/types/order";
-import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
-import { useDeleteOrder } from "@/hooks/queryClient/mutator/order/order";
+import { useDeleteOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 import UpdateOrderStatus from "@/components/order/UpdateOrderStatus";
 import Pagination from "@/components/admin/pagination";
 

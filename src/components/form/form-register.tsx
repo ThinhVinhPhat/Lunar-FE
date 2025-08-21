@@ -47,12 +47,18 @@ export const FormField = forwardRef(
           <input
             type={type}
             className={`form-control ${className}`}
+            name={label}
+            autoComplete={label}
             placeholder={label}
             ref={ref}
             {...other}
           />
         )}
-        {error && <div className="error-feedback">{typeof error === 'string' ? error : error?.message}</div>}
+        {error && (
+          <div className="error-feedback text-red-600">
+            {typeof error === "string" ? error : error?.message}
+          </div>
+        )}
       </div>
     );
   }

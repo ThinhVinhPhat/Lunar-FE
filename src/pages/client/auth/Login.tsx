@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useContextProvider } from "@/hooks/useContextProvider";
+import { useContextProvider } from "@/lib/hooks/useContextProvider";
 import { useForm } from "react-hook-form";
-import { AuthType } from "@/types/user";
 import { FormField } from "@/components/form/form-register";
-import { useLogin } from "@/hooks/queryClient/mutator/auth/login";
+import { useLogin } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
 import SocialLogin from "./SocialLogin";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AuthProps,
-  isAlreadyLoginAuth,
-} from "@/components/wrapper/withAuth";
+import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { LoginInterface } from "@/lib/api/service/auth.service";
 
 const schema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
@@ -33,19 +30,18 @@ const Login: React.FC<AuthProps> = () => {
     },
     resolver: zodResolver(schema),
   });
-  const { setIsLogin } = useContextProvider();
+  const { setIsLogin } = useContextProvider() as {
+    setIsLogin: (isLogin: boolean) => void;
+  };
   const [isRevealPassword, setIsRevealPassword] = useState(false);
 
   const { mutateAsync: login, isPending: isPendingLogin } = useLogin();
   const navigate = useNavigate();
 
-  const onSubmit = async (data: AuthType) => {
-    const res = await login(data);
-    console.log(res);
-    if (res) {
-      navigate("/");
-      setIsLogin(true);
-    }
+  const onSubmit = async (data: LoginInterface) => {
+    await login(data);
+    navigate("/");
+    setIsLogin(true);
   };
   const handleGoogleLogin = () => {
     window.location.href =

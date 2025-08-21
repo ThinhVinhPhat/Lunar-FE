@@ -1,9 +1,9 @@
 import { NotificationTemplate } from "@/types/notification";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 import { useNavigate } from "react-router-dom";
-import useNotificationMessageAction from "@/hooks/useNotificationMessageAction";
+import useNotificationMessageAction from "@/lib/hooks/useNotificationMessageAction";
 import { useState } from "react";
-import { formatTime } from "@/ultis/formatDate";
+import { formatTime } from "@/lib/ultis/formatDate";
 
 type Props = {
   isOpen: boolean;
@@ -26,7 +26,6 @@ export default function NotificationBell({ isOpen, setIsOpen }: Props) {
     isRead,
     handleUpdateNotification,
   } = useNotificationMessageAction(setIsOpen, isOpen);
-
 
   return (
     <IsLoadingWrapper isLoading={isLoading || isLoadingNotification}>

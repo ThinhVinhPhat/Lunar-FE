@@ -37,6 +37,8 @@ function ProductItem({
     }
   };
 
+  console.log(activeVariant.allColors);
+
   return (
     <div
       key={product.id}
@@ -112,20 +114,33 @@ function ProductItem({
       </div>
 
       <div className="pt-4 text-center">
-        <div className="flex justify-center gap-2 mb-2">
+        <div className="flex justify-center gap-3 mb-4">
           {product.allColors?.map((variant) => (
             <button
               key={variant.id}
               onClick={() => handleVariantClick(variant.id)}
               className={clsx(
-                "w-6 h-6 rounded-full border-2 transition-transform duration-200",
+                `w-10 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110`,
                 {
-                  "border-black scale-110": activeVariant.id === variant.id,
-                  "border-gray-300": activeVariant.id !== variant.id,
+                  "border-[#C8A846] scale-110 shadow-md":
+                    activeVariant.id === variant.id,
+                  "border-gray-200 hover:border-gray-400":
+                    activeVariant.id !== variant.id,
                 }
               )}
-              style={{ backgroundColor: variant.color || "#ccc" }}
-            ></button>
+              title={variant.color}
+            >
+              <div className="relative w-full h-full">
+                <img
+                  src={variant.image}
+                  alt={variant.color}
+                  className="w-full h-full object-cover rounded-full"
+                />
+                {activeVariant.id === variant.id && (
+                  <div className="absolute inset-0 rounded-full border-2 border-[#C8A846] animate-ping" />
+                )}
+              </div>
+            </button>
           ))}
         </div>
         <h3 className="text-md font-medium mb-1 text-[#2c2c2c] group-hover:text-[#C8A846] transition-colors duration-300">

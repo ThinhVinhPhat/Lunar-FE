@@ -1,3 +1,4 @@
+import { DiscountInterface } from "./discount";
 import { ProductType } from "./product";
 import { UserType } from "./user";
 
@@ -24,6 +25,8 @@ export type Order = {
   user: UserType;
   shipments: Shipment[];
   orderTracks: TrackingOrder[];
+  discounts: DiscountInterface[];
+  finalPrice: number;
 };
 
 export enum OrderStatus {

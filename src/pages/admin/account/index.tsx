@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Search, Edit, Trash2, UserPlus, Lock, User } from "lucide-react";
-import { useFindUser } from "@/hooks/queryClient/query/user";
+import { useFindUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { UserType } from "@/types/user";
 import Pagination from "@/components/admin/pagination";
 import PermissionModal from "./modals/permision-modal";
 import AddModal from "./modals/add-modal";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
-import { useDeleteUser } from "@/hooks/queryClient/mutator/user/delete";
+import { useDeleteUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 enum Role {
@@ -24,15 +24,17 @@ const AdminAccount = () => {
   const [currentRole, setCurrentRole] = useState(Role.Customer);
   const offset = (page - 1) * 10;
   const { mutate: deleteUser } = useDeleteUser();
-
-  const queryList = {
+  const {
+    data: accounts,
+    isLoading,
+    refetch,
+    total,
+  } = useFindUser({
     email: "",
-    role: [currentRole],
+    role: currentRole,
     offset: offset,
     limit: page * 10,
-  };
-
-  const { data: accounts, isLoading, refetch, total } = useFindUser(queryList);
+  });
   const totalPages = Math.ceil(accounts.length / 10);
 
   const filteredAccounts = accounts.filter(

@@ -12,12 +12,12 @@ import {
 } from "chart.js";
 import { Eye, ShoppingBag } from "lucide-react";
 import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
-import { useGetSummary } from "@/hooks/queryClient/query/analytics/getSummary";
-import { useGetCompareLastMonth } from "@/hooks/queryClient/query/analytics/getLastMonth";
-import { transFormCard, transFormRevenue } from "@/ultis/transFormCard";
+import { useGetSummary } from "@/lib/hooks/queryClient/query/analytics/analytics.query";
+import { useGetCompareLastMonth } from "@/lib/hooks/queryClient/query/analytics/analytics.query";
+import { transFormCard, transFormRevenue } from "@/lib/ultis/transFormCard";
 import { Product } from "@/types/product";
-import { useGetMonthRevenue } from "@/hooks/queryClient/query/analytics/getMonthRevenue";
-import { useGetUserOrder } from "@/hooks/queryClient/query/analytics/getUserOrder";
+import { useGetMonthRevenue } from "@/lib/hooks/queryClient/query/analytics/analytics.query";
+import { useGetUserOrder } from "@/lib/hooks/queryClient/query/analytics/analytics.query";
 import { OrderFilterEnum, UserOrderType } from "@/types/analytic";
 import { useState } from "react";
 import { Pagination } from "@/components/ui/Pagination";

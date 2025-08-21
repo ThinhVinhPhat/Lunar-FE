@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FeaturedCollection from "../product/FeaturedCollection";
-import { useGetCategoriesDetailByCateName } from "@/hooks/queryClient/query/category";
+import { useGetCategoriesDetailByCateName } from "@/lib/hooks/queryClient/query/category/category.query";
 import { useTranslation } from "react-i18next";
 
 const Navigation = ({

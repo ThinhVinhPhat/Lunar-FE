@@ -1,6 +1,6 @@
 import { CommentType } from "@/types/review";
-import { renderStars } from "@/ultis/renderStar";
-import { useGetUser } from "@/hooks/queryClient/query/user";
+import { renderStars } from "@/lib/ultis/renderStar";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,7 +25,10 @@ function ProductReviews({ review, onDelete }: ProductReviewsProps) {
           <div className="mt-3 mb-4">
             <div className="grid grid-cols-3 gap-2">
               {review.images.map((image, index) => (
-                <div key={index} className="relative h-24 rounded overflow-hidden">
+                <div
+                  key={index}
+                  className="relative h-24 rounded overflow-hidden"
+                >
                   <img
                     src={image}
                     alt={`Review image ${index + 1}`}

@@ -6,13 +6,14 @@ import {
   Role,
 } from "@/types/notification";
 import { useEffect } from "react";
+import { CreateNotificationParams, UpdateNotificationParams } from "@/lib/api/service/notification.service";
 
 type AddNotificationModalProps = {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   currentNotification?: NotificationTemplate | undefined;
-  onSubmitNotification: (data: NotificationTemplate) => void;
-  onUpdateNotification: (data: NotificationTemplate) => void;
+  onSubmitNotification: (data: CreateNotificationParams) => void;
+  onUpdateNotification: (data: UpdateNotificationParams) => void;
 };
 
 export const AddNotificationModal = ({
@@ -29,7 +30,7 @@ export const AddNotificationModal = ({
     control,
     reset,
     formState: { isDirty, errors },
-  } = useForm<NotificationTemplate>({
+  } = useForm<CreateNotificationParams>({
     defaultValues: {
       title: currentNotification?.title || "",
       message: currentNotification?.message || "",
@@ -53,15 +54,15 @@ export const AddNotificationModal = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(e.target.files || []);
-    console.log(newFiles);
     setValue("image", newFiles as unknown as string[]);
   };
 
-  const onSubmit = (data: NotificationTemplate) => {
-    console.log(data);
-
+  const onSubmit = (data: CreateNotificationParams) => {
     if (currentNotification) {
-      onUpdateNotification(data);
+      onUpdateNotification({
+        ...data,
+        status: currentNotification.status || false,
+      });
     } else {
       onSubmitNotification(data);
     }
@@ -156,16 +157,55 @@ export const AddNotificationModal = ({
               </div>
 
               <div>
-                <label className="block font-medium text-sm text-gray-700">
+                <label className="block font-medium text-sm text-gray-700 mb-2">
                   Image
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  multiple
-                />
+                <div className="flex items-center justify-center w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-8 h-8 mb-4 text-gray-500"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500">
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG or GIF (MAX. 800x400px)
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      multiple
+                      className="hidden"
+                    />
+                  </label>
+                </div>
               </div>
+
+              {currentNotification && (
+                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <img
+                    src={currentNotification?.image?.[0] || ""}
+                    alt="Notification Image"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
               <div className="flex justify-end space-x-3">
                 <button

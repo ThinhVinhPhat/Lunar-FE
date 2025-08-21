@@ -2,7 +2,7 @@ import { useState } from "react";
 import ProductItem from "../product/ProductItem";
 import { Product } from "@/types/product";
 import Text from "../wrapper/Text";
-import { useProductAction } from "@/hooks/useProductAction";
+import { useProductAction } from "@/lib/hooks/useProductAction";
 
 const FeaturedProducts = () => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiX } from "react-icons/fi";
 import { Product } from "@/types/product";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
-import { useProductBySuggestion } from "@/hooks/queryClient/query/product/product";
+import { useProductBySuggestion } from "@/lib/hooks/queryClient/query/product/product.query";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
-import { useProducts } from "@/hooks/queryClient/query/product/products";
+import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
 import ProductSearch from "./ProductSearch";
 import { useNavigate } from "react-router-dom";
 
@@ -25,7 +25,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const debouncedValue = useDebounce(searchQuery, 500);
   const { data: productSuggestion, isLoading: isLoadingSuggestion } =
     useProductBySuggestion(debouncedValue);
-  const { data: allProducts, isLoading: isLoadingAllProducts } = useProducts({limit: 3});
+  const { data: allProducts, isLoading: isLoadingAllProducts } = useProducts({
+    limit: 3,
+  });
   const navigate = useNavigate();
 
   // Focus the search input when the modal is opened

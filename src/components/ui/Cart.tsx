@@ -1,16 +1,22 @@
 import { enqueueSnackbar } from "notistack";
-import { deleteOrderDetail } from "@/api/service/order.service";
-import { useContextProvider } from "@/hooks/useContextProvider";
+import { deleteOrderDetail } from "@/lib/api/service/order.service";
+import { useContextProvider } from "@/lib/hooks/useContextProvider";
 import { OrderDetail } from "@/types/order";
 import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import { createPayment } from "@/api/service/payment.service";
-import { useGetUser } from "@/hooks/queryClient/query/user";
+import { createPayment } from "@/lib/api/service/payment.service";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import CartContent from "../cart/CartContent";
 import CartButton from "../cart/CartButton";
-import { useGetOrderDetail } from "@/hooks/queryClient/query/order/use-get-detail";
-import { useUpdateOrder } from "@/hooks/queryClient/mutator/order/order";
+import { useGetOrderDetail } from "@/lib/hooks/queryClient/query/order/order.query";
+import { useUpdateOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 import Text from "../wrapper/Text";
+import { useGetDiscountsByUser } from "@/lib/hooks/queryClient/query/discount/discount.query";
+import CartDiscount from "../cart/CartDiscount";
+import {
+  useApplyDiscount,
+  useDeleteDiscountFromOrder,
+} from "@/lib/hooks/queryClient/mutator/discount/discount.mutaition";
 
 type CartProps = {
   isOpen: boolean;
@@ -18,14 +24,22 @@ type CartProps = {
 };
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
-  const [subtotal, setSubtotal] = useState(0);
+  const [subtotal, setSubtotal] = useState<number>(0);
   const { cart, setCartItems, cartItems, setCart } = useContextProvider();
+  const [finalTotal, setFinalTotal] = useState<number>(cart?.finalPrice || 0);
   const { data: me } = useGetUser();
   const hasValidInfo = me?.address && me?.phone;
   const isCartEmpty = cartItems.length === 0;
   const { refetch } = useGetOrderDetail(cart?.id || "");
   const { mutateAsync: updateOrder } = useUpdateOrder();
+  const { data: discounts, refetch: refetchDiscounts } =
+    useGetDiscountsByUser();
 
+  const [showDiscounts, setShowDiscounts] = useState(false);
+  const { mutateAsync: deleteDiscountFromOrder } = useDeleteDiscountFromOrder();
+  const { mutateAsync: applyDiscountMutation } = useApplyDiscount();
+  const freeShippingThreshold = 99;
+  const freeShippingRemaining = freeShippingThreshold - subtotal;
   useEffect(() => {
     setCartItems(cart?.orderDetails || []);
     calculateSubtotal(cart?.orderDetails || []);
@@ -45,7 +59,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
 
   const calculateSubtotal = (items: OrderDetail[]) => {
     const total = items.reduce(
-      (sum, item) => sum + Number(item.product.price) * item.quantity,
+      (sum, item) => sum + Number(item.price) * item.quantity,
       0
     );
     setSubtotal(total);
@@ -56,6 +70,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
       const paymentData = await createPayment(cart?.id);
       window.location.href = paymentData.link;
     } catch (error) {
+      console.log(error);
       enqueueSnackbar("Error creating payment", {
         variant: "error",
       });
@@ -73,11 +88,16 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
       setCart(updatedOrder?.data);
       enqueueSnackbar("Product removed from cart", { variant: "success" });
     } catch (error) {
+      console.log(error);
       enqueueSnackbar("Error removing product from cart", { variant: "error" });
     }
   };
 
-  const updateQuantity = async (id: string, productId: string, newQuantity: number) => {
+  const updateQuantity = async (
+    id: string,
+    productId: string,
+    newQuantity: number
+  ) => {
     if (newQuantity < 1) {
       removeItem(id);
       return;
@@ -96,8 +116,35 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
     calculateSubtotal(updatedItems);
   };
 
-  const freeShippingThreshold = 99;
-  const freeShippingRemaining = freeShippingThreshold - subtotal;
+  const handleApplyDiscount = async (discountId: string) => {
+    try {
+      const response = await applyDiscountMutation({
+        discountId,
+        orderId: cart?.id || "",
+      });
+      setCart(response.order);
+      setFinalTotal(response.order.finalPrice);
+
+      await refetchDiscounts();
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar("Error applying discount", { variant: "error" });
+    }
+  };
+
+  const handleDeleteDiscountFromOrder = async (discountId: string) => {
+    try {
+      const response = await deleteDiscountFromOrder({
+        discountId,
+        orderId: cart?.id || "",
+      });
+      setCart(response.order);
+      setFinalTotal(response.order.finalPrice);
+      await refetchDiscounts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -105,11 +152,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
     <>
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={toggleCart}
-          />
-
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
           <div className="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-xl z-50 flex flex-col">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
               <h2 className="text-xl font-bold">
@@ -156,16 +199,58 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
                 hasValidInfo={hasValidInfo}
                 isCartEmpty={isCartEmpty}
                 removeItem={removeItem}
-                toggleCart={toggleCart}
                 updateQuantity={updateQuantity}
                 onClose={onClose}
               />
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowDiscounts(!showDiscounts)}
+                className="w-full p-4 border-t border-gray-200 flex items-center justify-between"
+              >
+                <Text id="cart.available_discounts" />
+                <svg
+                  className={`w-5 h-5 transition-transform ${
+                    showDiscounts ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <div
+                className={`transition-all duration-300 overflow-hidden ${
+                  showDiscounts ? "max-h-96" : "max-h-0"
+                }`}
+              >
+                {discounts ? (
+                  <CartDiscount
+                    onApplyDiscount={handleApplyDiscount}
+                    discounts={discounts}
+                    cartDiscounts={cart?.discounts}
+                    onDeleteDiscountFromOrder={handleDeleteDiscountFromOrder}
+                  />
+                ) : (
+                  <div className="p-4 text-gray-500">
+                    <Text id="cart.no_discounts_available" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <CartButton
               cartItems={cartItems}
               onClose={onClose}
               subtotal={subtotal}
+              finalTotal={finalTotal}
               toggleCart={toggleCart}
             />
           </div>

@@ -1,11 +1,17 @@
-import { useCreateUser } from "@/hooks/queryClient/mutator/user/create";
-import { useUpdateUserAdmin } from "@/hooks/queryClient/mutator/user/update-admin";
+import {
+  useCreateUser,
+  useUpdateUserAdmin,
+} from "@/lib/hooks/queryClient/mutator/user/user.mutator";
 import { UserType } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField } from "@/components/form/form-register";
 import { useEffect } from "react";
+import {
+  CreateUserParams,
+  UpdateUserAdminParams,
+} from "@/lib/api/service/user.service";
 
 type AddModalProps = {
   showAddModal: boolean;
@@ -68,18 +74,17 @@ function AddModal({
     document.body.style.overflow = "auto";
   }
 
-  const onSubmit = async (data: any) => {
-    const result = {
+  const onSubmit = async (data: CreateUserParams | UpdateUserAdminParams) => {
+    const result: CreateUserParams | UpdateUserAdminParams = {
       ...data,
-      status: data.status == "Active" ? true : false,
+      status: data.status === "Active" ? true : false,
     };
-    console.log(result);
 
     if (currentAccount) {
-      await updateUserAdmin(result);
+      await updateUserAdmin(result as UpdateUserAdminParams);
       refetch();
     } else {
-      await createUser(result);
+      await createUser(result as CreateUserParams);
       refetch();
     }
   };

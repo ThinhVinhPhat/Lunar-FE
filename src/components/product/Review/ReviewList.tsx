@@ -1,14 +1,15 @@
-import { useGetCommentProduct } from "@/hooks/queryClient/query/comment/get-comment-product";
+import { useGetCommentProduct } from "@/lib/hooks/queryClient/query/comment/comment.query";
 import ProductReviews from "./ProductReview";
 import { CommentSort, CommentType } from "@/types/review";
 import CommentModal from "@/components/modal/AddComment";
 import { useEffect, useState } from "react";
 import { StartReviews } from "./StarReviews";
-import { renderStars } from "@/ultis/renderStar";
-import { useCreateComment } from "@/hooks/queryClient/mutator/comment/create-comment";
-import { calculateStar } from "@/ultis/calculateStar";
+import { renderStars } from "@/lib/ultis/renderStar";
+import { useCreateComment } from "@/lib/hooks/queryClient/mutator/comment/comment.mutator";
+import { calculateStar } from "@/lib/ultis/calculateStar";
 import Pagination from "@/components/admin/pagination";
-import { useDeleteComment } from "@/hooks/queryClient/mutator/comment/delete-comment";
+import { useDeleteComment } from "@/lib/hooks/queryClient/mutator/comment/comment.mutator";
+import { CreateCommentInterface } from "@/lib/api/service/comment.service";
 
 type ReviewType = {
   productId: string;
@@ -42,7 +43,7 @@ function ReviewList({ productId, setIsOpen, isOpen }: ReviewType) {
     }
   }, [isOpen]);
 
-  const addComment = async (data: any) => {
+  const addComment = async (data: CreateCommentInterface) => {
     await createComment({
       productId: productId,
       data: data,

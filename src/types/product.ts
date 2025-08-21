@@ -51,3 +51,9 @@ export interface ProductType {
 export interface ProductsType {
   data: ProductType[];
 }
+
+export interface FavoriteProductInterface {
+  product: Product;
+  createdAt: string;
+  updatedAt: string;
+}

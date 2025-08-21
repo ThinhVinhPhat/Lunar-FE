@@ -5,7 +5,7 @@ import {
   useCreateOrderShipment,
   useUpdateOrderAddress,
   useUpdateOrderStatus,
-} from "@/hooks/queryClient/mutator/order/order";
+} from "@/lib/hooks/queryClient/mutator/order/order";
 import { useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 

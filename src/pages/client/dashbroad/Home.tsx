@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import Text from "@/components/wrapper/Text";
 import Banner from "@/components/home/Banner";
+import { Box, Container, Typography } from "@mui/material";
 
 const Home = () => {
   const [query] = useSearchParams();
@@ -26,54 +27,96 @@ const Home = () => {
   }, [query]);
 
   return (
-    <main className="bg-white">
+    <Box component="main" sx={{ bgcolor: 'white' }}>
       <Hero />
 
-      <section className="py-10 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-[#C8A846] text-sm uppercase tracking-wider mb-2 block">
+      <Box sx={{ py: 10, bgcolor: 'white' }}>
+  <Container maxWidth="xl">
+          <Box textAlign="center" mb={6}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: '#C8A846',
+                fontSize: '1.1rem',
+                letterSpacing: '0.12em',
+                display: 'block',
+                fontWeight: 600,
+                mb: 2,
+              }}
+            >
               <Text id="home.explore" />
-            </span>
-            <h2 className="text-4xl font-bold mb-4 text-[#2c2c2c]">
+            </Typography>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: '2.25rem',
+                fontWeight: 'bold',
+                mb: 3,
+                color: '#2c2c2c',
+              }}
+            >
               <Text id="home.ourCollections" />
-            </h2>
-            <p className="text-[#6b6b6b]">
+            </Typography>
+            <Typography
+              sx={{
+                color: '#6b6b6b',
+                maxWidth: '600px',
+                mx: 'auto',
+              }}
+            >
               <Text id="home.exploreMaterials" />
-            </p>
-          </div>
+            </Typography>
+          </Box>
           <Collections />
-        </div>
-      </section>
+        </Container>
+      </Box>
 
-      <section className="relative py-10 bg-[var(--primary-color)] text-white">
+
+      <Box sx={{ position: 'relative', py: 10, bgcolor: 'var(--primary-color)', color: 'white' }}>
         <Banner />
-      </section>
+      </Box>
 
-      <section className="mb-10 bg-[var(--primary-color)] text-white">
-        <div className="w-full  mx-auto px-4">
+      <Box sx={{ mb: 10, bgcolor: 'var(--primary-color)', color: 'white' }}>
+        <Container maxWidth={false} sx={{ px: 4 }}>
           <FeaturedProducts />
-        </div>
-      </section>
+        </Container>
+      </Box>
 
-      <section className="py-24 bg-[#f7f7f7]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-[#C8A846] text-sm uppercase tracking-wider mb-2 block">
+      <Box sx={{ py: 24, bgcolor: '#f7f7f7' }}>
+        <Container maxWidth="xl">
+          <Box textAlign="center" mb={16}>
+            <Typography 
+              variant="overline" 
+              sx={{ 
+                color: '#C8A846', 
+                fontSize: '0.875rem',
+                letterSpacing: '0.1em',
+                display: 'block',
+                mb: 2
+              }}
+            >
               <Text id="home.testimonials" />
-            </span>
-            <h2 className="text-4xl font-bold mb-4 text-[#2c2c2c]">
+            </Typography>
+            <Typography 
+              variant="h2" 
+              sx={{ 
+                fontSize: '2.25rem', 
+                fontWeight: 'bold', 
+                mb: 4, 
+                color: '#2c2c2c' 
+              }}
+            >
               <Text id="home.whatCustomersSay" />
-            </h2>
-            <p className="text-[#6b6b6b]">
+            </Typography>
+            <Typography sx={{ color: '#6b6b6b' }}>
               <Text id="home.realReviews" />{" "}
-              <span className="text-[#C8A846]">★★★★★</span>
-            </p>
-          </div>
+              <Typography component="span" sx={{ color: '#C8A846' }}>★★★★★</Typography>
+            </Typography>
+          </Box>
           <Reviews />
-        </div>
-      </section>
-    </main>
+        </Container>
+      </Box>
+    </Box>
   );
 };
 

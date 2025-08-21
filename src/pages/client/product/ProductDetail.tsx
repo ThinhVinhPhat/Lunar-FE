@@ -13,23 +13,19 @@ import { useState } from "react";
 import { RelatedProduct } from "@/components/product/RelatedProduct";
 import { Profit } from "@/components/product/Profit";
 import { Tabs } from "@/components/product/Tabs";
-import { useProduct } from "@/hooks/queryClient/query/product/product";
-import { useProducts } from "@/hooks/queryClient/query/product/products";
-import { useContextProvider } from "@/hooks/useContextProvider";
-import { useOrderDetail } from "@/hooks/queryClient/mutator/order/order-detail";
+import { useProduct } from "@/lib/hooks/queryClient/query/product/product.query";
+import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
+import { useContextProvider } from "@/lib/hooks/useContextProvider";
+import { useOrderDetail } from "@/lib/hooks/queryClient/mutator/order/order-detail";
 import { enqueueSnackbar } from "notistack";
-import {
-  features,
-  fitDetails,
-  included,
-} from "@/database/product/feature";
-import { useGetOrderDetail } from "@/hooks/queryClient/query/order/use-get-detail";
-import { calculateStar } from "@/ultis/calculateStar";
+import { features, fitDetails, included } from "@/database/product/feature";
+import { useGetOrderDetail } from "@/lib/hooks/queryClient/query/order/order.query";
+import { calculateStar } from "@/lib/ultis/calculateStar";
 import ReviewList from "@/components/product/Review/ReviewList";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
-import { useGetUser } from "@/hooks/queryClient/query/user";
-import { useFavoriteProduct } from "@/hooks/queryClient/mutator/product/favorite-product";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
+import { useFavoriteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
 import IsLoadingWrapper from "@/components/wrapper/isLoading";
 
 const ProductDetail = () => {
@@ -39,7 +35,7 @@ const ProductDetail = () => {
   const { product, isLoading } = useProduct(id, user?.id);
   const { mutateAsync: favoriteProduct } = useFavoriteProduct();
   const [selectedCategory, setSelectedCategory] = useState(
-    product?.productCategories[0]?.categoryDetails.id
+    product?.productCategories[0]?.categoryDetails.name
   );
   const { data: categoryProducts, isLoading: isLoadingCategoryProducts } =
     useProducts(selectedCategory);
@@ -102,11 +98,17 @@ const ProductDetail = () => {
       <div className="pt-36 pb-16">
         <div className="max-w-7xl mx-auto px-4 mb-6">
           <div className="text-md font-medium text-gray-500">
-            <span className="hover:text-[#C8A846] cursor-pointer">
+            <span
+              onClick={() => navigate("/")}
+              className="hover:text-[#C8A846] cursor-pointer"
+            >
               {t("product_detail.home")}
             </span>{" "}
             /
-            <span className="hover:text-[#C8A846] cursor-pointer">
+            <span
+              onClick={() => navigate("/products/men")}
+              className="hover:text-[#C8A846] cursor-pointer"
+            >
               {" "}
               {t("product_detail.collections")}
             </span>{" "}

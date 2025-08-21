@@ -2,7 +2,7 @@ import { Order } from "@/types/order";
 import Text from "@/components/wrapper/Text";
 import { useState } from "react";
 import { Pagination } from "@/components/ui/Pagination";
-import { useGetOrderList } from "@/hooks/queryClient/query/order/use-get-list";
+import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
 
 function OrderHistory() {
   const [page, setPage] = useState(1);
