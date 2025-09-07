@@ -1,4 +1,4 @@
-import { CommentType } from "@/types/review";
+import { CommentType } from "@/shared/types/review";
 
 type StartReviewsProps = {
   reviews: CommentType[];

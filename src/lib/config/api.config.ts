@@ -29,6 +29,7 @@ export const API_URL = {
     LIST: `/product`,
     DETAIL_BY_SLUG: (slug: string) => `/product/find-by-slug?slug=${slug}`,
     CREATE: `/product`,
+    UPDATE: (id: string) => `/product/${id}`,
     DELETE: (id: string) => `/product/${id}`,
     SUGGESTION: (name: string) => `/product/find-by-suggestion?name=${name}`,
   },

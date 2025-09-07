@@ -1,7 +1,7 @@
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
-import { OrderDetail } from "@/types/order";
-import { Order } from "@/types/order";
-import { UserType } from "@/types/user";
+import { OrderDetail } from "@/shared/types/order";
+import { Order } from "@/shared/types/order";
+import { UserType } from "@/shared/types/user";
 import { createContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { Socket, io } from "socket.io-client";

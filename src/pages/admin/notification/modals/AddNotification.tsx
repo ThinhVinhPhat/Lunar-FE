@@ -3,10 +3,10 @@ import clsx from "clsx";
 import {
   NotificationType,
   NotificationTemplate,
-} from "@/types/notification";
+} from "@/shared/types/notification";
 import { useEffect } from "react";
 import { CreateNotificationParams, UpdateNotificationParams } from "@/lib/api/service/notification.service";
-import { Role } from "@/types";
+import { Role } from "@/shared/types";
 type AddNotificationModalProps = {
   showModal: boolean;
   setShowModal: (show: boolean) => void;

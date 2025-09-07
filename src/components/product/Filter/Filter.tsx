@@ -1,136 +1,141 @@
-import { Product } from "@/types/product";
-import { FiFilter } from "react-icons/fi";
-import ProductItem from "../ProductItem";
+import { Product } from "@/shared/types/product";
 import FilterItem from "./FitlerItem";
 import { filterOptions } from "@/database/filter";
-import { useFilter } from "@/lib/hooks/useFilter";
-import Text from "@/components/wrapper/Text";
-import { useProductAction } from "@/lib/hooks/useProductAction";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import Text from "@/shared/components/wrapper/Text";
+import { Button } from "@/shared/components/Button";
+import { useFilter } from "@/shared/hooks/useFilter";
+
+import {
+  Box,
+  Typography,
+  IconButton,
+  List,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 type FilterProps = {
-  isLoading: boolean;
-  filteredProducts: Product[];
-  onFilterChange: (filters: string[]) => void;
-  type: "collection" | "product";
+  isLoading?: boolean;
+  products?: Product[];
+  type?: "collection" | "product";
+  onClose?: () => void;
+  openSections?: {
+    categories: boolean;
+    colors: boolean;
+    materials: boolean;
+    shapes: boolean;
+    price: boolean;
+  };
+  activeFilters?: {
+    categories: string[];
+    colors: string[];
+    materials: string[];
+    shapes: string[];
+    priceRange: [number, number] | null;
+  };
+  toggleSection?: (section: "categories" | "colors" | "materials" | "shapes" | "price") => void;
+  handleFilterChange?: (type: "categories" | "colors" | "materials" | "shapes" | "priceRange", value: string) => void;
+  clearFilters?: () => void;
+  applyFilters?: (products: Product[]) => Product[];
 };
 
 function Filter({
-  isLoading,
-  filteredProducts,
-  onFilterChange,
-  type,
+  onClose,
+  openSections: propOpenSections,
+  activeFilters: propActiveFilters,
+  toggleSection: propToggleSection,
+  handleFilterChange: propHandleFilterChange,
+  clearFilters: propClearFilters,
 }: FilterProps) {
-  const {
-    openSections,
-    hoveredId,
-    activeFilters,
-    toggleFilter,
-    toggleSection,
-    handleFilterChange,
-    clearFilters,
-    setHoveredId,
-  } = useFilter(onFilterChange);
-  const { handleFavoriteProduct } = useProductAction();
-  return (
-    <>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">
-          <Text id="product_list.all_products" />
-        </h2>
-        <button
-          onClick={() => toggleFilter()}
-          className="flex items-center px-4 py-2 border border-gray-300 rounded-md md:hidden"
+  const hookData = useFilter();  
+  const openSections = propOpenSections || hookData.openSections;
+  const activeFilters = propActiveFilters || hookData.activeFilters;
+  const toggleSection = propToggleSection || hookData.toggleSection;
+  const handleFilterChange = propHandleFilterChange || hookData.handleFilterChange;
+  const clearFilters = propClearFilters || hookData.clearFilters;
+
+  const activeFilterCount = activeFilters ? 
+    Object.values(activeFilters).reduce((count, filterArray) => {
+      if (Array.isArray(filterArray)) {
+        return count + filterArray.length;
+      }
+      return filterArray ? count + 1 : count;
+    }, 0) : 0;
+
+  const filterContent = (
+    <Box sx={{ width: { xs: '100vw', sm: 400 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        p: 3,
+        borderBottom: 1,
+        borderColor: 'divider'
+      }}>
+        <Typography variant="h5" fontWeight="bold">
+          <Text id="product_list.filters" />
+        </Typography>
+        {onClose && (
+          <IconButton onClick={onClose} size="large">
+            <CloseIcon />
+          </IconButton>
+        )}
+      </Box>
+      
+      <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
+        <List sx={{ p: 0 }}>
+          {Object.keys(filterOptions).map((filterKey) => {
+            if (!handleFilterChange || !toggleSection) {
+              return null;
+            }
+            
+            return (
+              <FilterItem
+                key={filterKey}
+                name={filterKey}
+                activeFilters={(() => {
+                  const filters = activeFilters || { categories: [], colors: [], materials: [], shapes: [], priceRange: null };
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { priceRange, ...arrayFilters } = filters;
+                  return arrayFilters;
+                })()}
+                handleFilterChange={handleFilterChange}
+                toggleSection={toggleSection}
+                openSections={openSections || { categories: true, colors: true, materials: true, shapes: true, price: true }}
+                filterOptions={filterOptions}
+              />
+            );
+          })}
+        </List>
+      </Box>
+      
+      <Box sx={{ 
+        p: 1, 
+        borderTop: 1, 
+        borderColor: 'divider',
+        display: "flex", 
+        justifyContent: "flex-end",
+        gap: 3 
+      }}>
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          size="large"
         >
-          <FiFilter className="mr-2" /> <Text id="product_list.filters" />
-        </button>
-      </div>
-
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="hidden md:block w-64 flex-shrink-0">
-          <div className="sticky top-24">
-            <div className="mb-4">
-              <h3 className="text-lg font-bold mb-4">
-                <Text id="product_list.filters" />
-              </h3>
-              <button
-                onClick={clearFilters}
-                className="text-[#C8A846] hover:underline text-sm"
-              >
-                <Text id="product_list.clear_all_filters" />
-              </button>
-            </div>
-            {Object.keys(filterOptions)?.map((key) => {
-              if (type === "collection") {
-                if (key !== "collections") {
-                  return (
-                    <FilterItem
-                      key={key}
-                      name={key}
-                      activeFilters={activeFilters}
-                      handleFilterChange={handleFilterChange}
-                      toggleSection={toggleSection}
-                      openSections={openSections}
-                      filterOptions={{
-                        ...filterOptions,
-                        collections: "",
-                      }}
-                    />
-                  );
-                }
-              } else if (type === "product") {
-                return (
-                  <FilterItem
-                    key={key}
-                    name={key}
-                    activeFilters={activeFilters}
-                    handleFilterChange={handleFilterChange}
-                    toggleSection={toggleSection}
-                    openSections={openSections}
-                    filterOptions={filterOptions}
-                  />
-                );
-              }
-            })}
-            <div className="mt-8">
-              <button
-                onClick={() => {
-                  toggleFilter();
-                  window.scrollTo({ top: 50, behavior: "smooth" });
-                }}
-                className="w-full py-3 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors"
-              >
-                <Text id="product_list.apply_filters" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1">
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                <Text id="product_list.no_products_found_matching_your_criteria" />
-              </p>
-            </div>
-          ) : (
-            <IsLoadingWrapper isLoading={isLoading}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductItem
-                    key={product.id}
-                    product={product}
-                    hoveredId={hoveredId}
-                    setHoveredId={setHoveredId}
-                    handleFavoriteProduct={handleFavoriteProduct}
-                  />
-                ))}
-              </div>
-            </IsLoadingWrapper>
-          )}
-        </div>
-      </div>
-    </>
+          <Text id="product_list.clear_all_filters" />
+        </Button>
+        <Button
+          variant="primary"
+          onClick={onClose}
+          size="large"
+        >
+          <Text id="product_list.apply_filters" /> ({activeFilterCount})
+        </Button>
+      </Box>
+    </Box>
   );
+
+  return filterContent;
 }
 
 export default Filter;
+

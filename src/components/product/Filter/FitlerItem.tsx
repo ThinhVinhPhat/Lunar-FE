@@ -1,13 +1,24 @@
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import {
+  Box,
+  Typography,
+  Button,
+  Collapse,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+} from "@mui/material";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 type FilterItemProps = {
   name: string;
-  activeFilters: any;
-  handleFilterChange: any;
-  toggleSection: any;
-  openSections: any;
-  filterOptions: any;
+  activeFilters: Record<string, string[]>;
+  handleFilterChange: (filter: "categories" | "colors" | "materials" | "shapes" | "priceRange", value: string) => void;
+  toggleSection: (section: "categories" | "colors" | "materials" | "shapes" | "price") => void;
+  openSections: Record<string, boolean>;
+  filterOptions: Record<string, string[]>;
 };
+
 function FilterItem({
   name,
   activeFilters,
@@ -16,32 +27,49 @@ function FilterItem({
   openSections,
   filterOptions,
 }: FilterItemProps) {
+  const isSectionOpen = openSections[name];
+
   return (
-    <div className="border-b border-gray-200 py-4">
-      <button
-        className="flex justify-between items-center w-full text-left font-medium"
-        onClick={() => toggleSection(name)}
+    <Box sx={{ borderBottom: 1, borderColor: "divider", py: 2 }}>
+      <Button
+        fullWidth
+        onClick={() => toggleSection(name as "categories" | "colors" | "materials" | "shapes" | "price")}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          textTransform: "capitalize",
+          color: "text.primary",
+          fontWeight: "medium",
+          px: 0,
+        }}
       >
-        {name.charAt(0).toUpperCase() + name.slice(1)}
-        {openSections[name] ? <FiChevronUp /> : <FiChevronDown />}
-      </button>
-      {openSections[name] && (
-        <div className="mt-2 space-y-2">
-          {filterOptions[name].map((category: any) => (
-            <label key={category} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={activeFilters.categories.includes(category)}
-                onChange={() => handleFilterChange("categories", category)}
-                className="h-4 w-4 text-[#C8A846] focus:ring-[#C8A846]"
-              />
-              <span className="ml-2">{category}</span>
-            </label>
+        <Typography variant="subtitle1" fontWeight="medium">
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </Typography>
+        {isSectionOpen ? <ExpandLess /> : <ExpandMore />}
+      </Button>
+      <Collapse in={isSectionOpen} timeout="auto" unmountOnExit>
+        <FormGroup sx={{ mt: 1, ml: 1 }}>
+          {filterOptions[name].map((category: string) => (
+            <FormControlLabel
+              key={category}
+              control={
+                <Checkbox
+                  checked={activeFilters[name]?.includes(category) || false}
+                  onChange={() => handleFilterChange(name as "categories" | "colors" | "materials" | "shapes" | "priceRange", category)}
+                  sx={{ color: "#C8A846", "&.Mui-checked": { color: "#C8A846" } }}
+                />
+              }
+              label={category}
+            />
           ))}
-        </div>
-      )}
-    </div>
+        </FormGroup>
+      </Collapse>
+    </Box>
   );
 }
 
 export default FilterItem;
+
+

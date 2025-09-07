@@ -1,4 +1,4 @@
-import { OrderStatus } from "../types/order";
+import { OrderStatus } from "../shared/types/order";
 
 export const canTransition = (from: OrderStatus, to: OrderStatus) => {
   if (from === OrderStatus.PENDING) return to === OrderStatus.PENDING;

@@ -1,7 +1,7 @@
-import { OrderDetail } from "@/types/order";
+import { OrderDetail } from "@/shared/types/order";
 import { FiShoppingCart, FiTrash2 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import Text from "../wrapper/Text";
+import Text from "../../shared/components/wrapper/Text";
 
 type CartType = {
   hasValidInfo: boolean;
@@ -14,6 +14,7 @@ type CartType = {
   cartItems: OrderDetail[];
   removeItem: (id: string) => void;
   onClose: () => void;
+  toggleCart: () => void;
 };
 
 function CartContent({
@@ -23,6 +24,7 @@ function CartContent({
   cartItems,
   removeItem,
   onClose,
+  toggleCart,
 }: CartType) {
   const navigate = useNavigate();
   const cartContent = isCartEmpty ? (
@@ -34,6 +36,7 @@ function CartContent({
       <button
         onClick={() => {
           onClose();
+          toggleCart();
         }}
         className="text-[#C8A846] hover:underline font-medium"
       >
@@ -42,7 +45,7 @@ function CartContent({
     </div>
   ) : (
     <ul className="divide-y divide-gray-200">
-      {cartItems.map((item: any) => (
+      {cartItems.map((item: OrderDetail) => (
         <li key={item.id} className="py-4 flex">
           <div className="h-24 w-[150px] flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
             <img
@@ -65,8 +68,8 @@ function CartContent({
               <p className="ml-4">
                 $
                 {Number(
-                  (item?.product?.price || 0) *
-                    (1 - (item?.product?.discount_percentage || 0) / 100) *
+                  (Number(item?.product?.price) || 0) *
+                    (1 - (Number(item?.product?.discount_percentage) || 0) / 100) *
                     item.quantity
                 ).toFixed(2)}
               </p>
@@ -76,7 +79,7 @@ function CartContent({
               <div className="flex items-center border border-gray-300 rounded">
                 <button
                   onClick={() =>
-                    updateQuantity(item.id, item.product.id, item.quantity - 1)
+                    updateQuantity(item.id, item.product?.id || '', item.quantity - 1)
                   }
                   className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 >
@@ -85,7 +88,7 @@ function CartContent({
                 <span className="px-3 py-1">{item.quantity}</span>
                 <button
                   onClick={() =>
-                    updateQuantity(item.id, item.product.id, item.quantity + 1)
+                    updateQuantity(item.id, item.product?.id || '', item.quantity + 1)
                   }
                   className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 >

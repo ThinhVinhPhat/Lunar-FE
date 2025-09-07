@@ -1,3 +1,5 @@
+import { NotificationSettings } from "@/shared/types/notification";
+
 export const inboxMessages = [
   {
     id: 1,
@@ -79,7 +81,7 @@ export const getDeviceInfo = () => {
   ];
 };
 
-export const notifications = (notificationSettings: any) => [
+export const notifications = (notificationSettings: NotificationSettings) => [
   {
     name: "Email Notifications",
     value: notificationSettings.emailNotifications,

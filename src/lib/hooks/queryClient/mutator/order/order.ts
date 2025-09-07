@@ -8,7 +8,7 @@ import {
   updateOrderAddress,
   updateOrderStatus,
 } from "@/lib/api/service/order.service";
-import { CreateOrderProps } from "@/types/order";
+import { CreateOrderProps } from "@/shared/types/order";
 import { enqueueSnackbar } from "notistack";
 
 export const useCreateOrder = () => {

@@ -6,7 +6,7 @@ import {
   UserService,
   deleteUser,
 } from "@/lib/api/service/user.service";
-import { UserType } from "@/types/user";
+import { UserType } from "@/shared/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 
@@ -51,8 +51,8 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (data: UserType) => UserService.updateUser(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+    onSuccess: async () => {
+     await queryClient.invalidateQueries({ queryKey: ["user"] });
       enqueueSnackbar("User updated successfully", {
         variant: "success",
       });

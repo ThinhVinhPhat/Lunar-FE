@@ -1,19 +1,31 @@
 import { ChevronLeft } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import { Button } from "../ui/Button";
-import Text from "../wrapper/Text";
+import Text from "../../shared/components/wrapper/Text";
+import { Button } from "../../shared/components/Button";
 import { useState, useRef, useEffect } from "react";
 import { heroSlides } from "@/database/home";
 import { Box, Typography, IconButton } from "@mui/material";
+import { useAutoPlaySlider } from "../../shared/hooks/useAutoPlaySlider";
 
 const Hero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [isInView, setIsInView] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
-  const autoplayRef = useRef(null);
   const heroRef = useRef(null);
 
   const totalSlides = heroSlides.length;
+  
+  const {
+    activeIndex: currentSlide,
+    setActiveIndex: setCurrentSlide,
+    nextSlide,
+    prevSlide,
+    handleMouseEnter: autoPlayMouseEnter,
+    handleMouseLeave: autoPlayMouseLeave,
+  } = useAutoPlaySlider({
+    totalSlides,
+    interval: 5000,
+    enableMouseEvents: true,
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -41,19 +53,6 @@ const Hero = () => {
     };
   }, [isInView]);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
-  };
-
-  const handleMouseEnter = () => {
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current);
-    }
-  };
 
   useEffect(() => {
     setTextVisible(false);
@@ -70,7 +69,8 @@ const Hero = () => {
         height: '100vh',
         overflow: 'hidden'
       }}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={autoPlayMouseEnter}
+      onMouseLeave={autoPlayMouseLeave}
     >
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         {heroSlides.map((slide, index) => (

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Bell,
   Plus,
@@ -9,126 +8,65 @@ import {
   Filter,
   Search,
 } from "lucide-react";
-import { useGetAllNotification } from "@/lib/hooks/queryClient/query/notification/notification.query";
-import { NotificationTemplate, NotificationType } from "@/types/notification";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { NotificationTemplate, NotificationType } from "@/shared/types/notification";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import Pagination from "@/components/admin/pagination";
 import { AddNotificationModal } from "./modals/AddNotification";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
 import { formatDate } from "@/lib/ultis/formatDate";
-import useNotificationMessageAction from "@/lib/hooks/useNotificationMessageAction";
-import {
-  useCreateNotification,
-  useDeleteNotification,
-  useUpdateNotification,
-} from "@/lib/hooks/queryClient/mutator/notification/notification.mutator";
-import { CreateNotificationParams, UpdateNotificationParams } from "@/lib/api/service/notification.service";
+import useNotificationMessageAction from "@/pages/admin/notification/hooks/useNotificationMessageAction";
 
 const NotificationPage = () => {
   const {
-    data: notifications,
+    // Data
+    paginatedNotifications,
+    filteredNotifications,
+    totalPages,
+    notifiTotalItem,
+    
+    // Loading states
     isLoading,
-    refetch,
-  } = useGetAllNotification("", 1, 5);
-  const { mutateAsync: updateNotification } = useUpdateNotification();
-  const { mutateAsync: deleteNotification } = useDeleteNotification();
-  const { mutateAsync: createNotification } = useCreateNotification();
-  const { refetchNotifications, setPage, page, notifiTotalItem } =
-    useNotificationMessageAction();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("ALL");
-  const itemsPerPage = 5;
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [currentNotification, setCurrentNotification] =
-    useState<NotificationTemplate | null>(null);
+    
+    // UI State
+    searchTerm,
+    setSearchTerm,
+    filterType,
+    setFilterType,
+    showAddModal,
+    setShowAddModal,
+    showDeleteModal,
+    setShowDeleteModal,
+    currentNotification,
+    
+    // Pagination
+    page,
+    handlePageChange,
+    
+    // Helper functions
+    getTypeIcon,
+    getTypeColor,
+    
+    // Event handlers
+    handleEdit,
+    handleCreateNew,
+    handleDeleteClick,
+    handleSubmitNotification,
+    handleDelete,
+    handleUpdateNotificationData,
+  } = useNotificationMessageAction();
 
-  const handleSubmitNotification = async (data: CreateNotificationParams) => {
-    try {
-      const isCreated = await createNotification(data);
-      if (isCreated) {
-        refetch();
-        refetchNotifications();
-        setShowAddModal(false);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleDelete = async () => {
-    if (currentNotification) {
-      await deleteNotification(currentNotification.id);
-      refetch();
-      refetchNotifications();
-      setShowDeleteModal(false);
-      setCurrentNotification(null);
-    }
-  };
-
-  const handleUpdateNotification = async (data: UpdateNotificationParams) => {
-    if (currentNotification) {
-      await updateNotification({ id: currentNotification.id, data });
-      refetch();
-      refetchNotifications();
-      setShowAddModal(false);
-      setCurrentNotification(null);
-    }
-  };
-
-  const filteredNotifications = notifications?.filter(
-    (notification: NotificationTemplate) => {
-      const matchesSearch =
-        notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notification.message.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType =
-        filterType === "ALL" || notification.type === filterType;
-      return matchesSearch && matchesType;
-    }
-  );
-
-  const totalPages = Math.ceil(filteredNotifications?.length / itemsPerPage);
-  const paginatedNotifications = filteredNotifications?.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
-
-  const getTypeIcon = (type: NotificationType) => {
-    switch (type) {
-      case NotificationType.NEW_MESSAGE:
+  const renderTypeIcon = (type: NotificationType) => {
+    const iconName = getTypeIcon(type);
+    switch (iconName) {
+      case "Bell":
         return <Bell className="w-4 h-4" />;
-      case NotificationType.NEW_ORDER:
+      case "Send":
         return <Send className="w-4 h-4" />;
-      case NotificationType.NEW_REPLY:
-        return <Bell className="w-4 h-4" />;
-      case NotificationType.NEW_DEAL:
+      case "Users":
         return <Users className="w-4 h-4" />;
-      case NotificationType.NEW_THREAD:
-        return <Bell className="w-4 h-4" />;
       default:
         return <Bell className="w-4 h-4" />;
     }
-  };
-
-  const getTypeColor = (type: NotificationType) => {
-    switch (type) {
-      case NotificationType.NEW_MESSAGE:
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case NotificationType.NEW_ORDER:
-        return "bg-green-100 text-green-800 border-green-200";
-      case NotificationType.NEW_REPLY:
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case NotificationType.NEW_DEAL:
-        return "bg-orange-100 text-orange-800 border-orange-200";
-      case NotificationType.NEW_THREAD:
-        return "bg-indigo-100 text-indigo-800 border-indigo-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const handleEdit = (notification: NotificationTemplate) => {
-    setCurrentNotification(notification);
-    setShowAddModal(true);
   };
 
   return (
@@ -143,10 +81,7 @@ const NotificationPage = () => {
               </h1>
             </div>
             <button
-              onClick={() => {
-                setCurrentNotification(null);
-                setShowAddModal(true);
-              }}
+              onClick={handleCreateNew}
               className="inline-flex items-center px-4 py-2 bg-[#C8A846] text-white rounded-lg hover:bg-[#b39539]"
             >
               <Plus className="mr-2" /> Create
@@ -204,7 +139,7 @@ const NotificationPage = () => {
                           notification.type
                         )}`}
                       >
-                        {getTypeIcon(notification.type)}
+                        {renderTypeIcon(notification.type)}
                         <span className="ml-1">
                           {notification.type
                             .replace("_", " ")
@@ -220,10 +155,7 @@ const NotificationPage = () => {
                           <Edit size={16} />
                         </button>
                         <button
-                          onClick={() => {
-                            setCurrentNotification(notification);
-                            setShowDeleteModal(true);
-                          }}
+                          onClick={() => handleDeleteClick(notification)}
                           className="text-red-500 hover:text-red-700"
                         >
                           <Trash2 size={16} />
@@ -252,7 +184,7 @@ const NotificationPage = () => {
 
       <Pagination
         filteredProducts={filteredNotifications}
-        setPage={setPage}
+        setPage={handlePageChange}
         page={page}
         totalPages={totalPages}
         totalItems={notifiTotalItem}
@@ -264,7 +196,7 @@ const NotificationPage = () => {
           setShowModal={setShowAddModal}
           currentNotification={currentNotification || undefined}
           onSubmitNotification={handleSubmitNotification}
-          onUpdateNotification={handleUpdateNotification}
+          onUpdateNotification={handleUpdateNotificationData}
         />
       )}
 

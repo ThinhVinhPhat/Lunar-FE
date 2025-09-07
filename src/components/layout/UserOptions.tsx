@@ -1,6 +1,6 @@
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Text from "../wrapper/Text";
+import Text from "../../shared/components/wrapper/Text";
 type UserOptionsProps = {
   isProfileOpen: boolean;
   setIsProfileOpen: (isProfileOpen: boolean) => void;

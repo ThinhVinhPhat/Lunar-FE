@@ -1,49 +1,35 @@
-import { Product } from "@/types/product";
+import { Product, ProductCategory } from "@/shared/types/product";
 import { Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
 import Pagination from "@/components/admin/pagination";
 import SearchComponent from "@/components/admin/ui/Search";
-import { useDeleteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
+import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
+import { useProductManagement } from "./hooks/useProductManagement";
 import { AddProductModal } from "./modals/AddProduct";
-import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
-import { useProductAction } from "@/lib/hooks/useProductAction";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+
+
 
 const AdminProduct: React.FC<AuthProps> = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-  const { mutateAsync: deleteProduct } = useDeleteProduct();
-  const [page, setPage] = useState(1);
-  const { products, isLoading, refetch, total } = useProductAction(page, 5);
-
-  const filteredProducts = products?.filter(
-    (product: Product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.productCategories.some((category: any) =>
-        category.categoryDetails.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      )
-  );
-  const totalProducts = searchTerm === "" ? total : filteredProducts?.length;
-  const totalPages = Math.ceil(totalProducts / 5);
-
-  const handleEdit = (product: Product) => {
-    setCurrentProduct(product);
-    setShowAddModal(true);
-  };
-
-  const handleDelete = async () => {
-    const response = await deleteProduct(currentProduct?.id);
-    if (response.status === 200) {
-      setShowDeleteModal(false);
-      refetch();
-    }
-  };
-
+  const {
+    isLoading,
+    filteredProducts,
+    totalPages,
+    total,
+    searchTerm,
+    setSearchTerm,
+    handleEdit,
+    handleDelete,
+    showAddModal,
+    setShowAddModal,
+    showDeleteModal,
+    setShowDeleteModal,
+    currentProduct,
+    setCurrentProduct,
+    page,
+    handlePageChange,
+    handleRefresh,
+  } = useProductManagement();
   return (
     <>
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -119,7 +105,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
                       <div className="text-sm text-gray-900">
                         {product?.productCategories
                           ?.map(
-                            (category: any) => category.categoryDetails.name
+                            (category: ProductCategory) => category.categoryDetails.name
                           )
                           .join(", ")}
                       </div>
@@ -172,7 +158,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
 
       <Pagination
         filteredProducts={filteredProducts}
-        setPage={setPage}
+        setPage={handlePageChange}
         page={page}
         totalItems={total}
         totalPages={totalPages}
@@ -181,6 +167,7 @@ const AdminProduct: React.FC<AuthProps> = () => {
       <AddProductModal
         showAddModal={showAddModal}
         setShowAddModal={setShowAddModal}
+        handleRefresh={handleRefresh}
         currentProduct={currentProduct || undefined}
       />
       <DeleteConfirmModal

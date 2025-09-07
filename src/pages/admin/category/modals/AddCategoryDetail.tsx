@@ -1,10 +1,10 @@
-import { FormField } from "@/components/form/form-register";
+import { FormField } from "@/shared/components/form/form-register";
 import { useForm } from "react-hook-form";
-import { Category, CategoryDetail } from "@/types/category";
+import { Category, CategoryDetail } from "@/shared/types/category";
 import { useAddDetail } from "@/lib/hooks/queryClient/mutator/category/categoryDetail/categoryDetail.mutator";
 import { useEditDetail } from "@/lib/hooks/queryClient/mutator/category/categoryDetail/categoryDetail.mutator";
 import { useGetCategoriesDetail } from "@/lib/hooks/queryClient/query/category/category.query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   UpdateCategoryDetailInterface,
 } from "@/lib/api/service/category.service";
@@ -27,6 +27,7 @@ function AddCategoryDetail({
   currentCategoryDetail = null,
   currentCategory = null,
 }: AddCategoryDetailProps) {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const {
     register,
     handleSubmit,
@@ -39,7 +40,7 @@ function AddCategoryDetail({
     defaultValues: {
       name: currentCategoryDetail?.name || "",
       description: currentCategoryDetail?.description || "",
-      image: currentCategoryDetail?.image || [],
+      image: currentCategoryDetail?.image ? [currentCategoryDetail.image] : [],
       status: currentCategoryDetail?.status || false,
     },
   });
@@ -52,7 +53,7 @@ function AddCategoryDetail({
       reset({
         name: currentCategoryDetail?.name || "",
         description: currentCategoryDetail?.description || "",
-        image: currentCategoryDetail?.image || [],
+        image: currentCategoryDetail?.image ? [currentCategoryDetail.image] : [],
         status: currentCategoryDetail?.status || false,
       });
     }
@@ -78,7 +79,8 @@ function AddCategoryDetail({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(e.target.files || []);
-    setValue("image", newFiles as unknown as string[]);
+    setSelectedFiles(newFiles);
+    setValue("image", newFiles.map(file => file.name));
   };
 
   return (
@@ -162,14 +164,25 @@ function AddCategoryDetail({
                             />
                           </label>
                         </div>
-                        {images instanceof FileList && images.length > 0 && (
+                        {selectedFiles.length > 0 && (
                           <div className="mt-4 grid grid-cols-2 gap-4">
-                            {Array.from(images).map((file, index) => (
+                            {selectedFiles.map((file, index) => (
                               <div key={index} className="relative">
                                 <img
-                                  src={URL.createObjectURL(
-                                    file as unknown as Blob
-                                  )}
+                                  src={URL.createObjectURL(file)}
+                                  alt={`Preview ${index + 1}`}
+                                  className="w-full h-32 object-cover rounded-lg"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {Array.isArray(images) && images.length > 0 && selectedFiles.length === 0 && (
+                          <div className="mt-4 grid grid-cols-2 gap-4">
+                            {images.map((imagePath, index) => (
+                              <div key={index} className="relative">
+                                <img
+                                  src={typeof imagePath === 'string' ? imagePath : ''}
                                   alt={`Preview ${index + 1}`}
                                   className="w-full h-32 object-cover rounded-lg"
                                 />

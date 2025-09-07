@@ -2,11 +2,69 @@ import {
   DiscountCategoryInterface,
   DiscountInterface,
   DiscountValueType,
-} from "@/types/discount";
-import { Gift, Tag, Package, Loader2 as Spinner } from "lucide-react";
+} from "@/shared/types/discount";
+import { Gift, Tag, Package } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import DiscountButton from "../ui/DiscountButton";
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Typography,
+  Chip,
+  Avatar,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  CircularProgress,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DiscountButton from "../../shared/components/DiscountButton";
+
+// Styled Components
+const StyledDiscountCard = styled(Card)(() => ({
+  background: "#ffffff",
+  borderRadius: "8px",
+  border: "1px solid #e0e0e0",
+  transition: "all 0.2s ease",
+  "&:hover": {
+    borderColor: "#C8A846",
+    boxShadow: "0 2px 8px rgba(200, 168, 70, 0.1)",
+  },
+}));
+
+const StyledAccordion = styled(Accordion)(() => ({
+  background: "transparent",
+  boxShadow: "none",
+  border: "none",
+  "&:before": {
+    display: "none",
+  },
+  "& .MuiAccordionSummary-root": {
+    padding: "8px 12px",
+    borderRadius: "6px",
+    background: "#C8A846",
+    color: "white",
+    marginBottom: "6px",
+    minHeight: "auto",
+    "&:hover": {
+      background: "#b8983e",
+    },
+  },
+  "& .MuiAccordionDetails-root": {
+    padding: "0 6px 12px 6px",
+  },
+}));
+
+const VoucherInputContainer = styled(Box)(() => ({
+  background: "#C8A846",
+  borderRadius: "8px",
+  padding: "12px",
+  marginBottom: "12px",
+}));
 
 type DiscountProps = {
   discounts: DiscountCategoryInterface | undefined;
@@ -70,83 +128,165 @@ export default function CartDiscount({
   };
 
   return (
-    <div className="border-t border-gray-200 p-2 max-h-[400px] overflow-y-auto">
-      <div className="flex items-center gap-2 w-[420px] p-4 mb-4 sticky top-0 bg-gray-100 rounded-md z-10 pb-4">
-        <input
-          type="text"
-          value={voucherCode}
-          onChange={(e) => setVoucherCode(e.target.value)}
-          placeholder={t("discount.enter_voucher_code")}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#C8A846]"
-          disabled={isApplyingVoucher}
-        />
-        <button
-          onClick={handleApplyVoucher}
-          disabled={isApplyingVoucher || !voucherCode.trim()}
-          className="px-4 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#ae923e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px]"
-        >
-          {isApplyingVoucher ? (
-            <Spinner className="w-4 h-4 animate-spin mx-auto" />
-          ) : (
-            t("discount.apply")
-          )}
-        </button>
-      </div>
+    <Box className="p-3">
+      {/* Voucher Input Section */}
+      <VoucherInputContainer>
+        <Typography variant="body2" className="text-white mb-1.5 font-medium">
+          Nhập mã voucher
+        </Typography>
+        <Box className="flex items-center gap-2">
+          <TextField
+            fullWidth
+            size="small"
+            value={voucherCode}
+            onChange={(e) => setVoucherCode(e.target.value)}
+            placeholder="Nhập mã voucher"
+            disabled={isApplyingVoucher}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "white",
+                borderRadius: "6px",
+                height: "36px",
+                fontSize: "0.875rem",
+                "& fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "white",
+                },
+              },
+            }}
+          />
+          <Button
+            onClick={handleApplyVoucher}
+            disabled={isApplyingVoucher || !voucherCode.trim()}
+            variant="contained"
+            size="small"
+            sx={{
+              backgroundColor: "white",
+              color: "#C8A846",
+              borderRadius: "6px",
+              minWidth: "70px",
+              height: "36px",
+              fontSize: "0.75rem",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+              },
+              "&:disabled": {
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                color: "rgba(200, 168, 70, 0.5)",
+              },
+            }}
+          >
+            {isApplyingVoucher ? (
+              <CircularProgress size={14} sx={{ color: "#C8A846" }} />
+            ) : (
+              "Áp dụng"
+            )}
+          </Button>
+        </Box>
+      </VoucherInputContainer>
 
-      <div className="space-y-4">
+      {/* Discount Categories */}
+      <Box className="space-y-1.5">
         {discounts &&
-          categories.map((category) => (
-            <div key={category.id} className="space-y-3">
-              <div className="flex items-center gap-2">
-                <category.icon className="w-5 h-5 text-[#C8A846]" />
-                <h3 className="font-medium">{category.name}</h3>
-                <span className="text-sm text-gray-500">
-                  ({category.count})
-                </span>
-              </div>
+          categories.map((category, index) => (
+            <StyledAccordion key={category.id} defaultExpanded={index === 0}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "white", fontSize: 20 }} />}>
+                <Box className="flex items-center gap-2">
+                  <Avatar
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      width: 24,
+                      height: 24,
+                    }}
+                  >
+                    <category.icon className="w-3 h-3 text-white" />
+                  </Avatar>
+                  <Typography variant="body2" className="font-medium">
+                    {category.name}
+                  </Typography>
+                  <Chip
+                    label={category.count}
+                    size="small"
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      color: "white",
+                      fontWeight: "bold",
+                      height: "20px",
+                      fontSize: "0.7rem",
+                    }}
+                  />
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box className="space-y-2">
+                  {category.discount?.map((discount) => (
+                    <StyledDiscountCard key={discount.id}>
+                      <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                        <Box className="flex justify-between items-center gap-3">
+                          <Box className="flex items-center gap-2 flex-1 min-w-0">
+                            <Box
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                backgroundColor: "rgba(200, 168, 70, 0.1)",
+                                border: "1px solid #C8A846",
+                                borderRadius: "6px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                className="text-[#C8A846] font-bold"
+                                sx={{ fontSize: "0.7rem" }}
+                              >
+                                {discount.valueType === DiscountValueType.PERCENTAGE
+                                  ? `${discount.value}%`
+                                  : `$${discount.value}`}
+                              </Typography>
+                            </Box>
+                            <Box className="min-w-0 flex-1">
+                              <Typography
+                                variant="body2"
+                                className="font-medium text-[#C8A846] truncate"
+                                sx={{ fontSize: "0.8rem" }}
+                              >
+                                {discount.valueType === DiscountValueType.PERCENTAGE
+                                  ? `${discount.value}% OFF`
+                                  : `$${discount.value} OFF`}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                className="text-gray-500 truncate block"
+                                sx={{ fontSize: "0.7rem" }}
+                              >
+                                Tối thiểu: ${discount.thresholdAmount} • Hết hạn: {new Date(discount.expireAt).toLocaleDateString()}
+                              </Typography>
+                            </Box>
+                          </Box>
 
-              {category.discount?.map((discount) => (
-                <div
-                  key={discount.id}
-                  className="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
-                >
-                  <div className="flex flex-wrap sm:flex-nowrap justify-between items-center gap-4">
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="h-14 w-14 bg-[#C8A846]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-[#C8A846] font-semibold">
-                          {discount.valueType === DiscountValueType.PERCENTAGE
-                            ? `${discount.value}%`
-                            : `$${discount.value}`}
-                        </span>
-                      </div>
-                      <div className="min-w-0 space-y-0.5">
-                        <p className="font-medium text-[#C8A846] truncate">
-                          {discount.valueType === DiscountValueType.PERCENTAGE
-                            ? `${discount.value}% OFF`
-                            : `$${discount.value} OFF`}
-                        </p>
-                        <p className="text-sm text-gray-600 truncate">
-                          {t("discount.min_spend")}: ${discount.thresholdAmount}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {t("discount.expires")}:{" "}
-                          {new Date(discount.expireAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    <DiscountButton
-                      discountId={discount.id}
-                      cartDiscounts={cartDiscounts || []}
-                      onApplyDiscount={onApplyDiscount}
-                      onDeleteDiscountFromOrder={onDeleteDiscountFromOrder}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+                          <DiscountButton
+                            discountId={discount.id}
+                            cartDiscounts={cartDiscounts || []}
+                            onApplyDiscount={onApplyDiscount}
+                            onDeleteDiscountFromOrder={onDeleteDiscountFromOrder}
+                          />
+                        </Box>
+                      </CardContent>
+                    </StyledDiscountCard>
+                  ))}
+                </Box>
+              </AccordionDetails>
+            </StyledAccordion>
           ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

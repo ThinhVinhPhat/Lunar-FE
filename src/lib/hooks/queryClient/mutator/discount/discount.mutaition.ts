@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createDiscount,
   deleteDiscount,
@@ -7,6 +7,7 @@ import {
   applyDiscount,
   deleteDiscountFromOrder,
   CreateDiscountInterface,
+  UpdateDiscountInterface,
 } from "@/lib/api/service/discount.service";
 import { enqueueSnackbar } from "notistack";
 
@@ -33,7 +34,7 @@ export const useCreateDiscount = () => {
 
 export const useUpdateDiscount = () => {
   const response = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateDiscountInterface }) =>
       updateDiscount(id, data),
     onSuccess: () => {
       enqueueSnackbar("Cập nhật mã giảm giá thành công", {
@@ -85,6 +86,7 @@ export const useApplyDiscountForUser = () => {
 };
 
 export const useApplyDiscount = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: ({
       discountId,
@@ -94,6 +96,9 @@ export const useApplyDiscount = () => {
       orderId: string;
     }) => applyDiscount(discountId, orderId),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["discounts-by-user", "create-order"]
+      })
       enqueueSnackbar("Áp dụng mã giảm giá thành công", {
         variant: "success",
       });
@@ -112,6 +117,7 @@ export const useApplyDiscount = () => {
 };
 
 export const useDeleteDiscountFromOrder = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: ({
       discountId,
@@ -121,6 +127,9 @@ export const useDeleteDiscountFromOrder = () => {
       orderId: string;
     }) => deleteDiscountFromOrder(discountId, orderId),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["discounts-by-user", "create-order"]
+      })
       enqueueSnackbar("Xóa mã giảm giá thành công", {
         variant: "success",
       });

@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import Logo from "../ui/Logo";
+import Logo from "../../shared/components/Logo";
 import Navigation from "./Navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import SearchModal from "../ui/Search/Search";
-import { useContextProvider } from "@/lib/hooks/useContextProvider";
-import LanguageSelector from "../ui/LanguageSelector";
-import Text from "../wrapper/Text";
+import SearchModal from "../../shared/components/Search/Search";
+import { useContextProvider } from "@/shared/hooks/useContextProvider";
+import LanguageSelector from "../../shared/components/LanguageSelector";
+import Text from "../../shared/components/wrapper/Text";
+
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,36 +26,75 @@ export const Header: React.FC = () => {
 
   const navigate = useNavigate();
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
-      {/* <div className="admin-btn bg-gray-100 flex justify-start">
-        <button onClick={() => navigate("/admin/login")}>Admin</button>
-      </div> */}
-      <div className="bg-[#C8A846] text-white underline py-2 text-center text-sm">
-        <Text id="home.freeUSShippingOver99" />
-      </div>
+    <AppBar position="fixed" sx={{ bgcolor: "white", boxShadow: 1 }}>
+      <Box sx={{ bgcolor: "#C8A846", color: "white", py: 1, textAlign: "center" }}>
+        <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+          <Text id="home.freeUSShippingOver99" />
+        </Typography>
+      </Box>
 
-      <div className="container  mx-auto px-4 py-4 ml-[0px] flex items-center justify-between">
-        <Logo />
-        <Navigation isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
-
-        <div className="flex min-w-[200px] items-center gap-4">
-          <button
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          px: { xs: 2, md: 4 },
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          flexWrap: "wrap",
+        }}
+      >
+        <Box
+          sx={{
+            order: { xs: 2, md: 0 },
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
+          <Logo />
+        </Box>
+        <Box
+          sx={{
+            order: { xs: 1, md: 1 },
+            flexGrow: 2,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Navigation isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+        </Box>
+        <Box
+          sx={{
+            order: { xs: 3, md: 5 },
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <IconButton
             onClick={toggleSearch}
-            className="hidden md:block hover:text-[#C8A846]"
+            sx={{ color: "text.primary" }}
           >
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-          <button onClick={() => navigate("/login")}>
+            <SearchIcon />
+          </IconButton>
+          <Button
+            onClick={() => navigate("/login")}
+            className="text-sm text-primary transition-all duration-150 ease-in-out hover:scale-105 "
+          >
             <Text id="auth.login" />
-          </button>
+          </Button>
           <LanguageSelector />
-        </div>
-      </div>
+        </Box>
+      </Toolbar>
 
       <SearchModal
         isOpen={isOpenSearch}
         onClose={() => setIsOpenSearch(false)}
       />
-    </header>
+    </AppBar>
   );
 };
+
+

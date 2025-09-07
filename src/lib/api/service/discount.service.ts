@@ -1,4 +1,4 @@
-import { DiscountType, DiscountValueType } from "@/types/discount";
+import { DiscountType, DiscountValueType } from "@/shared/types/discount";
 import instance from "..";
 import { API_URL } from "@/lib/config/api.config";
 

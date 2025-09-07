@@ -1,4 +1,4 @@
-import { Category } from "@/types/category";
+import { Category } from "@/shared/types/category";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
@@ -6,7 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link, useNavigate } from "react-router-dom";
-import Text from "../wrapper/Text";
+import Text from "../../shared/components/wrapper/Text";
 type FeaturedCollectionProps = {
   categories: Category[] | null;
 };
@@ -49,8 +49,8 @@ function FeaturedCollection({ categories }: FeaturedCollectionProps) {
           }}
           className="collection-swiper"
         >
-          {categories?.map((category: any) => {
-            const image = category?.image?.map((item: string) =>
+          {categories?.map((category: Category) => {
+            const image = category?.images?.map((item: string) =>
               item.replace(/[{}"]/g, "")
             );
             return (

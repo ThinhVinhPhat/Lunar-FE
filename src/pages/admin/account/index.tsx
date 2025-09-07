@@ -1,62 +1,55 @@
-import { useState } from "react";
 import { Search, Edit, Trash2, UserPlus, Lock, User } from "lucide-react";
-import { useFindUser } from "@/lib/hooks/queryClient/query/user/user.query";
-import { UserType } from "@/types/user";
+import { UserType } from "@/shared/types/user";
 import Pagination from "@/components/admin/pagination";
 import PermissionModal from "./modals/permision-modal";
 import AddModal from "./modals/add-modal";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
-import { useDeleteUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
-import { Role } from "@/types";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
+import { Role } from "@/shared/types";
+import { useAccountManagement } from "./hooks/useAccountManagement";
 
 const AdminAccount = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState<UserType | null>(null);
-  const [page, setPage] = useState(1);
-  const [currentRole, setCurrentRole] = useState(Role.CUSTOMER);
-  const { mutate: deleteUser } = useDeleteUser();
   const {
-    data: accounts,
-    isLoading,
-    refetch,
+    // Data
+    filteredAccounts,
+    totalPages,
     total,
-  } = useFindUser({
-    email: "",
-    role: [currentRole],
-    page: page,
-    limit: page * 10,
-  });
-  const totalPages = Math.ceil(total / (page * 10));
+    currentAccount,
 
-  const filteredAccounts = accounts.filter(
-    (account: UserType) =>
-      account?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account?.role?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    // Loading state
+    isLoading,
 
-  const handleEdit = (account: UserType) => {
-    setCurrentAccount(account);
-    setTimeout(() => {
-      setShowAddModal(true);
-    }, 0);
-  };
+    // Search & Filter state
+    searchTerm,
+    setSearchTerm,
+    currentRole,
+    setCurrentRole,
 
-  const handleDelete = (account: UserType) => {
-    deleteUser(account.id as string);
-    setShowDeleteModal(false);
-    refetch();
-  };
+    // Modal states
+    showAddModal,
+    setShowAddModal,
+    showDeleteModal,
+    setShowDeleteModal,
+    showPermissionsModal,
+    setShowPermissionsModal,
 
-  const handlePermissions = (account: UserType) => {
-    setCurrentAccount(account);
-    setShowPermissionsModal(true);
-  };
+    // Pagination
+    page,
+    handlePageChange,
+
+    // Event handlers
+    handleEdit,
+    handleCreateNew,
+    handleDeleteClick,
+    handleDelete,
+    handlePermissions,
+
+    // Utility functions
+    getStatusBadgeStyle,
+    getStatusText,
+    formatDate,
+    refetch,
+  } = useAccountManagement();
 
   return (
     <>
@@ -72,10 +65,7 @@ const AdminAccount = () => {
               </p>
             </div>
             <button
-              onClick={() => {
-                setCurrentAccount(null);
-                setShowAddModal(true);
-              }}
+              onClick={handleCreateNew}
               className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#b39539] transition-colors"
             >
               <UserPlus size={16} className="mr-2" />
@@ -162,17 +152,13 @@ const AdminAccount = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            account.status
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeStyle(account.status)}`}
                         >
-                          {account.status ? "Active" : "Inactive"}
+                          {getStatusText(account.status)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(account.createdAt).toLocaleDateString()}
+                        {formatDate(account.createdAt)}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-center text-sm font-medium">
                         <div className="flex justify-left ml-2 items-center space-x-2">
@@ -189,10 +175,7 @@ const AdminAccount = () => {
                             <Lock size={16} />
                           </button>
                           <button
-                            onClick={() => {
-                              setCurrentAccount(account);
-                              setShowDeleteModal(true);
-                            }}
+                            onClick={() => handleDeleteClick(account)}
                             className="text-red-600 hover:text-red-900"
                           >
                             <Trash2 size={16} />
@@ -206,7 +189,7 @@ const AdminAccount = () => {
             </div>
             <Pagination
               filteredProducts={filteredAccounts}
-              setPage={setPage}
+              setPage={handlePageChange}
               page={page}
               totalPages={totalPages}
               totalItems={total}
@@ -225,9 +208,7 @@ const AdminAccount = () => {
             <DeleteConfirmModal
               showDeleteModal={showDeleteModal}
               setShowDeleteModal={setShowDeleteModal}
-              onDelete={() => {
-                handleDelete(currentAccount as UserType);
-              }}
+              onDelete={handleDelete}
             />
           </div>
         </>

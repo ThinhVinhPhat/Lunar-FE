@@ -1,6 +1,6 @@
 import { API_URL } from "@/lib/config/api.config";
 import instance from "../index";
-import { CommentSort } from "@/types/review";
+import { CommentSort } from "@/shared/types/review";
 
 export interface CreateCommentInterface {
   comment: string;

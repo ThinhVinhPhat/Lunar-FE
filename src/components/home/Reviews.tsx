@@ -1,127 +1,181 @@
-import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faQuoteRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  Box,
+  Typography,
+  Avatar,
+  Rating,
+  IconButton,
+  useTheme,
+} from "@mui/material";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import { useAutoPlaySlider } from "@/shared/hooks/useAutoPlaySlider";
+import { reviews } from "@/database/reviews";
 
-interface Review {
-  id: number;
-  author: string;
-  avatar: string;
-  rating: number;
-  date: string;
-  text: string;
-  product: string;
-}
 
 const Reviews = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const theme = useTheme();
 
-  const reviews: Review[] = [
-    {
-      id: 1,
-      author: "Michael K.",
-      avatar: "https://i.pravatar.cc/150?img=11",
-      rating: 5,
-      date: "July 15, 2023",
-      text: "These are the best sunglasses I've ever owned. The wood finish is beautiful and the quality is outstanding. Worth every penny!",
-      product: "Canby Wood Sunglasses",
-    },
-    {
-      id: 2,
-      author: "Sarah L.",
-      avatar: "https://i.pravatar.cc/150?img=5",
-      rating: 5,
-      date: "August 3, 2023",
-      text: "Absolutely love my new shades! They're lightweight, stylish, and I get compliments everywhere I go. The sustainable materials are a huge plus.",
-      product: "Pearl Metal Sunglasses",
-    },
-    {
-      id: 3,
-      author: "David R.",
-      avatar: "https://i.pravatar.cc/150?img=8",
-      rating: 5,
-      date: "September 12, 2023",
-      text: "The craftsmanship is exceptional. These sunglasses are not only beautiful but also incredibly comfortable. Customer service was excellent too!",
-      product: "Kennedy Acetate Sunglasses",
-    },
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % reviews.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [reviews.length]);
+  const {
+    activeIndex,
+    setActiveIndex,
+    nextSlide,
+    prevSlide,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAutoPlaySlider({
+    totalSlides: reviews.length,
+    interval: 5000,
+    enableMouseEvents: true,
+  });
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="relative h-[400px] overflow-hidden">
-        {reviews.map((review, index) => (
-          <div
-            key={review.id}
-            className={`absolute w-full transition-all duration-700 ease-in-out ${
-              index === activeIndex
-                ? "opacity-100 translate-x-0"
-                : index < activeIndex
-                ? "opacity-0 -translate-x-full"
-                : "opacity-0 translate-x-full"
-            }`}
+    <Box 
+      sx={{ 
+        mx: "auto", 
+        py: 2, 
+        position: "relative"
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Box sx={{ p: 2, minHeight: 400, minWidth: 500 }}>
+        <Box sx={{ textAlign: "center" }}>
+          <Box sx={{ position: "relative", display: "flex", justifyContent: "center", flexDirection: "column" }}>
+            <Avatar
+              src={reviews[activeIndex]?.avatar}
+              alt={reviews[activeIndex]?.author}
+              sx={{
+                width: { xs: 150, md: 150 },
+                height: { xs: 150, md: 150 },
+                mx: "auto",
+                mb: 3,
+                border: "4px solid #C8A846",
+              }}
+            />
+          </Box>
+
+          <Rating value={reviews[activeIndex]?.rating} readOnly sx={{ mb: 2 }} />
+
+          <Typography 
+            variant="h6" 
+            fontStyle="italic" 
+            color="text.secondary" 
+            mb={1} 
+            px={2}
+            sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}
           >
-            <div className="text-center">
-              <div className="relative inline-block">
-                <img
-                  src={review.avatar}
-                  alt={review.author}
-                  className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-[#C8A846]"
-                />
-                <div className="absolute -bottom-2 right-0 bg-[#C8A846] rounded-full p-2">
-                  <FontAwesomeIcon
-                    icon={faQuoteRight}
-                    className="text-white w-4 h-4"
-                  />
-                </div>
-              </div>
+            "{reviews[activeIndex]?.text}"
+          </Typography>
 
-              <div className="flex justify-center gap-1 mb-4">
-                {[...Array(review.rating)].map((_, i) => (
-                  <FontAwesomeIcon
-                    key={i}
-                    icon={faStar}
-                    className="text-[#C8A846] w-4 h-4"
-                  />
-                ))}
-              </div>
+          <Box>
+            <Typography 
+              variant="h5" 
+              fontWeight="semibold" 
+              color="#2c2c2c"
+              sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}
+            >
+              {reviews[activeIndex]?.author}
+            </Typography>
+            <Typography variant="subtitle1" color="primary.main" fontWeight="medium">
+              {reviews[activeIndex]?.product}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {reviews[activeIndex]?.date}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
 
-              <p className="text-lg text-gray-600 italic mb-6 px-4">
-                "{review.text}"
-              </p>
+      {reviews.length > 1 && (
+        <>
+          <IconButton
+            onClick={prevSlide}
+            sx={{
+              position: "absolute",
+              left: { xs: 8, md: 16 },
+              top: "50%",
+              transform: "translateY(-50%)",
+              bgcolor: "rgba(255,255,255,0.9)",
+              color: "#333",
+              width: { xs: 40, md: 48 },
+              height: { xs: 40, md: 48 },
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              zIndex: 10,
+              transition: "all 0.3s ease",
+              "&:hover": { 
+                bgcolor: "white",
+                transform: "translateY(-50%) scale(1.1)",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.2)"
+              },
+              "&:disabled": {
+                opacity: 0.5,
+                cursor: "not-allowed"
+              }
+            }}
+            disabled={activeIndex === 0}
+          >
+            {theme.direction === "rtl" ? (
+              <KeyboardArrowRight />
+            ) : (
+              <KeyboardArrowLeft />
+            )}
+          </IconButton>
 
-              <div className="space-y-2">
-                <h4 className="text-xl font-semibold text-[#2c2c2c]">
-                  {review.author}
-                </h4>
-                <p className="text-[#C8A846] font-medium">{review.product}</p>
-                <p className="text-sm text-gray-500">{review.date}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          <IconButton
+            onClick={nextSlide}
+            sx={{
+              position: "absolute",
+              right: { xs: 8, md: 16 },
+              top: "50%",
+              transform: "translateY(-50%)",
+              bgcolor: "rgba(255,255,255,0.9)",
+              color: "#333",
+              width: { xs: 40, md: 48 },
+              height: { xs: 40, md: 48 },
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              zIndex: 10,
+              transition: "all 0.3s ease",
+              "&:hover": { 
+                bgcolor: "white",
+                transform: "translateY(-50%) scale(1.1)",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.2)"
+              },
+              "&:disabled": {
+                opacity: 0.5,
+                cursor: "not-allowed"
+              }
+            }}
+            disabled={activeIndex === reviews.length - 1}
+          >
+            {theme.direction === "rtl" ? (
+              <KeyboardArrowLeft />
+            ) : (
+              <KeyboardArrowRight />
+            )}
+          </IconButton>
+        </>
+      )}
 
-      <div className="flex justify-center gap-2 mt-8">
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3, gap: 1 }}>
         {reviews.map((_, index) => (
-          <button
+          <Box
             key={index}
             onClick={() => setActiveIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === activeIndex
-                ? "bg-[#C8A846] w-8"
-                : "bg-gray-300 hover:bg-gray-400"
-            }`}
-            aria-label={`Go to review ${index + 1}`}
+            sx={{
+              width: activeIndex === index ? 24 : 8,
+              height: 8,
+              borderRadius: activeIndex === index ? "8px" : "50%",
+              bgcolor: activeIndex === index ? "#C8A846" : "#e0e0e0",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                bgcolor: activeIndex === index ? "#C8A846" : "#bdbdbd",
+              },
+            }}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

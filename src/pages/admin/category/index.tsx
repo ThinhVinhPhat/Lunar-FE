@@ -1,63 +1,57 @@
-import React, { useState } from "react";
+import React from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AddCategoryModal from "./modals/AddCategory";
 import { DeleteConfirmModal } from "@/components/admin/modal/DeleteConfirm";
-import { useGetCategories } from "@/lib/hooks/queryClient/query/category/category.query";
 import SearchComponent from "@/components/admin/ui/Search";
-import { Category, CategoryDetail } from "@/types/category";
+import { Category, CategoryDetail } from "@/shared/types/category";
 import Pagination from "@/components/admin/pagination";
 import AddCategoryDetail from "./modals/AddCategoryDetail";
-import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
-import { useDeleteDetail } from "@/lib/hooks/queryClient/mutator/category/categoryDetail/categoryDetail.mutator";
-import { useDeleteCategory } from "@/lib/hooks/queryClient/mutator/category/category.mutator";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
+import { useCategoryManagement } from "./hooks/useCategoryManagement";
 
 const AdminCategory: React.FC<AuthProps> = () => {
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showAddDetailModal, setShowAddDetailModal] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
-  const [currentCategoryDetail, setCurrentCategoryDetail] =
-    useState<CategoryDetail | null>(null);
   const {
-    data: categories,
+    // Data
+    filteredCategories,
     total,
+    totalPages,
+    currentCategory,
+    currentCategoryDetail,
+
+    // Loading state
     isLoading,
-    refetch,
-  } = useGetCategories(searchTerm, 10, page);
-  const { mutateAsync: deleteCategory } = useDeleteCategory();
-  const { mutateAsync: deleteDetail } = useDeleteDetail();
 
-  const filteredCategories = categories.filter((category: Category) =>
-    category?.categoryDetails?.some((item: CategoryDetail) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    // Search state
+    searchTerm,
+    setSearchTerm,
 
-  const totalProducts =
-    searchTerm === "" ? categories?.length : filteredCategories?.length;
-  const totalPages = Math.ceil(totalProducts / 10);
+    // Modal states
+    showAddModal,
+    setShowAddModal,
+    showDeleteModal,
+    setShowDeleteModal,
+    showAddDetailModal,
+    setShowAddDetailModal,
 
-  const handleEditDetail = (category: CategoryDetail) => {
-    setCurrentCategoryDetail(category);
-    setShowAddDetailModal(true);
-  };
+    // Pagination
+    page,
+    handlePageChange,
 
-  const handleDelete = async (category: Category) => {
-    setCurrentCategory(category);
-    setShowDeleteModal(true);
-    await deleteCategory(category.id);
-    refetch();
-  };
+    // Event handlers
+    handleCreateNewCategory,
+    handleEditDetail,
+    handleCreateNewDetail,
+    handleDeleteCategoryClick,
+    handleDeleteDetailClick,
+    handleDelete,
 
-  const handleDeleteDetail = async (category: CategoryDetail) => {
-    setCurrentCategoryDetail(category);
-    setShowDeleteModal(true);
-    await deleteDetail(category.id);
-    refetch();
-  };
+    // Utility functions
+    // formatDate,
+    // getCategoryStatusStyle,
+    // getCategoryStatusText,
+    // getDetailCount,
+  } = useCategoryManagement();
 
   return (
     <IsLoadingWrapper isLoading={isLoading}>
@@ -68,10 +62,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
             <p className="text-gray-600">Manage your product categories</p>
           </div>
           <button
-            onClick={() => {
-              setCurrentCategory(null);
-              setShowAddModal(true);
-            }}
+            onClick={handleCreateNewCategory}
             className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#b39539] transition-colors"
           >
             <Plus size={16} className="mr-2" />
@@ -104,7 +95,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
                       </p>
 
                       <button
-                        onClick={() => handleDelete(category)}
+                        onClick={() => handleDeleteCategoryClick(category)}
                         className="p-1 rounded-md hover:bg-gray-100 text-red-600"
                       >
                         <Trash2 size={14} />
@@ -142,7 +133,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
                                 <Edit size={14} />
                               </button>
                               <button
-                                onClick={() => handleDeleteDetail(detail)}
+                                onClick={() => handleDeleteDetailClick(detail)}
                                 className="p-1 rounded-md hover:bg-gray-100 text-red-600"
                               >
                                 <Trash2 size={14} />
@@ -157,11 +148,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
 
                     <div className="border border-dashed border-gray-300 rounded-md p-3 flex items-center justify-center hover:bg-gray-50 cursor-pointer">
                       <button
-                        onClick={() => {
-                          setCurrentCategoryDetail(null);
-                          setCurrentCategory(category);
-                          setShowAddDetailModal(true);
-                        }}
+                        onClick={() => handleCreateNewDetail(category)}
                         className="text-[#C8A846] flex items-center"
                       >
                         <Plus size={16} className="mr-1" />
@@ -177,7 +164,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
 
         <Pagination
           filteredProducts={filteredCategories}
-          setPage={setPage}
+          setPage={handlePageChange}
           page={page}
           totalItems={total}
           totalPages={totalPages}
@@ -196,13 +183,7 @@ const AdminCategory: React.FC<AuthProps> = () => {
         <DeleteConfirmModal
           showDeleteModal={showDeleteModal}
           setShowDeleteModal={setShowDeleteModal}
-          onDelete={() => {
-            if (currentCategory) {
-              handleDelete(currentCategory);
-            } else if (currentCategoryDetail) {
-              handleDeleteDetail(currentCategoryDetail);
-            }
-          }}
+          onDelete={handleDelete}
         />
       </>
     </IsLoadingWrapper>

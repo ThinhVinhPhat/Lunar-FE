@@ -1,9 +1,27 @@
-import { NotificationTemplate } from "@/types/notification";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { NotificationTemplate } from "@/shared/types/notification";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { useNavigate } from "react-router-dom";
-import useNotificationMessageAction from "@/lib/hooks/useNotificationMessageAction";
-import { useState } from "react";
+import useNotificationMessageAction from "@/pages/admin/notification/hooks/useNotificationMessageAction";
+import React, { useState } from "react";
 import { formatTime } from "@/lib/ultis/formatDate";
+
+import {
+  Box,
+  IconButton,
+  Badge,
+  Menu,
+  Tabs,
+  Tab,
+  Typography,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Avatar,
+  Divider,
+  Button,
+} from "@mui/material";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 type Props = {
   isOpen: boolean;
@@ -24,150 +42,178 @@ export default function NotificationBell({ isOpen, setIsOpen }: Props) {
     dropdownRef,
     toggleDropdown,
     isRead,
-    handleUpdateNotification,
+    handleUpdateNotificationStatus
   } = useNotificationMessageAction(setIsOpen, isOpen);
+
+  const handleTabChange = (newValue: "messages" | "notifications") => {
+    setActiveTab(newValue);
+  };
 
   return (
     <IsLoadingWrapper isLoading={isLoading || isLoadingNotification}>
-      <div className="relative" ref={dropdownRef}>
-        <button
-          className="relative p-2 rounded-full hover:bg-slate-100"
+      <Box sx={{ position: "relative" }} ref={dropdownRef}>
+        <IconButton
+          color="inherit"
           onClick={toggleDropdown}
+          sx={{ p: 1, borderRadius: "50%", "&:hover": { bgcolor: "#f0f0f0" } }}
         >
-          <svg
-            className="w-6 h-6 text-slate-600"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+          <Badge badgeContent={totalUnreadCount} color="error">
+            <NotificationsIcon sx={{ color: "#606060" }} />
+          </Badge>
+        </IconButton>
+
+        <Menu
+          anchorEl={dropdownRef.current}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          PaperProps={{
+            sx: {
+              mt: 2,
+              width: 360,
+              maxHeight: 400,
+              overflow: "hidden",
+              borderRadius: 2,
+              boxShadow: 3,
+            },
+          }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <Tabs
+            value={activeTab}
+            onChange={(_, newValue) => handleTabChange(newValue)}
+            variant="fullWidth"
+            sx={{ borderBottom: 1, borderColor: "divider" }}
           >
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-          {totalUnreadCount > 0 && (
-            <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full min-w-5 h-5 px-1 text-xs font-semibold flex items-center justify-center">
-              {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
-            </div>
-          )}
-        </button>
+            <Tab label="Messages" value="messages" />
+            <Tab label="Notifications" value="notifications" />
+          </Tabs>
 
-        <div
-          className={`absolute top-full right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl w-96 max-h-96 overflow-hidden z-50 transition-all duration-200 ease-out ${
-            isOpen
-              ? "opacity-100 visible translate-y-0"
-              : "opacity-0 invisible -translate-y-2"
-          }`}
-        >
-          <div className="flex justify-around border-b border-slate-200">
-            {["messages", "notifications"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() =>
-                  setActiveTab(tab as "messages" | "notifications")
-                }
-                className={`w-full py-2 font-medium text-sm ${
-                  activeTab === tab
-                    ? "text-[#C8A846] border-b-2 border-[#C8A846]"
-                    : "text-slate-500"
-                }`}
-              >
-                {tab === "messages" ? "Messages" : "Notifications"}
-              </button>
-            ))}
-          </div>
-
-          <div className="max-h-80 overflow-y-auto">
+          <Box sx={{ maxHeight: 300, overflowY: "auto" }}>
             {activeTab === "messages" ? (
               groupedNotifications.length === 0 ? (
-                <div className="py-12 px-6 text-center text-slate-500">
+                <Typography sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
                   No messages yet
-                </div>
+                </Typography>
               ) : (
-                groupedNotifications.map((notification) => (
-                  <div
-                    key={notification.senderId}
-                    className={`px-6 py-4 border-b border-slate-100 flex gap-3 cursor-pointer hover:bg-slate-50 relative ${
-                      notification.unreadCount > 0
-                        ? "bg-blue-50 border-l-4 border-l-[#C8A846]"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      navigate(`/admin/message/${notification.senderId}`);
-                    }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-[#C8A846] text-white flex items-center justify-center font-semibold text-sm">
-                      {notification.senderName
-                        .split(" ")
-                        .map((w) => w[0])
-                        .join("")}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-slate-900 text-sm">
-                        {notification.senderName}
-                      </div>
-                      <div className="text-sm text-slate-600 truncate">
-                        {notification.latestMessage}
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span>{formatTime(notification.latestTime)}</span>
-                        <span className="bg-[#C8A846] text-white px-2 py-1 rounded-full text-xs">
-                          Message
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                <List disablePadding>
+                  {groupedNotifications.map((notification) => (
+                    <React.Fragment key={notification.senderId}>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          onClick={() => {
+                            navigate(`/admin/message/${notification.senderId}`);
+                            setIsOpen(false);
+                          }}
+                          sx={{
+                            borderLeft: notification.unreadCount > 0 ? "4px solid #C8A846" : "none",
+                            bgcolor: notification.unreadCount > 0 ? "#e3f2fd" : "inherit",
+                            "&:hover": { bgcolor: "#f5f5f5" },
+                          }}
+                        >
+                        <Avatar sx={{ bgcolor: "#C8A846", mr: 2 }}>
+                          {notification.senderName
+                            .split(" ")
+                            .map((w) => w[0])
+                            .join("")}
+                        </Avatar>
+                        <ListItemText
+                          primary={notification.senderName}
+                          secondary={
+                            <>
+                              <Typography
+                                sx={{ display: "block" }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                                noWrap
+                              >
+                                {notification.latestMessage}
+                              </Typography>
+                              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
+                                <Typography variant="caption" color="text.secondary">
+                                  {formatTime(notification.latestTime)}
+                                </Typography>
+                                <Badge color="primary" sx={{ bgcolor: "#C8A846", color: "white", px: 1, borderRadius: 1 }}>
+                                  Message
+                                </Badge>
+                              </Box>
+                            </>
+                          }
+                        />
+                        </ListItemButton>
+                      </ListItem>
+                      <Divider component="li" />
+                    </React.Fragment>
+                  ))}
+                </List>
               )
             ) : notifications.length === 0 ? (
-              <div className="py-12 px-6 text-center text-slate-500">
+              <Typography sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
                 No notifications yet
-              </div>
+              </Typography>
             ) : (
-              notifications?.map((notif: NotificationTemplate) => {
-                return (
-                  <div
-                    onClick={() => handleUpdateNotification(notif?.id)}
-                    key={notif?.id}
-                    className={`px-6 py-4 border-b border-slate-100 flex gap-3 cursor-pointer hover:bg-slate-50 relative ${
-                      !isRead(notif?.id)
-                        ? "bg-yellow-50 border-l-4 border-[#C8A846]"
-                        : ""
-                    }`}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-slate-200 text-center flex items-center justify-center text-xl">
-                      <img
-                        className="object-cover w-full h-full rounded-full"
-                        src={notif?.image?.[0]}
-                        alt="icon"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-slate-900 text-sm">
-                        {notif?.title}
-                      </div>
-                      <div className="text-sm text-slate-600 truncate">
-                        {notif?.message}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {formatTime(notif?.createdAt)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+              <List disablePadding>
+                {notifications?.map((notif: NotificationTemplate) => {
+                  return (
+                    <React.Fragment key={notif?.id}>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          onClick={() => handleUpdateNotificationStatus(notif?.id)}
+                          sx={{
+                            borderLeft: !isRead(notif?.id) ? "4px solid #C8A846" : "none",
+                            bgcolor: !isRead(notif?.id) ? "#fffde7" : "inherit",
+                            "&:hover": { bgcolor: "#f5f5f5" },
+                          }}
+                        >
+                        <Avatar src={notif?.image?.[0]} alt="icon" sx={{ mr: 2 }} />
+                        <ListItemText
+                          primary={notif?.title}
+                          secondary={
+                            <>
+                              <Typography
+                                sx={{ display: "block" }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                                noWrap
+                              >
+                                {notif?.message}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {formatTime(notif?.createdAt)}
+                              </Typography>
+                            </>
+                          }
+                        />
+                        </ListItemButton>
+                      </ListItem>
+                      <Divider component="li" />
+                    </React.Fragment>
+                  );
+                })}
+              </List>
             )}
-          </div>
+          </Box>
 
-          <div className="px-6 py-4 border-t border-slate-200 text-center">
-            <button
-              onClick={() => handleUpdateNotification("all")}
-              className="text-[#C8A846] text-sm font-medium hover:underline"
+          <Box sx={{ p: 2, borderTop: 1, borderColor: "divider", textAlign: "center" }}>
+            <Button
+              onClick={() => handleUpdateNotificationStatus("all")}
+              sx={{ color: "#C8A846", textTransform: "none" }}
             >
               Mark all as read
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </Box>
+        </Menu>
+      </Box>
     </IsLoadingWrapper>
   );
 }
+
+

@@ -21,6 +21,7 @@
     "handcraftedInPortlandOregon": "Thủ công tại Portland, Oregon",
     "shopNow": "Mua ngay",
     "shopOurMostPopularStyles": "Mua những sản phẩm phổ biến nhất của chúng tôi",
+    "shopOurMostPopularStylesDescription": "Khám phá các khung mắt kính thủ công từ vật liệu bền vững",
     "realReviews": "Những đánh giá thật sự",
     "freeUSShippingOver99": "Vận chuyển miễn phí tại Mỹ trên $99 và trả hàng miễn phí*",
     "pandeletonGlasses": "Kính Pendleton",
@@ -69,7 +70,12 @@
   "profile": {
     "account_information": "Thông tin tài khoản",
     "manage_your_personal_information": "Quản lý thông tin cá nhân của bạn",
-    "edit": "Chỉnh sửa"
+    "edit": "Chỉnh sửa",
+    "upload_profile_photo": "Upload ảnh đại diện",
+    "order_history": "Lịch sử đơn hàng",
+    "favorites_reviews": "Yêu thích & Đánh giá",
+    "discounts": "Mã giảm giá",
+    "member_since": "Tham gia từ"
   },
   "profile_fields": {
     "firstName": "Họ",
@@ -95,7 +101,8 @@
     "subtotal": "Tổng tiền sản phẩm",
     "shipping_and_taxes_calculated_at_checkout": "Phí vận chuyển và thuế được tính tại thời điểm thanh toán.",
     "checkout": "Thanh toán",
-    "final_total": "Tổng tiền"
+    "final_total": "Tổng tiền",
+    "applied_discounts": "Mã giảm giá đang áp dụng"
   },
   "order_history": {
     "order_history": "Lịch sử đơn hàng",
@@ -104,7 +111,13 @@
     "total": "Tổng",
     "date": "Ngày",
     "shop_now": "Mua ngay",
-    "you_dont_have_any_orders_yet": "Bạn không có đơn hàng nào"
+    "you_dont_have_any_orders_yet": "Bạn không có đơn hàng nào",
+    "track_your_orders_and_purchase_history": "Theo dõi đơn hàng và lịch sử mua hàng",
+    "view_details": "Xem chi tiết",
+    "track_order": "Theo dõi đơn hàng",
+    "order_progress": "Tình trạng đơn hàng",
+    "items": "Sản phẩm",
+    "start_shopping_to_see_your_orders_here": "Start shopping to see your orders here."
   },
   "user_product": {
     "favorite_products": "Sản phẩm yêu thích",
@@ -145,7 +158,8 @@
     "results_for": "kết quả cho",
     "no_products_found": "Không tìm thấy sản phẩm phù hợp",
     "try_different_search_term": "Hãy thử từ khóa tìm kiếm khác hoặc khám phá các bộ sưu tập của chúng tôi",
-    "view_details": "Xem chi tiết"
+    "view_details": "Xem chi tiết",
+    "no_results": "Không tìm thấy kết quả"
   },
   "navigation": {
     "men": "Nam",
@@ -284,12 +298,6 @@
     "actions": "Hành động",
     "your_orders": "Đơn hàng của bạn"
   },
-  "search": {
-    "no_results": "Không tìm thấy kết quả",
-    "search_products": "Tìm kiếm sản phẩm",
-    "search_placeholder": "Tìm kiếm sản phẩm...",
-    "popular_searches": "Tìm kiếm phổ biến"
-  },
   "discount": {
     "discountVoucher": "Kho Voucher",
     "findMoreVoucher": "Tìm thêm Voucher",
@@ -317,6 +325,10 @@
     "available_discounts": "Ưu đãi có sẵn",
     "min_spend": "Giá trị tối thiểu",
     "expires": "Hết hạn",
-    "delete": "Xóa"
+    "delete": "Xóa",
+    "loadMoreVouchers": "Tải thêm voucher",
+    "noVoucherFound": "Không tìm thấy voucher",
+    "tryChangingYourSearchTermsOrFiltersToFindMoreVouchers": "Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc để tìm thêm voucher",
+    "discountVoucherDescription": "Khám phá và tiết kiệm với các voucher giảm giá độc quyền của chúng tôi"
   }
 }

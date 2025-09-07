@@ -4,18 +4,18 @@ import {
   DiscountInterface,
   DiscountValueType,
   DiscountType,
-} from "@/types/discount";
+} from "@/shared/types/discount";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormField } from "@/components/form/form-register";
+import { FormField } from "@/shared/components/form/form-register";
 import { useEffect, useState } from "react";
 import { useFindUser } from "@/lib/hooks/queryClient/query/user/user.query";
-import { useProductAction } from "@/lib/hooks/useProductAction";
-import { Product } from "@/types/product";
-import { UserType } from "@/types/user";
+import { useProductAction } from "@/shared/hooks/useProductAction";
+import { Product } from "@/shared/types/product";
+import { UserType } from "@/shared/types/user";
 import { CreateDiscountInterface } from "@/lib/api/service/discount.service";
-import { Role } from "@/types";
+import { Role } from "@/shared/types";
 
 type AddDiscountModalProps = {
   showAddModal: boolean;
@@ -60,7 +60,7 @@ function AddDiscountModal({
   const { mutateAsync: updateDiscount } = useUpdateDiscount();
   const [productPage, setProductPage] = useState(1);
   const [userPage, setUserPage] = useState(1);
-  const { products } = useProductAction(productPage, 10, { category: null });
+  const { products } = useProductAction(productPage, 10, null);
   const { data: users } = useFindUser({
     role: [Role.CUSTOMER],
     page: userPage,
@@ -125,16 +125,22 @@ function AddDiscountModal({
 
   const onSubmit = async (data: FormData) => {
     const result: CreateDiscountInterface = {
-      ...data,
+      name: data.name,
+      description: data.description,
+      value: Number(data.value),
       startAt: new Date(data.startAt),
       expireAt: new Date(data.expireAt),
       valueType: data.valueType as DiscountValueType,
       discountType: data.discountType as DiscountType,
+      thresholdAmount: Number(data.thresholdAmount),
+      usageLimit: Number(data.usageLimit),
+      isActive: data.isActive,
     };
 
     try {
       if (currentDiscount) {
-        await updateDiscount({ id: currentDiscount.id, data: result });
+        const updateData = { ...result, status: currentDiscount.isActive };
+        await updateDiscount({ id: currentDiscount.id, data: updateData });
       } else {
         await createDiscount(result);
       }

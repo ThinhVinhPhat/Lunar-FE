@@ -1,4 +1,4 @@
-import { CompareLastMonthType, SummaryType } from "@/types/analytic";
+import { CompareLastMonthType, SummaryType } from "@/shared/types/analytic";
 import { CreditCard, Eye, ShoppingBag, Users } from "lucide-react";
 
 export const transFormCard = (
@@ -46,7 +46,18 @@ export const transFormCard = (
   return statsCards;
 };
 
-export const transFormRevenue = (revenue: any) => {
+
+export type RevenueType = {
+  monthlyRevenues: {
+    month: string;
+    totalRevenue: number;
+  }[];
+  categoryCounts: {
+    [category: string]: number;
+  };
+};
+
+export const transFormRevenue = (revenue: RevenueType) => {
   if (!revenue || !revenue.monthlyRevenues) {
     return {
       revenueData: {
@@ -74,13 +85,13 @@ export const transFormRevenue = (revenue: any) => {
     };
   }
 
-  const months = revenue.monthlyRevenues.map((item: any) => {
+  const months = revenue.monthlyRevenues.map((item) => {
     const date = new Date(item.month);
     return date.toLocaleString("default", { month: "short" });
   });
 
-  const revenueValues = revenue.monthlyRevenues.map((item: any) =>
-    parseFloat(item.totalRevenue)
+  const revenueValues = revenue.monthlyRevenues.map((item) =>
+    parseFloat(item.totalRevenue.toString())
   );
 
   // Transform category data

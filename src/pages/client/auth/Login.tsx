@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useContextProvider } from "@/lib/hooks/useContextProvider";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
+import { useContextProvider } from "@/shared/hooks/useContextProvider";
 import { useForm } from "react-hook-form";
-import { FormField } from "@/components/form/form-register";
+import { FormField } from "@/shared/components/form/form-register";
 import { useLogin } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
 import SocialLogin from "./SocialLogin";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { AuthProps, isAlreadyLoginAuth } from "@/shared/components/wrapper/withAuth";
 import { LoginInterface } from "@/lib/api/service/auth.service";
 
 const schema = z.object({

@@ -15,7 +15,7 @@ import { Profit } from "@/components/product/Profit";
 import { Tabs } from "@/components/product/Tabs";
 import { useProduct } from "@/lib/hooks/queryClient/query/product/product.query";
 import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
-import { useContextProvider } from "@/lib/hooks/useContextProvider";
+import { useContextProvider } from "@/shared/hooks/useContextProvider";
 import { useOrderDetail } from "@/lib/hooks/queryClient/mutator/order/order-detail";
 import { enqueueSnackbar } from "notistack";
 import { features, fitDetails, included } from "@/database/product/feature";
@@ -26,7 +26,16 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { useFavoriteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
+import { ProductColorInterface } from "@/shared/types/product";
+import { Category } from "@/shared/types/category";
+
+type ProductCategory = {
+  id: string;
+  quantity: number;
+  categoryDetails: Category;
+};
+
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -225,7 +234,7 @@ const ProductDetail = () => {
                 <div className="flex justify-start ">
                   {product?.allColors && (
                     <div className="flex justify-center gap-2 bg-white bg-opacity-90 px-4 py-2 rounded-full shadow">
-                      {product.allColors.map((variant: any) => (
+                      {product.allColors.map((variant: ProductColorInterface ) => (
                         <button
                           key={variant.id}
                           onClick={() => navigate(`/product/${variant.slug}`)}
@@ -251,7 +260,7 @@ const ProductDetail = () => {
                   {t("product_detail.category")}
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {product?.productCategories?.map((category: any) => (
+                  {product?.productCategories?.map((category: ProductCategory) => (
                     <button
                       disabled
                       key={category?.categoryDetails?.id}

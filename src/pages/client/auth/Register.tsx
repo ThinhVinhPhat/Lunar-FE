@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { FormField } from "@/components/form/form-register";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { FormField } from "@/shared/components/form/form-register";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { useRegister } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
-import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { AuthProps, isAlreadyLoginAuth } from "@/shared/components/wrapper/withAuth";
 import { RegisterInterface } from "@/lib/api/service/auth.service";
 
 const schema = z.object({

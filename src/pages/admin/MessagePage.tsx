@@ -12,9 +12,9 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import MessageBubble from "@/components/admin/ui/message/MessageBubble";
 import { useEffect, useRef, useState } from "react";
-import { useContextProvider } from "@/lib/hooks/useContextProvider";
+import { useContextProvider } from "@/shared/hooks/useContextProvider";
 import { useGetConversation } from "@/lib/hooks/queryClient/query/message/message.query";
-import { MessageType } from "@/types/message";
+import { MessageType } from "@/shared/types/message";
 
 const MessagePage = () => {
   const navigate = useNavigate();

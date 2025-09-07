@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Plus,
   Edit,
@@ -14,97 +14,57 @@ import SearchComponent from "@/components/admin/ui/Search";
 import {
   DiscountInterface,
   DiscountProductInterface,
-  DiscountValueType,
-  UserDiscountInterface,
-} from "@/types/discount";
+} from "@/shared/types/discount";
 import Pagination from "@/components/admin/pagination";
-import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
-import { useDeleteDiscount } from "@/lib/hooks/queryClient/mutator/discount/discount.mutaition";
-import { useGetAllDiscounts } from "@/lib/hooks/queryClient/query/discount/discount.query";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { useTranslation } from "react-i18next";
+import { useDiscountManagement } from "./hooks/useDiscountManagement";
 
 const AdminDiscount: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [_, setShowAddProductModal] = useState(false);
-  const [currentDiscount, setCurrentDiscount] =
-    useState<DiscountInterface | null>(null);
-  const [currentDiscountProduct, setCurrentDiscountProduct] =
-    useState<DiscountProductInterface | null>(null);
+  
   const {
-    data: discounts,
-    total: totalItems,
+    // Data
+    filteredDiscounts,
+    totalItems,
+    totalPages,
+    currentDiscount,
+
+    // Loading state
     isLoading,
+
+    // Search state
+    searchTerm,
+    setSearchTerm,
+
+    // Modal states
+    showAddModal,
+    setShowAddModal,
+    showDeleteModal,
+    setShowDeleteModal,
+
+    // Pagination
+    page,
+    handlePageChange,
+
+    // Event handlers
+    handleCreateNewDiscount,
+    handleEditDiscount,
+    handleEditProduct,
+    handleCreateNewProduct,
+    handleDeleteDiscountClick,
+    handleDeleteProductClick,
+    handleDelete,
+
+    // Utility functions
+    getDiscountBadgeColor,
+    getDiscountStatus,
+    formatDiscountValue,
+    getRecentUsers,
+    formatDate,
     refetch,
-  } = useGetAllDiscounts(page, 10, "All Discount", searchTerm);
-  const { mutateAsync: deleteDiscount } = useDeleteDiscount();
-  const { mutateAsync: deleteDiscountProduct } = useDeleteDiscount();
-
-  const filteredDiscounts = discounts?.filter(
-    (discount: DiscountInterface) =>
-      discount?.discountProduct?.some((item: DiscountProductInterface) =>
-        item.product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) || discount.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalDiscounts =
-    searchTerm === "" ? discounts?.length : filteredDiscounts?.length;
-  const totalPages = Math.ceil(totalDiscounts / 10);
-
-  const handleEditProduct = (discountProduct: DiscountProductInterface) => {
-    setCurrentDiscountProduct(discountProduct);
-    setShowAddProductModal(true);
-  };
-
-  const handleDelete = async (discount: DiscountInterface) => {
-    setCurrentDiscount(discount);
-    setShowDeleteModal(true);
-    await deleteDiscount(discount.id);
-    refetch();
-  };
-
-  const handleDeleteProduct = async (
-    discountProduct: DiscountProductInterface
-  ) => {
-    setCurrentDiscountProduct(discountProduct);
-    setShowDeleteModal(true);
-    await deleteDiscountProduct(discountProduct.product.id);
-    refetch();
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const getDiscountBadgeColor = (discount: DiscountInterface) => {
-    if (!discount.isActive) return "bg-gray-100 text-gray-600";
-    const now = new Date();
-    const startDate = new Date(discount.startAt);
-    const endDate = new Date(discount.expireAt);
-
-    if (now < startDate) return "bg-blue-100 text-blue-600";
-    if (now > endDate) return "bg-red-100 text-red-600";
-    return "bg-green-100 text-green-600";
-  };
-
-  const getDiscountStatus = (discount: DiscountInterface) => {
-    if (!discount.isActive) return "Inactive";
-    const now = new Date();
-    const startDate = new Date(discount.startAt);
-    const endDate = new Date(discount.expireAt);
-
-    if (now.getTime() < startDate.getTime()) return "Scheduled";
-    if (now.getTime() > endDate.getTime()) return "Expired";
-    return "Active";
-  };
+  } = useDiscountManagement();
 
   return (
     <IsLoadingWrapper isLoading={isLoading}>
@@ -119,11 +79,8 @@ const AdminDiscount: React.FC<AuthProps> = () => {
             </p>
           </div>
           <button
-            onClick={() => {
-              setCurrentDiscount(null);
-              setShowAddModal(true);
-            }}
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gradient-to-r from-[#C8A846] to-[#d4b851] text-white rounded-lg hover:from-[#b39539] hover:to-[#c5a942] transition-all duration-200 shadow-md hover:shadow-lg"
+            onClick={handleCreateNewDiscount}
+            className="flex items-center gap-2 rounded-lg bg-[#C8A846] px-4 py-2 text-white hover:bg-[#C8A846]/80"
           >
             <Plus size={16} className="mr-2" />
             {t("discount.addDiscount")}
@@ -161,9 +118,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
                       <div className="flex items-center text-[#C8A846] bg-[#C8A846]/10 px-2 py-1 rounded-md">
                         <Percent size={14} className="mr-1" />
                         <span className="text-sm font-medium">
-                          {discount.valueType === DiscountValueType.PERCENTAGE
-                            ? `${discount.value}%`
-                            : `$${discount.value}`}
+                          {formatDiscountValue(discount)}
                         </span>
                       </div>
                     </div>
@@ -172,11 +127,11 @@ const AdminDiscount: React.FC<AuthProps> = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                       <div className="flex items-center text-gray-600">
                         <Calendar size={14} className="mr-2 text-[#C8A846]" />
-                        <span>Start: {formatDate(discount.startAt)}</span>
+                        <span>Start: {formatDate(discount.startAt.toString())}</span>
                       </div>
                       <div className="flex items-center text-gray-600">
                         <Calendar size={14} className="mr-2 text-red-400" />
-                        <span>End: {formatDate(discount.expireAt)}</span>
+                        <span>End: {formatDate(discount.expireAt.toString())}</span>
                       </div>
                       <div className="flex items-center text-gray-600">
                         <Users size={14} className="mr-2 text-blue-400" />
@@ -196,16 +151,13 @@ const AdminDiscount: React.FC<AuthProps> = () => {
 
                   <div>
                     <button
-                      onClick={() => {
-                        setCurrentDiscount(discount);
-                        setShowAddModal(true);
-                      }}
+                      onClick={() => handleEditDiscount(discount)}
                       className="ml-4 p-2 rounded-lg hover:bg-red-50 text-blue-600 transition-colors"
                     >
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(discount)}
+                      onClick={() => handleDeleteDiscountClick(discount)}
                       className="ml-4 p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
                     >
                       <Trash2 size={16} />
@@ -248,7 +200,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
                               <p className="text-sm text-gray-500">
                                 Applied:{" "}
                                 {discountProduct.appliedAt
-                                  ? formatDate(discountProduct.appliedAt)
+                                  ? formatDate(discountProduct.appliedAt.toString())
                                   : "Not applied"}
                               </p>
                             </div>
@@ -263,7 +215,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
                               </button>
                               <button
                                 onClick={() =>
-                                  handleDeleteProduct(discountProduct)
+                                  handleDeleteProductClick(discountProduct)
                                 }
                                 className="p-2 rounded-md hover:bg-red-50 text-red-600 transition-colors"
                               >
@@ -277,11 +229,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
 
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center hover:bg-[#C8A846]/5 hover:border-[#C8A846] cursor-pointer transition-all duration-200">
                     <button
-                      onClick={() => {
-                        setCurrentDiscountProduct(null);
-                        setCurrentDiscount(discount);
-                        setShowAddProductModal(true);
-                      }}
+                      onClick={() => handleCreateNewProduct(discount)}
                       className="text-[#C8A846] flex items-center font-medium"
                     >
                       <Plus size={16} className="mr-2" />
@@ -297,9 +245,8 @@ const AdminDiscount: React.FC<AuthProps> = () => {
                         Recent Usage
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {discount.userDiscounts
-                          .slice(0, 5)
-                          .map((userDiscount: UserDiscountInterface, index) => (
+                        {getRecentUsers(discount, 5)
+                          .map((userDiscount, index) => (
                             <span
                               key={index}
                               className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md"
@@ -324,7 +271,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
 
         <Pagination
           filteredProducts={filteredDiscounts}
-          setPage={setPage}
+          setPage={handlePageChange}
           page={page}
           totalItems={totalItems}
           totalPages={totalPages}
@@ -340,13 +287,7 @@ const AdminDiscount: React.FC<AuthProps> = () => {
         <DeleteConfirmModal
           showDeleteModal={showDeleteModal}
           setShowDeleteModal={setShowDeleteModal}
-          onDelete={() => {
-            if (currentDiscount) {
-              handleDelete(currentDiscount);
-            } else if (currentDiscountProduct) {
-              handleDeleteProduct(currentDiscountProduct);
-            }
-          }}
+          onDelete={handleDelete}
         />
       </>
     </IsLoadingWrapper>

@@ -1,8 +1,9 @@
 import { useGetCommentProduct } from "@/lib/hooks/queryClient/query/comment/comment.query";
 import ProductReviews from "./ProductReview";
-import { CommentSort, CommentType } from "@/types/review";
-import CommentModal from "@/components/modal/AddComment";
+import { CommentSort, CommentType } from "@/shared/types/review";
+import CommentModal from "@/shared/modal/AddComment";
 import { useEffect, useState } from "react";
+import usePagination from "@/shared/hooks/usePagination";
 import { StartReviews } from "./StarReviews";
 import { renderStars } from "@/lib/ultis/renderStar";
 import { useCreateComment } from "@/lib/hooks/queryClient/mutator/comment/comment.mutator";
@@ -18,7 +19,7 @@ type ReviewType = {
 };
 
 function ReviewList({ productId, setIsOpen, isOpen }: ReviewType) {
-  const [page, setPage] = useState(1);
+  const { page, handlePageChange } = usePagination();
   const [sort, setSort] = useState(CommentSort.NEWEST);
   const { mutateAsync: createComment } = useCreateComment();
   const { mutateAsync: deleteComment } = useDeleteComment();
@@ -103,7 +104,7 @@ function ReviewList({ productId, setIsOpen, isOpen }: ReviewType) {
       </div>
       <Pagination
         filteredProducts={reviews}
-        setPage={setPage}
+        setPage={handlePageChange}
         page={page}
         totalPages={totalPages}
         totalItems={total}

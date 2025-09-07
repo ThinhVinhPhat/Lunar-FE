@@ -1,6 +1,6 @@
   import { API_URL } from "@/lib/config/api.config";
 import instance from "..";
-import { CreateOrderProps } from "@/types/order";
+import { CreateOrderProps } from "@/shared/types/order";
 
 export const getOrders = async (page: number, limit: number) => {
   const response = await instance.get(API_URL.ORDERS.LIST(page, limit));

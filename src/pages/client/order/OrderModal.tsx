@@ -1,10 +1,10 @@
-import { Order } from "@/types/order";
+import { Order } from "@/shared/types/order";
 import { useCancelOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import html2pdf from "html2pdf.js";
 
-import PrintOrder from "@/components/template/PrintOrder";
+import PrintOrder from "@/shared/template/PrintOrder";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 function OrderModal({

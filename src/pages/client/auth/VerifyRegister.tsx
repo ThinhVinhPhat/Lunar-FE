@@ -1,7 +1,7 @@
-import { AuthProps, isAlreadyLoginAuth } from "@/components/wrapper/withAuth";
+import { AuthProps, isAlreadyLoginAuth } from "@/shared/components/wrapper/withAuth";
 import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CodeForm from "@/components/ui/CodeForm";
+import CodeForm from "@/shared/components/CodeForm";
 import { useVerifyRegister } from "@/lib/hooks/queryClient/mutator/auth/auth.mutator";
 
 const VerifyRegister: React.FC<AuthProps> = () => {

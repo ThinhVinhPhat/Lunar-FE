@@ -2,11 +2,11 @@ import {
   useCreateUser,
   useUpdateUserAdmin,
 } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
-import { UserType } from "@/types/user";
+import { UserType } from "@/shared/types/user";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormField } from "@/components/form/form-register";
+import { FormField } from "@/shared/components/form/form-register";
 import { useEffect } from "react";
 import {
   CreateUserParams,

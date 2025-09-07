@@ -1,5 +1,5 @@
-import { Role } from "@/types";
-import { UserType } from "@/types/user";
+import { Role } from "@/shared/types";
+import { UserType } from "@/shared/types/user";
 import { Lock } from "lucide-react";
 type PermissionModalProps = {
   showPermissionsModal: boolean;

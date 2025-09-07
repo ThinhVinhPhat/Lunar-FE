@@ -1,7 +1,7 @@
-import { NotificationTemplate, userNotification } from "@/types/notification";
+import { NotificationTemplate, userNotification } from "@/shared/types/notification";
 import instance from "..";
 import { API_URL } from "@/lib/config/api.config";
-import { Role } from "@/types";
+import { Role } from "@/shared/types";
 
 export interface CreateNotificationParams {
   title: string;

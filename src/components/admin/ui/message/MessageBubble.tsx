@@ -1,5 +1,5 @@
-import { MessageType } from "@/types/message";
-import { UserType } from "@/types/user";
+import { MessageType } from "@/shared/types/message";
+import { UserType } from "@/shared/types/user";
 import { formatTime } from "@/lib/ultis/formatDate";
 import { User } from "lucide-react";
 

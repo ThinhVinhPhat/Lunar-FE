@@ -1,19 +1,21 @@
-import { Pagination } from "@/components/ui/Pagination";
+import { Pagination } from "@/shared/components/Pagination";
 import clsx from "clsx";
 import { useState } from "react";
+import usePagination from "@/shared/hooks/usePagination";
 import OrderModal from "./OrderModal";
 import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { Order } from "@/types/order";
-import { AuthProps, isLoginAuth } from "@/components/wrapper/withAuth";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
+import { Order } from "@/shared/types/order";
+import { AuthProps, isLoginAuth } from "@/shared/components/wrapper/withAuth";
 import OrderEmpty from "./OrderEmpty";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "@/lib/ultis/formatDate";
 
 const OrderList: React.FC<AuthProps> = () => {
   const [status, setStatus] = useState("All Order");
   const [isOpen, setIsOpen] = useState(false);
-  const [page, setPage] = useState(1);
+  const { page, handlePageChange } = usePagination();
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
   const navigate = useNavigate();
   const {
@@ -26,7 +28,6 @@ const OrderList: React.FC<AuthProps> = () => {
 
   console.log(orderList);
 
-  // Define column headers with their data keys and translation labels
   const columnHeaders = [
     { key: "id", label: t("order_list.order_id", "Order ID") },
     { key: "date", label: t("order_list.date", "Date") },
@@ -36,7 +37,7 @@ const OrderList: React.FC<AuthProps> = () => {
   ];
 
   const statusOptions = [
-    { value: "ALL_ORDER", label: t("order_list.all_orders", "ALL_ORDER") },
+    { value: "All Order", label: t("order_list.all_orders", "All Order") },
     { value: "Pending", label: t("order_list.pending", "Pending") },
     { value: "Confirmed", label: t("order_list.confirmed", "Confirmed") },
     { value: "Shipped", label: t("order_list.shipped", "Shipped") },
@@ -107,7 +108,7 @@ const OrderList: React.FC<AuthProps> = () => {
                         {order.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {order.createdAt}
+                        {formatDate(order.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {order.total_price}
@@ -167,7 +168,7 @@ const OrderList: React.FC<AuthProps> = () => {
         <Pagination
           productCount={total}
           currentPage={page}
-          onSetPage={setPage}
+          onSetPage={handlePageChange}
           limit={10}
         />
       )}

@@ -1,4 +1,4 @@
-import CodeForm from "@/components/ui/CodeForm";
+import CodeForm from "@/shared/components/CodeForm";
 import {
   useForgotPassword,
   useUpdatePassword,

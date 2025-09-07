@@ -5,12 +5,14 @@ import {
   getFailedPayment,
   getSuccessPayment,
 } from "@/lib/api/service/payment.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 type PaymentResultProps = {
   status: "success" | "failed";
 };
 const PaymentResult: React.FC<PaymentResultProps> = ({ status }) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [currentStatus, setCurrentStatus] = useState<"success" | "failed">(
     "success"
   );
@@ -29,6 +31,9 @@ const PaymentResult: React.FC<PaymentResultProps> = ({ status }) => {
     const fetchData = async () => {
       if (currentStatus == "success") {
         await getSuccessPayment(orderId, sessionId);
+        await queryClient.invalidateQueries({
+          queryKey: ["create-order"],
+        });
       } else {
         await getFailedPayment();
       }

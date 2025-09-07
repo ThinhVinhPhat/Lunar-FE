@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useFindUser, useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import UserListItem from "./UserListItem";
-import { UserType } from "@/types/user";
-import { Role } from "@/types";
+import { UserType } from "@/shared/types/user";
+import { Role } from "@/shared/types";
 
 export default function UserList() {
   const { data: user } = useGetUser();

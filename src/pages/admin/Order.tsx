@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import usePagination from "@/shared/hooks/usePagination";
 import { Search, Edit, Trash } from "lucide-react";
-import { isLoginAdminAuth, AuthProps } from "@/components/wrapper/withAuth";
-import { Order } from "@/types/order";
+import { isLoginAdminAuth, AuthProps } from "@/shared/components/wrapper/withAuth";
+import { Order } from "@/shared/types/order";
 import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { useDeleteOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 import UpdateOrderStatus from "@/components/order/UpdateOrderStatus";
 import Pagination from "@/components/admin/pagination";
@@ -12,7 +13,7 @@ const OrdersManagement: React.FC<AuthProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentStatus, setCurrentStatus] = useState("Confirmed");
-  const [page, setPage] = useState(1);
+  const { page, handlePageChange } = usePagination();
   const {
     data: orders,
     total,
@@ -265,7 +266,7 @@ const OrdersManagement: React.FC<AuthProps> = () => {
 
       <Pagination
         page={page}
-        setPage={setPage}
+        setPage={handlePageChange}
         totalItems={total}
         totalPages={totalPage}
       />

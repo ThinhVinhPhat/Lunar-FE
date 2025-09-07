@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 import { AxiosResponse } from "axios";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import instance from "@/lib/api";
 
 interface RefreshTokenResponse {

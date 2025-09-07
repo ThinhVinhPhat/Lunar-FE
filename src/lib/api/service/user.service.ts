@@ -1,7 +1,7 @@
-import { UserType } from "@/types/user";
+import { UserType } from "@/shared/types/user";
 import instance from "..";
 import { API_URL } from "@/lib/config/api.config";
-import { Role } from "@/types";
+import { Role } from "@/shared/types";
 
 export type FindUserParams = {
   email?: string;

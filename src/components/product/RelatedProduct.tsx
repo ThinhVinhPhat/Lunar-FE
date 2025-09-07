@@ -1,6 +1,6 @@
-import { Product } from "@/types/product";
+import { Product } from "@/shared/types/product";
 import { Link } from "react-router-dom";
-import IsLoadingWrapper from "../wrapper/isLoading";
+import IsLoadingWrapper from "../../shared/components/wrapper/isLoading";
 
 type RelatedProductProps = {
   categoryProducts: Product[];

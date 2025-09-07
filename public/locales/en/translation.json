@@ -21,6 +21,7 @@
     "handcraftedInPortlandOregon": "Handcrafted in Portland, Oregon",
     "shopNow": "Shop Now",
     "shopOurMostPopularStyles": "Shop Our Most Popular Styles",
+    "shopOurMostPopularStylesDescription": "Explore our handcrafted frames made from sustainable materials",
     "realReviews": "Real Reviews",
     "freeUSShippingOver99": "Free U.S. shipping over $99 & free returns*",
     "pandeletonGlasses": "Pendleton Glassess",
@@ -79,7 +80,8 @@
     "results_for": "results for",
     "no_products_found": "No products found matching",
     "try_different_search_term": "Try a different search term or browse our categories",
-    "view_details": "View Details"
+    "view_details": "View Details",
+    "no_results": "No results found"
   },  
   "user_options": {
     "my_orders": "My Orders",
@@ -109,19 +111,29 @@
     "manageProductDiscounts": "Manage your product discounts and promotions",
     "addDiscount": "Add Discount",
     "searchDiscounts": "Search discounts",
-    "use_now": "Use Now",
+    "useNow": "Use Now",
     "allProducts": "All Products",
     "apply": "Apply",
     "available_discounts": "Available Discounts",
     "min_spend": "Min spend",
     "expires": "Expires",
-    "delete": "Delete"
+    "delete": "Delete",
+    "loadMoreVouchers": "Load More Vouchers",
+    "noVoucherFound": "No vouchers found",
+    "enterVoucherCode": "Enter voucher code",
+    "discountVoucherDescription": "Discover and save with our exclusive discount vouchers",
+    "tryChangingYourSearchTermsOrFiltersToFindMoreVouchers": "Try changing your search terms or filters to find more vouchers"
   },
 
   "profile": {
     "account_information": "Account Information",
     "manage_your_personal_information": "Manage your personal information",
-    "edit": "Edit"
+    "edit": "Edit",
+    "upload_profile_photo": "Upload Profile Photo",
+    "order_history": "Order History",
+    "favorites_reviews": "Favorites & Reviews",
+    "discounts": "Discounts",
+    "member_since": "Member since"
   },
   "product_detail": {
     "home": "Home",
@@ -171,7 +183,8 @@
     "subtotal": "Subtotal",
     "shipping_and_taxes_calculated_at_checkout": "Shipping and taxes calculated at checkout.",
     "checkout": "Checkout",
-    "final_total": "Final Total"
+    "final_total": "Final Total",
+    "applied_discounts": "Applied Discounts"
   },
   "collections": {
     "exploreCollection": "Explore Collection"
@@ -183,7 +196,13 @@
     "total": "Total",
     "date": "Date",
     "shop_now": "Shop Now",
-    "you_dont_have_any_orders_yet": "You don't have any orders yet."
+    "you_dont_have_any_orders_yet": "You don't have any orders yet.",
+    "track_your_orders_and_purchase_history": "Track your orders and purchase history",
+    "view_details": "View Details",
+    "track_order": "Track Order",
+    "order_progress": "Order Progress",
+    "items": "Items",
+    "start_shopping_to_see_your_orders_here": "Start shopping to see your orders here."
   },
   "user_product": {
     "favorite_products": "Favorite Products",
@@ -308,7 +327,7 @@
   "order_list": {
     "view_details": "View Details",
     "track": "Track",
-    "all_orders": "ALL_ORDER",
+    "all_orders": "All Order",
     "pending": "Pending",
     "confirmed": "Confirmed",
     "shipped": "Shipped",
@@ -320,11 +339,5 @@
     "status": "Status",
     "actions": "Actions",
     "your_orders": "Your Orders"
-  },
-  "search": {
-    "search_products": "Search Products",
-    "search_placeholder": "Search for products...",
-    "no_results": "No results found",
-    "popular_searches": "Popular searches"
   }
 }

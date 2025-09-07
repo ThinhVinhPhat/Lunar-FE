@@ -1,16 +1,18 @@
 import { useGetCategoriesDetail } from "@/lib/hooks/queryClient/query/category/category.query";
 import { Controller, useForm } from "react-hook-form";
-import { FormField } from "@/components/form/form-register";
-import { useAddProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
+import { FormField } from "@/shared/components/form/form-register";
+import { useAddProduct, useUpdateProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
 import clsx from "clsx";
-import { Product } from "@/types/product";
-import { CategoryDetail } from "@/types/category";
+import { Product, ProductCategory } from "@/shared/types/product";
+import { CategoryDetail } from "@/shared/types/category";
 import { useEffect, useState } from "react";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 
 type AddProductModalsProps = {
   showAddModal: boolean;
   setShowAddModal: (showAddModal: boolean) => void;
   currentProduct?: Product;
+  handleRefresh: () => void;
 };
 
 type AddProductForm = {
@@ -19,31 +21,24 @@ type AddProductForm = {
   stock: number;
   discount: number;
   description: string;
-  categoryId: string[];
-  images: string[];
+  category: string[];
+  images: (string | File)[];
   isFreeShip: boolean;
   isFeatured: boolean;
   isNew: boolean;
 };
 
-type ProductCategory = {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  quantity: number;
-  categoryDetails: CategoryDetail;
-};
 
 export const AddProductModal = ({
   showAddModal,
   setShowAddModal,
   currentProduct = undefined,
+  handleRefresh,
 }: AddProductModalsProps) => {
-  const [product, setProduct] = useState<Product | undefined>(currentProduct);
-
-  useEffect(() => {
-    setProduct(currentProduct);
-  }, [currentProduct]);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const { data: categoriesDetails } = useGetCategoriesDetail();
+  const { mutateAsync: addProduct, isPending: isAdding, isSuccess: isSuccessAdd } = useAddProduct();
+  const { mutateAsync: updateProduct, isPending: isUpdating, isSuccess: isSuccessUpdate } = useUpdateProduct();
 
   const {
     register,
@@ -55,48 +50,76 @@ export const AddProductModal = ({
     formState: { isDirty, errors },
   } = useForm<AddProductForm>({
     defaultValues: {
-      name: product?.name || "",
-      price: Number(product?.price) || 0,
-      stock: Number(product?.stock) || 0,
-      description: product?.description || "",
-      discount: Number(product?.discount_percentage) || 0,
-      categoryId:
-        product?.productCategories?.map(
+      name: currentProduct?.name || "",
+      price: Number(currentProduct?.price) || 0,
+      stock: Number(currentProduct?.stock) || 0,
+      description: currentProduct?.description || "",
+      discount: Number(currentProduct?.discount_percentage) || 0,
+      category:
+        currentProduct?.productCategories?.map(
           (category: ProductCategory) => category.categoryDetails.id
         ) || [],
-      images: product?.images || [],
-      isFreeShip: product?.isFreeShip,
-      isFeatured: product?.isFeatured,
-      isNew: product?.isNew,
+      images: currentProduct?.images || [],
+      isFreeShip: currentProduct?.isFreeShip,
+      isFeatured: currentProduct?.isFeatured,
+      isNew: currentProduct?.isNew,
     },
   });
 
-  const { data: categoriesDetails } = useGetCategoriesDetail();
-  const { mutateAsync: addProduct, isPending: isAdding } = useAddProduct();
 
+  useEffect(() => {
+    if(currentProduct) {
+      reset({
+        name: currentProduct.name,
+        price: Number(currentProduct.price) || 0,
+        stock: Number(currentProduct.stock) || 0,
+        description: currentProduct.description || "",
+        discount: Number(currentProduct.discount_percentage) || 0,
+        category:
+          currentProduct.productCategories?.map(
+            (category: ProductCategory) => category.categoryDetails.id
+          ) || [],
+        images: currentProduct.images || [],
+        isFreeShip: currentProduct.isFreeShip,
+        isFeatured: currentProduct.isFeatured,
+        isNew: currentProduct.isNew,
+      });
+    }    
+    setIsUpdate(!!currentProduct);
+  }, [currentProduct]);
+  
   const onSubmit = async (data: AddProductForm) => {
     if (!isDirty) return;
-    const res = await addProduct({
+    
+    const baseData = {
       ...data,
-      images: data.images.map((image) => image.toString()),
-    });
-    if (res.status === 201) {
-      reset();
+      categoryId: data.category,
+      images: data.images, // Giữ nguyên File objects, không convert thành string
+      discount: Number(data.discount)
+    };
+    
+    isUpdate ? await updateProduct({
+      ...baseData,
+      id: currentProduct?.id || '',
+    }) : await addProduct(baseData);
+ 
+     if(isSuccessAdd || isSuccessUpdate) {
+      handleRefresh();
       setShowAddModal(false);
-    }
+      reset();
+     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const currentImages = getValues("images") || [];
-      const newFiles = Array.from(e.target.files);
-      setValue("images", [...currentImages, ...newFiles.map((file) => file.toString())]);
-    }
+  const handleRemoveImage = (index: number) => {
+    const currentImages = getValues("images") || [];
+    const updatedImages = currentImages.filter((_, i) => i !== index);
+    setValue("images", updatedImages, { shouldDirty: true });
   };
 
   return (
     showAddModal && (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      <IsLoadingWrapper isLoading={isAdding || isUpdating}>
+          <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity">
             <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -109,7 +132,7 @@ export const AddProductModal = ({
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Add New Product
+                    {isUpdate ? "Update Product" : "Add New Product"}
                   </h3>
                   <div className="mt-4">
                     <form
@@ -122,7 +145,6 @@ export const AddProductModal = ({
                         </label>
                         <FormField
                           label="Product Name"
-                          value={product?.name}
                           placeholder="Enter product name"
                           error={errors.name?.message as string}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
@@ -137,21 +159,16 @@ export const AddProductModal = ({
                           {categoriesDetails?.map(
                             (category: CategoryDetail) => (
                               <div
-                                key={category.id}
+                                key={category.name  }
                                 className="flex items-center"
                               >
                                 <Controller
                                   control={control}
-                                  name="categoryId"
+                                  name="category"
                                   render={({ field }) => (
                                     <input
                                       type="checkbox"
-                                      value={category.name}
-                                      checked={product?.productCategories?.some(
-                                        (productCategory: ProductCategory) =>
-                                          productCategory.categoryDetails.id ===
-                                          category.id
-                                      )}
+                                      checked={field.value.includes(category.name)}
                                       onChange={(e) => {
                                         const newValue = e.target.checked
                                           ? [...field.value, category.name]
@@ -165,12 +182,12 @@ export const AddProductModal = ({
                                 />
 
                                 <label
-                                  htmlFor={`category-${category.id}`}
+                                  htmlFor={`category-${category.name}`}
                                   className="ml-2 block text-sm text-gray-900"
                                 >
                                   {category.name}
                                 </label>
-                                {errors.categoryId?.message}
+                                {errors.category?.message}
                               </div>
                             )
                           )}
@@ -185,7 +202,6 @@ export const AddProductModal = ({
                             type="number"
                             label="price"
                             step={0.01}
-                            value={product?.price}
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter price"
                             error={errors.price?.message as string}
@@ -198,7 +214,6 @@ export const AddProductModal = ({
                           </label>
                           <FormField
                             type="number"
-                            value={product?.stock}
                             label="Stock"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter stock"
@@ -212,7 +227,6 @@ export const AddProductModal = ({
                           </label>
                           <FormField
                             type="number"
-                            value={product?.discount_percentage}
                             label="Discount"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                             placeholder="Enter discount"
@@ -222,74 +236,50 @@ export const AddProductModal = ({
                         </div>
                       </div>
                       <div>
-                        <div className="space-y-2">
-                          <div className="input-holder flex flex-col items-center space-x-2">
-                            <div className="w-full flex p-2 items-center space-x-2">
-                              <label className="block text-sm font-medium text-gray-700">
-                                Images
-                              </label>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const inputHolder =
-                                    document.querySelector(".input-holder");
-                                  if (!inputHolder) return;
-
-                                  const newInputContainer =
-                                    document.createElement("div");
-                                  newInputContainer.className =
-                                    "w-full flex p-2 items-center space-x-2";
-
-                                  const fileInput =
-                                    document.createElement("input");
-                                  fileInput.type = "file";
-                                  fileInput.className =
-                                    "flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]";
-                                  fileInput.accept = "image/*";
-                                  fileInput.onchange = (e: Event) => {
-                                    const inputEvent =
-                                      e as unknown as React.ChangeEvent<HTMLInputElement>;
-                                    handleImageChange(inputEvent);
-                                  };
-
-                                  const removeButton =
-                                    document.createElement("button");
-                                  removeButton.type = "button";
-                                  removeButton.className =
-                                    "px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500";
-                                  removeButton.textContent = "Remove";
-                                  removeButton.onclick = function () {
-                                    inputHolder.removeChild(newInputContainer);
-                                  };
-
-                                  newInputContainer.appendChild(fileInput);
-                                  newInputContainer.appendChild(removeButton);
-                                  inputHolder.appendChild(newInputContainer);
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Images
+                        </label>
+                        <Controller
+                          control={control}
+                          name="images"
+                          render={({ field }) => (
+                            <div className="space-y-4">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    const newFiles = Array.from(e.target.files);
+                                    field.onChange([...field.value, ...newFiles]);
+                                  }
                                 }}
-                                className="px-3 py-2 bg-[#C8A846] text-white rounded-md hover:bg-[#b39539] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A846]"
-                              >
-                                Add
-                              </button>
+                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                              />
+                              
+                              {field.value && field.value.length > 0 && (
+                                <div className="grid grid-cols-3 gap-2">
+                                  {field.value.map((image: string | File, index: number) => (
+                                    <div key={index} className="relative">
+                                      <img
+                                        src={image instanceof File ? URL.createObjectURL(image) : image}
+                                        className="w-full h-20 object-cover rounded-md"
+                                        alt={`Product Image ${index + 1}`}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          </div>
-                          <div className="image-holder flex flex-wrap items-center space-x-2">
-                            {product?.images?.map((image: any) => {
-                              return image instanceof File ? (
-                                <img
-                                  src={URL.createObjectURL(image)}
-                                  className="w-1/4 h-1/4 object-cover"
-                                  alt="Product Image"
-                                />
-                              ) : (
-                                <img
-                                  src={image}
-                                  className="w-1/4 h-1/4 object-cover"
-                                  alt="Product Image"
-                                />
-                              );
-                            })}
-                          </div>
-                        </div>
+                          )}
+                        />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
@@ -297,7 +287,6 @@ export const AddProductModal = ({
                         </label>
                         <textarea
                           rows={3}
-                          value={product?.description}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                           {...register("description")}
                         ></textarea>
@@ -313,7 +302,7 @@ export const AddProductModal = ({
                               label={status}
                               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
                               checked={
-                                product?.[status as keyof Product] as boolean
+                                currentProduct?.[status as keyof Product] as boolean
                               }
                               {...register(status as keyof AddProductForm)}
                             />
@@ -334,7 +323,9 @@ export const AddProductModal = ({
                             }
                           )}
                         >
-                          {isAdding ? "Adding..." : "Add Product"}
+                          {
+                            isUpdate ? "Update" : "Add"
+                          }
                         </button>
                         <button
                           type="button"
@@ -352,6 +343,7 @@ export const AddProductModal = ({
           </div>
         </div>
       </div>
+      </IsLoadingWrapper>
     )
   );
 };

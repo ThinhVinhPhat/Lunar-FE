@@ -1,8 +1,15 @@
-import { CommentType } from "@/types/review";
-import { renderStars } from "@/lib/ultis/renderStar";
+import { CommentType } from "@/shared/types/review";
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  Box,
+  Typography,
+  Rating,
+  IconButton,
+  ImageList,
+  ImageListItem,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type ProductReviewsProps = {
   review: CommentType;
@@ -11,50 +18,56 @@ type ProductReviewsProps = {
 
 function ProductReviews({ review, onDelete }: ProductReviewsProps) {
   const { data: user } = useGetUser();
+
   return (
-    <div
-      key={review.id}
-      className="border-b border-gray-200 pb-6 flex flex-row items-start justify-between"
+    <Box
+      sx={{
+        borderBottom: 1,
+        borderColor: "divider",
+        pb: 3,
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+      }}
     >
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <div className="flex">{renderStars(review.rate)}</div>
-        </div>
-        <p className="text-sm text-gray-600 mb-2">{review.content}</p>
+      <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+          <Rating value={review.rate} readOnly precision={0.5} />
+        </Box>
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          {review.content}
+        </Typography>
         {review.images && review.images.length > 0 && (
-          <div className="mt-3 mb-4">
-            <div className="grid grid-cols-3 gap-2">
-              {review.images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative h-24 rounded overflow-hidden"
-                >
-                  <img
-                    src={image}
-                    alt={`Review image ${index + 1}`}
-                    className="h-full w-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <ImageList sx={{ width: 300, height: 150 }} cols={3} rowHeight={100}>
+            {review.images.map((image, index) => (
+              <ImageListItem key={index}>
+                <img
+                  src={image}
+                  alt={`Review image ${index + 1}`}
+                  loading="lazy"
+                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                />
+              </ImageListItem>
+            ))}
+          </ImageList>
         )}
-        <p className="text-sm text-gray-500 flex items-center gap-2">
-          <span className="font-medium">
+        <Typography variant="caption" color="text.disabled" mt={1}>
+          <Typography component="span" fontWeight="medium">
             {review.user.firstName} {review.user.lastName}
-          </span>{" "}
+          </Typography>{" "}
           - {new Date(review.createdAt).toDateString()}
-        </p>
-      </div>
+        </Typography>
+      </Box>
       {user?.id === review.user.id && (
-        <FontAwesomeIcon
-          icon={faTrash}
-          onClick={() => onDelete(review.id)}
-          className="cursor-pointer text-red-500"
-        />
+        <IconButton onClick={() => onDelete(review.id)} color="error">
+          <DeleteIcon />
+        </IconButton>
       )}
-    </div>
+    </Box>
   );
 }
 
 export default ProductReviews;
+
+

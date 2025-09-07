@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
+import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
 
 const Setting: React.FC<AuthProps> = () => {
   const [activeTab, setActiveTab] = useState("User & Role Management");

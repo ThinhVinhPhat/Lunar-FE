@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, Menu, X } from "lucide-react";
-import { useAuthAction } from "@/lib/hooks/useAuthAction";
+import { useAuthAction } from "@/shared/hooks/useAuthAction";
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import UserList from "../ui/user/UserList";
-import { Role } from "@/types";
+import { Role } from "@/shared/types";
 
 type NavigationProps = {
   isSidebarOpen: boolean;

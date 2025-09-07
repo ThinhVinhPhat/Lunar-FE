@@ -2,18 +2,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGetOrderById } from "@/lib/hooks/queryClient/query/order/order.query";
 import { useNavigate, useParams } from "react-router-dom";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { AuthProps, isLoginAuth } from "@/components/wrapper/withAuth";
-import IsLoadingWrapper from "@/components/wrapper/isLoading";
+import { AuthProps, isLoginAuth } from "@/shared/components/wrapper/withAuth";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { useTranslation } from "react-i18next";
 import {
   OrderDetail,
+  OrderHistory,
   OrderStatus,
   Shipment,
   TrackingOrder,
-} from "@/types/order";
+} from "@/shared/types/order";
 import clsx from "clsx";
 import { canTransition } from "@/database/order";
-import { UseMapRender } from "@/lib/hooks/useMapRender";
+import { UseMapRender } from "@/shared/hooks/useMapRender";
 const OrderTrack: React.FC<AuthProps> = () => {
   const { id } = useParams();
   const { data: order, isLoading } = useGetOrderById(id);
@@ -136,7 +137,7 @@ const OrderTrack: React.FC<AuthProps> = () => {
                     <p className="text-xs text-gray-500">
                       {
                         order?.histories?.find(
-                          (history: any) => history.action === "UPDATE_STATUS"
+                          (history: OrderHistory) => history.action === "UPDATE_STATUS"
                         )?.createdAt
                       }
                     </p>

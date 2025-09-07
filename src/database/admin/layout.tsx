@@ -1,5 +1,5 @@
-import { Role } from "@/types";
-import { OrderStatus } from "@/types/order";
+import { Role } from "@/shared/types";
+import { OrderStatus } from "@/shared/types/order";
 import {
   Settings,
   Users,

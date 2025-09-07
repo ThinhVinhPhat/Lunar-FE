@@ -15,7 +15,8 @@ import { useRef } from "react";
 import { updatePassword } from "@/lib/api/service/user.service";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
-import { ErrorResponse } from "@/types";
+import { ErrorResponse } from "@/shared/types";
+
 
 export const useForgotPassword = () => {
   const status = useRef(true);

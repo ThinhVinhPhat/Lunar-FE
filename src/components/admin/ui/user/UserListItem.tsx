@@ -1,4 +1,4 @@
-import { UserType } from "@/types/user";
+import { UserType } from "@/shared/types/user";
 import { User } from "lucide-react";
 
 type UserListItemProps = {

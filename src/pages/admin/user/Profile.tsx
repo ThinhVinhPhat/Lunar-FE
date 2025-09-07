@@ -1,106 +1,37 @@
-import { AuthProps, isLoginAdminAuth } from "@/components/wrapper/withAuth";
-import FormProfile from "@/components/form/form-profile";
-import {
-  getDeviceInfo,
-  inboxMessages,
-  notifications,
-} from "@/database/admin/profile";
-import { useUpdateUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
-import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { UserType } from "@/types/user";
+import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
+import FormProfile from "@/shared/components/form/form-profile";
+import { useAdminProfile } from "./hooks/useAdminProfile";
 
-type DeviceInfoType = { name: string; value: string };
+type DeviceInfoType = { name: string; value: string; id: number };
 
 const AdminProfile: React.FC<AuthProps> = () => {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const { data: user } = useGetUser();
-  const navigate = useNavigate();
-  const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
-  const deviceInfo = getDeviceInfo();
   const {
+    user,
+    isUpdating,
     register,
     handleSubmit,
-    formState: { isDirty },
     setValue,
-  } = useForm({
-    defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      email: user?.email,
-      phone: user?.phone,
-      address: user?.address,
-      company: user?.company,
-      city: user?.city,
-      role: user?.role,
-      avatar: user?.avatar ? [user.avatar] : [],
-    },
-  });
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    systemAlerts: true,
-    userRegistrations: false,
-    orderUpdates: true,
-    securityAlerts: true,
-    maintenanceAlerts: false,
-    reportNotifications: true,
-  });
-
-  const handleNotificationChange = (setting: string) => {
-    setNotificationSettings((prev) => ({
-      ...prev,
-      [setting]: !prev[setting as keyof typeof prev],
-    }));
-  };
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user]);
-
-  const onSubmit = async (data: UserType) => {
-    try {
-      if (isDirty) {
-        await updateUser(data);
-        setIsEditing(false);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "low":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "Cao";
-      case "medium":
-        return "Trung bình";
-      case "low":
-        return "Thấp";
-      default:
-        return "Bình thường";
-    }
-  };
-
-  const unreadCount = inboxMessages.filter((msg) => !msg.read).length;
+    isDirty,
+    onSubmit,
+    isEditing,
+    setIsEditing,
+    handleNotificationChange,
+    saveNotificationSettings,
+    getNotificationList,
+    deviceInfo,
+    inboxMessages,
+    unreadCount,
+    markAllAsRead,
+    deleteAllMessages,
+    deleteMessage,
+    viewMessageDetails,
+    navigateToUserManagement,
+    navigateToOrderManagement,
+    navigateToDashboard,
+    navigateToSettings,
+    getPriorityColor,
+    getPriorityText,
+  } = useAdminProfile();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -123,25 +54,25 @@ const AdminProfile: React.FC<AuthProps> = () => {
               <h3 className="font-semibold text-gray-900 mb-4">Admin Tools</h3>
               <div className="space-y-2">
                 <button
-                  onClick={() => navigate("/admin/accounts")}
+                  onClick={navigateToUserManagement}
                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                 >
                   👥 Quản lý người dùng
                 </button>
                 <button
-                  onClick={() => navigate("/admin/orders")}
+                  onClick={navigateToOrderManagement}
                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                 >
                   📦 Quản lý đơn hàng
                 </button>
                 <button
-                  onClick={() => navigate("/admin/dashboard")}
+                  onClick={navigateToDashboard}
                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                 >
                   📊 Thống kê hệ thống
                 </button>
                 <button
-                  onClick={() => navigate("/admin/settings")}
+                  onClick={navigateToSettings}
                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                 >
                   ⚙️ Cài đặt hệ thống
@@ -175,7 +106,10 @@ const AdminProfile: React.FC<AuthProps> = () => {
                 <h2 className="text-xl font-bold text-gray-900">
                   Cài đặt thông báo
                 </h2>
-                <button className="px-4 py-2 text-sm bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
+                <button 
+                  onClick={saveNotificationSettings}
+                  className="px-4 py-2 text-sm bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
+                >
                   Lưu cài đặt
                 </button>
               </div>
@@ -186,8 +120,8 @@ const AdminProfile: React.FC<AuthProps> = () => {
                       Thông báo Email
                     </h3>
                     <div className="space-y-3">
-                      {notifications(notificationSettings).map(
-                        (item, index) => (
+                      {getNotificationList().map(
+                        (item, index: number) => (
                           <label key={index} className="flex items-center">
                             <input
                               type="checkbox"
@@ -222,10 +156,16 @@ const AdminProfile: React.FC<AuthProps> = () => {
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  <button className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
+                  <button 
+                    onClick={markAllAsRead}
+                    className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                  >
                     Đánh dấu đã đọc
                   </button>
-                  <button className="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors">
+                  <button 
+                    onClick={deleteAllMessages}
+                    className="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+                  >
                     Xóa
                   </button>
                 </div>
@@ -274,10 +214,16 @@ const AdminProfile: React.FC<AuthProps> = () => {
                           {message.time}
                         </span>
                         <div className="flex space-x-2">
-                          <button className="text-xs text-blue-600 hover:text-blue-800">
+                          <button 
+                            onClick={() => viewMessageDetails(message.id.toString())}
+                            className="text-xs text-blue-600 hover:text-blue-800"
+                          >
                             Xem chi tiết
                           </button>
-                          <button className="text-xs text-gray-500 hover:text-gray-700">
+                          <button 
+                            onClick={() => deleteMessage(message.id.toString())}
+                            className="text-xs text-gray-500 hover:text-gray-700"
+                          >
                             Xóa
                           </button>
                         </div>

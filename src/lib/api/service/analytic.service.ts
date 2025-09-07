@@ -1,4 +1,4 @@
-  import { OrderFilterEnum, SummaryType } from "@/types/analytic";
+  import { OrderFilterEnum, SummaryType } from "@/shared/types/analytic";
 import instance from "..";
 import { API_URL } from "@/lib/config/api.config";
 

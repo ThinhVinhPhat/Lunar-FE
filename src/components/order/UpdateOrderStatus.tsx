@@ -1,5 +1,5 @@
 import { canTransition } from "@/database/admin/layout";
-import { Order, OrderStatus, Shipment, TrackingOrder } from "@/types/order";
+import { Order, OrderStatus, Shipment, TrackingOrder } from "@/shared/types/order";
 import { useEffect, useState } from "react";
 import {
   useCreateOrderShipment,
@@ -15,6 +15,7 @@ interface UpdateOrderStatusProps {
   currentStatus: string;
   setCurrentStatus: (status: string) => void;
 }
+
 
 export default function UpdateOrderStatus({
   selectedOrder,
@@ -92,19 +93,13 @@ export default function UpdateOrderStatus({
     }
   };
 
-  const handleCreateOrderShipment = async (data: any) => {
+  const handleCreateOrderShipment = async (data: {
+    estimateDate: string;
+    deliveredDate: string;
+    shippingCarrier: string;
+  }) => {
     if (errors.shippingCarrier || errors.estimateDate || errors.deliveredDate) {
       return;
-    }
-
-    if (
-      data.currentDelivery &&
-      data.currentDelivery !== currentTrackingOrder?.currentAddress
-    ) {
-      await updateOrderAddress({
-        orderId: selectedOrder.id,
-        address: data.currentDelivery,
-      });
     }
 
     await createOrderShipment({
@@ -117,7 +112,7 @@ export default function UpdateOrderStatus({
     setIsOpenDescription(false);
   };
 
-  const handleUpdateOrderAddress = async (data: any) => {
+  const handleUpdateCurrentDelivery = async (data: { currentDelivery: string }) => {
     if (
       data.currentDelivery &&
       data.currentDelivery !== currentTrackingOrder?.currentAddress
@@ -216,7 +211,7 @@ export default function UpdateOrderStatus({
           </h4>
           <div>
             <form
-              onSubmit={handleSubmitCurrentDelivery(handleUpdateOrderAddress)}
+              onSubmit={handleSubmitCurrentDelivery(handleUpdateCurrentDelivery)}
             >
               <input
                 type="text"

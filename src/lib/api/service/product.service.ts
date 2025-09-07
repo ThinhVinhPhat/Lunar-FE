@@ -9,10 +9,26 @@ export type CreateProductParams = {
   stock: number;
   discount: number;
   video?: string;
-  images: string[];
+  images: (string | File)[];
   isFreeShip: boolean;
   isNew: boolean;
   isFeatured: boolean;
+};
+
+export type UpdateProductParams = {
+  id: string;
+  categoryId: string[];
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  discount: number;
+  video?: string;
+  images: (string | File)[];
+  isFreeShip: boolean;
+  isNew: boolean;
+  isFeatured: boolean;
+  status?: boolean;
 };
 
 export const getProducts = async (
@@ -49,8 +65,13 @@ export const addProduct = async (data: CreateProductParams) => {
   const formData = new FormData();
   Object.keys(data).forEach((key) => {
     if (key === "images") {
-      data[key].forEach((image: string) => {
-        formData.append("images", image as unknown as File);
+      data[key].forEach((image: string | File) => {
+        if (image instanceof File) {
+          formData.append("images", image);
+        } else {
+          // Nếu là string (URL), có thể cần xử lý khác hoặc skip
+          formData.append("images", image);
+        }
       });
     } else {
       formData.append(key, data[key as keyof CreateProductParams] as string);
@@ -58,6 +79,28 @@ export const addProduct = async (data: CreateProductParams) => {
   });
 
   const response = await instance.post(API_URL.PRODUCTS.CREATE, formData);
+  return response.data;
+};
+
+export const updateProduct = async (data: UpdateProductParams) => {
+  console.log(data);
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (key === "images") {
+      data[key].forEach((image: string | File) => {
+        if (image instanceof File) {
+          formData.append("images", image);
+        } else {
+          // Nếu là string (URL), có thể cần xử lý khác hoặc skip
+          formData.append("images", image);
+        }
+      });
+    } else {
+      formData.append(key, data[key as keyof UpdateProductParams] as string);
+    }
+  });
+
+  const response = await instance.patch(API_URL.PRODUCTS.UPDATE(data.id as string), formData);
   return response.data;
 };
 

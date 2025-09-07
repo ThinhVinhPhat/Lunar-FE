@@ -6,7 +6,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "@/types";
+import { ErrorResponse } from "@/shared/types";
 
 
 

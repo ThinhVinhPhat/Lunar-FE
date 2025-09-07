@@ -1,4 +1,4 @@
-import { OrderFilterEnum, SummaryType } from "@/types/analytic";
+import { OrderFilterEnum, SummaryType } from "@/shared/types/analytic";
 import { getCompareLastMonth, getRevenue, getSummary, getUserOrder } from "@/lib/api/service/analytic.service";
 import { useQuery } from "@tanstack/react-query";
 
@@ -48,6 +48,7 @@ export const useGetMonthRevenue = () => {
     return {
       ...response,
       data: response.data || [],
+      total: response.data?.meta?.total || 0,
     };
   };
   

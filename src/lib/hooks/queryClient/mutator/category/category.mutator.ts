@@ -6,7 +6,7 @@ import {
 } from "@/lib/api/service/category.service";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ErrorResponse } from "@/types";
+import { ErrorResponse } from "@/shared/types";
 
 export const useAddCategory = () => {
   const response = useMutation({

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addProduct, CreateProductParams, deleteProduct, favoriteProduct } from "@/lib/api/service/product.service";
+import { addProduct, CreateProductParams, deleteProduct, favoriteProduct, updateProduct, UpdateProductParams } from "@/lib/api/service/product.service";
 import { enqueueSnackbar } from "notistack";
 
 export const useAddProduct = () => {
@@ -22,6 +22,28 @@ export const useAddProduct = () => {
   };
 };
 
+
+export const useUpdateProduct = () => {
+  const response = useMutation({
+    mutationFn: async (data: UpdateProductParams) => await updateProduct(data),
+    onSuccess: () => {
+      enqueueSnackbar("Product updated successfully", {
+        variant: "success",
+      });
+    },
+    onError: () => {
+      enqueueSnackbar("Failed to update product", {
+        variant: "error",
+      });
+    },
+  });
+  return {
+    ...response,
+    isPending: response.isPending,
+  };
+};
+
+
 export const useDeleteProduct = () => {
   const response = useMutation({
     mutationFn: (id: string | undefined) => deleteProduct(id),
@@ -36,7 +58,9 @@ export const useDeleteProduct = () => {
       });
     },
   });
-  return response;
+  return {
+    ...response,
+  };
 };
 
 
@@ -45,10 +69,10 @@ export const useFavoriteProduct = () => {
   const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (productId: string | undefined) => favoriteProduct(productId),
-    onSuccess: (variables) => {
+    onSuccess: () => {
       enqueueSnackbar("Product added to favorite", { variant: "success" });
       queryClient.invalidateQueries({ queryKey: ["product"] });
-      queryClient.refetchQueries({ queryKey: ["product", variables] });
+      queryClient.invalidateQueries({ queryKey: ["favorite"] });
     },
     onError: (error) => {
       console.log(error);

@@ -1,4 +1,4 @@
-import { FormField } from "@/components/form/form-register";
+import { FormField } from "@/shared/components/form/form-register";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

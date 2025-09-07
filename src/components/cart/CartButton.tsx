@@ -1,5 +1,5 @@
-import { OrderDetail } from "@/types/order";
-import Text from "../wrapper/Text";
+import { OrderDetail } from "@/shared/types/order";
+import Text from "../../shared/components/wrapper/Text";
 
 type Prop = {
   cartItems: OrderDetail[];

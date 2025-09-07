@@ -1,32 +1,62 @@
-import React, { useState, useMemo } from "react";
-import {
-  Gift,
-  Calendar,
-  Users,
-  Package,
-  Percent,
-  Clock,
-  Tag,
-} from "lucide-react";
+import { useState, useMemo } from "react";
 import {
   DiscountInterface,
   DiscountType,
   DiscountValueType,
-} from "@/types/discount";
+} from "@/shared/types/discount";
 import { useGetDiscountsByUser } from "@/lib/hooks/queryClient/query/discount/discount.query";
 import { formatDate } from "@/lib/ultis/formatDate";
 import { useTranslation } from "react-i18next";
 import { useApplyDiscountForUser } from "@/lib/hooks/queryClient/mutator/discount/discount.mutaition";
-import { CountdownTimer } from "@/components/ui/CountdownTimer";
+import { CountdownTimer } from "@/shared/components/CountdownTimer";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Chip,
+  TextField,
+  InputAdornment,
+  Tabs,
+  Tab,
+  Grid,
+  LinearProgress,
+  IconButton,
+  Tooltip,
+  Stack,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import {
+  LocalOffer,
+  CalendarToday,
+  People,
+  LocalShipping,
+  Percent,
+  AccessTime,
+  Search,
+  ContentCopy,
+} from "@mui/icons-material";
+import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
+
+enum SortBy {
+  NEWEST = "newest",
+  OLDEST = "oldest",
+  VALUE = "value",
+  EXPIRY = "expiry",
+  USAGE = "usage",
+}
 
 const DiscountVoucherPage = () => {
-  const PRIMARY_COLOR = "#C8A846";
-  const PRIMARY_COLOR_HOVER = "#b39539";
-  const PRIMARY_COLOR_LIGHT = "#d4b851";
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState(SortBy.NEWEST);
   const { data: discounts, total } = useGetDiscountsByUser();
   const { mutateAsync: applyDiscountForUser } = useApplyDiscountForUser();
   const categories = useMemo(() => {
@@ -35,22 +65,22 @@ const DiscountVoucherPage = () => {
         id: "all",
         name: t("discount.all"),
         count: discounts?.all?.length || 0,
-        icon: Gift,
+        icon: LocalOffer,
       },
       {
         id: "discountProduct",
         name: t("discount.discountProduct"),
         count: discounts?.discountProduct?.length || 0,
-        icon: Tag,
+        icon: Percent,
       },
       {
         id: "freeShip",
         name: t("discount.freeShip"),
         count: discounts?.freeShip?.length || 0,
-        icon: Package,
+        icon: LocalShipping,
       },
     ];
-  }, [discounts]);
+  }, [discounts, t]);
 
   const filteredAndSortedDiscounts = useMemo(() => {
     let discountsToFilter;
@@ -68,19 +98,21 @@ const DiscountVoucherPage = () => {
 
     return filtered?.sort((a: DiscountInterface, b: DiscountInterface) => {
       switch (sortBy) {
-        case "value":
+        case SortBy.VALUE:
           return b.value - a.value;
-        case "expiry":
+        case SortBy.EXPIRY:
           return (
             new Date(a.expireAt).getTime() - new Date(b.expireAt).getTime()
           );
-        case "usage":
+        case SortBy.USAGE:
           return (b.userDiscounts?.length || 0) - (a.userDiscounts?.length || 0);
         default:
           return new Date(b.startAt).getTime() - new Date(a.startAt).getTime();
       }
     });
   }, [selectedCategory, sortBy, discounts]);
+
+
 
   const getDiscountLabel = (discount: DiscountInterface) => {
     if (discount.valueType === DiscountValueType.PERCENTAGE) {
@@ -97,14 +129,19 @@ const DiscountVoucherPage = () => {
   const getDiscountIcon = (type: DiscountType) => {
     switch (type) {
       case DiscountType.ALL_DISCOUNT:
-        return <Gift className="w-6 h-6 text-white" />;
+        return <LocalOffer className="text-white" />;
       case DiscountType.DISCOUNT:
-        return <Tag className="w-6 h-6 text-white" />;
+        return <Percent className="text-white" />;
       case DiscountType.FREE_SHIP:
-        return <Package className="w-6 h-6 text-white" />;
+        return <LocalShipping className="text-white" />;
       default:
-        return <Percent className="w-6 h-6 text-white" />;
+        return <LocalOffer className="text-white" />;
     }
+  };
+
+  const copyToClipboard = (code: string) => {
+    navigator.clipboard.writeText(code);
+    enqueueSnackbar("Copied to clipboard", { variant: "success" });
   };
 
   const isExpiringSoon = (expireDate: Date) => {
@@ -114,12 +151,8 @@ const DiscountVoucherPage = () => {
     return hoursDiff <= 72 && hoursDiff > 0;
   };
 
-  const handleApplyDiscount = async (slug: string) => {
-    try {
-      await applyDiscountForUser(slug);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleApplyDiscount = async () => {
+    navigate(`/products/:type`);
   };
 
   const handleSearchDiscount = async () => {
@@ -132,289 +165,253 @@ const DiscountVoucherPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            {t("discount.discountVoucher")}
-          </h1>
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex gap-4">
-              <button
-                className="font-medium border-b-2 pb-1"
-                style={{
-                  color: PRIMARY_COLOR,
-                  borderColor: PRIMARY_COLOR,
-                }}
-              >
-                {t("discount.findMoreVoucher")}
-              </button>
-              <button
-                className="text-gray-600 transition-colors hover:text-gray-800"
-                style={{
-                  color: PRIMARY_COLOR,
-                }}
-                onMouseEnter={(e) =>
-                  ((e.target as HTMLElement).style.color = PRIMARY_COLOR)
-                }
-                onMouseLeave={(e) =>
-                  ((e.target as HTMLElement).style.color = "#6B7280")
-                }
-              >
-                {t("discount.viewHistoryVoucher")}
-              </button>
-              <button
-                className="text-gray-600 transition-colors hover:text-gray-800"
-                onMouseEnter={(e) =>
-                  ((e.target as HTMLElement).style.color = PRIMARY_COLOR)
-                }
-                onMouseLeave={(e) =>
-                  ((e.target as HTMLElement).style.color = "#6B7280")
-                }
-              >
-                {t("discount.learnMore")}
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <select
+    <Box>
+      <Card elevation={2} className="mb-6">
+        <CardContent>
+          <Box display="flex" alignItems="center" gap="16px" mb="24px">
+            <LocalOffer fontSize="large" sx={{ color: "#C8A846" }} />
+            <Typography variant="h4" color="text.primary">
+              {t("discount.discountVoucher")}
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" mb="24px">
+            {t("discount.discountVoucherDescription")}
+          </Typography>
+          <Box mb="24px">
+            <FormControl fullWidth>
+              <InputLabel id="sort-by-label">Sort by</InputLabel>
+              <Select
+                labelId="sort-by-label"
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2"
-                style={
-                  { "--tw-ring-color": PRIMARY_COLOR } as React.CSSProperties
-                }
-                onFocus={(e) => (e.target.style.borderColor = PRIMARY_COLOR)}
-                onBlur={(e) => (e.target.style.borderColor = "#D1D5DB")}
+                label="Sort by"
+                onChange={(event) => setSortBy(event.target.value as SortBy)}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 8 } }}
               >
-                <option value="newest">{t("discount.newest")}</option>
-                <option value="value">{t("discount.highestValue")}</option>
-                <option value="expiry">{t("discount.expiringSoon")}</option>
-                <option value="usage">{t("discount.popular")}</option>
-              </select>
-            </div>
-          </div>
-        </div>
+                <MenuItem value={SortBy.NEWEST}>Newest</MenuItem>
+                <MenuItem value={SortBy.OLDEST}>Oldest</MenuItem>
+                <MenuItem value={SortBy.VALUE}>Value</MenuItem>
+                <MenuItem value={SortBy.EXPIRY}>Expiry</MenuItem>
+                <MenuItem value={SortBy.USAGE}>Usage</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </CardContent>
+      </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <div className="flex items-center">
-                <span className="bg-gray-100 px-3 py-2 text-sm text-gray-600 border border-r-0 rounded-l-lg">
-                  {t("discount.voucherCode")}
-                </span>
-                <input
-                  type="text"
-                  placeholder={t("discount.enterVoucherCode")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-l-0 rounded-r-lg focus:outline-none focus:ring-2"
-                  style={
-                    { "--tw-ring-color": PRIMARY_COLOR } as React.CSSProperties
-                  }
-                  onFocus={(e) => (e.target.style.borderColor = PRIMARY_COLOR)}
-                  onBlur={(e) => (e.target.style.borderColor = "#D1D5DB")}
-                />
-              </div>
-            </div>
-            <button
-              className="text-white px-6 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: PRIMARY_COLOR,
+      <Card elevation={1} className="mb-6">
+        <CardContent>
+          <Box className="flex gap-4">
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder={t("discount.enterVoucherCode")}
+              
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search className="text-gray-400" />
+                  </InputAdornment>
+                ),
               }}
-              onMouseEnter={(e) =>
-                ((e.target as HTMLElement).style.backgroundColor =
-                  PRIMARY_COLOR_HOVER)
-              }
-              onMouseLeave={(e) =>
-                ((e.target as HTMLElement).style.backgroundColor =
-                  PRIMARY_COLOR)
-              }
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#C8A846',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#C8A846',
+                  },
+                },
+              }}
+            />
+            <Button
+              variant="contained"
               onClick={handleSearchDiscount}
+              className="bg-[#C8A846] hover:bg-[#ae923e] px-8"
+              startIcon={<LocalOffer />}
             >
               {t("discount.save")}
-            </button>
-          </div>
-        </div>
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="flex overflow-x-auto">
-            {categories?.map((category) => (
-              <button
+      <Card elevation={1} className="mb-6">
+        <Tabs
+          value={selectedCategory}
+          onChange={(_, newValue) => setSelectedCategory(newValue)}
+          variant="fullWidth"
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontSize: '1rem',
+              fontWeight: 500,
+            },
+            '& .Mui-selected': {
+              color: '#C8A846 !important',
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#C8A846',
+            },
+          }}
+        >
+          {categories?.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <Tab
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex-shrink-0 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                  selectedCategory === category.id
-                    ? "border-b-2"
-                    : "text-gray-600 border-transparent"
-                }`}
-                style={{
-                  color:
-                    selectedCategory === category.id
-                      ? PRIMARY_COLOR
-                      : "#6B7280",
-                  borderColor:
-                    selectedCategory === category.id
-                      ? PRIMARY_COLOR
-                      : "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  if (selectedCategory !== category.id) {
-                    (e.target as HTMLElement).style.color = PRIMARY_COLOR;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedCategory !== category.id) {
-                    (e.target as HTMLElement).style.color = "#6B7280";
-                  }
-                }}
-              >
-                {category.name} ({category.count})
-              </button>
-            ))}
-          </div>
-        </div>
+                value={category.id}
+                label={
+                  <Box className="flex items-center gap-2">
+                    <IconComponent fontSize="small" />
+                    {category.name} ({category.count})
+                  </Box>
+                }
+              />
+            );
+          })}
+        </Tabs>
+      </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredAndSortedDiscounts?.map((discount: DiscountInterface) => (
-            <div
-              key={discount.id}
-              className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="flex">
-                <div
-                  className="w-24 flex items-center justify-center relative"
-                  style={{
-                    background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, ${PRIMARY_COLOR_LIGHT} 100%)`,
-                  }}
-                >
-                  {getDiscountIcon(discount.discountType)}
-                  {isExpiringSoon(discount.expireAt) && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-1 py-0.5 rounded">
-                      Hot
-                    </div>
-                  )}
-                  <div className="absolute -right-3 top-0 w-6 h-6 bg-white rounded-full"></div>
-                  <div className="absolute -right-3 bottom-0 w-6 h-6 bg-white rounded-full"></div>
-                </div>
-
-                <div className="flex-1 p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3
-                        className="font-bold text-lg"
-                        style={{ color: PRIMARY_COLOR }}
-                      >
-                        {getDiscountLabel(discount)}
-                      </h3>
-                      <p className="text-sm text-gray-600">{discount.name}</p>
-                    </div>
+      <Grid container spacing={3}>
+        {filteredAndSortedDiscounts?.map((discount: DiscountInterface) => (
+          <Grid key={discount.id}>
+            <Card elevation={2} className="h-full hover:shadow-lg transition-shadow">
+              <CardContent>
+                <Box className="flex gap-4">
+                  <Box
+                    className="w-16 h-16 rounded-lg flex items-center justify-center relative"
+                    sx={{
+                      background: 'linear-gradient(135deg, #C8A846 0%, #d4b851 100%)',
+                    }}
+                  >
+                    {getDiscountIcon(discount.discountType)}
                     {isExpiringSoon(discount.expireAt) && (
-                      <div className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full flex items-center">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {t("discount.expiringSoon")}
-                      </div>
+                      <Chip
+                        label="Hot"
+                        color="error"
+                        size="small"
+                        className="absolute -top-2 -right-2"
+                      />
                     )}
-                  </div>
+                  </Box>
 
-                  <p className="text-sm text-gray-700 mb-3">
-                    {discount.description}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {getThresholdText(discount.thresholdAmount)}
-                  </p>
+                  <Box className="flex-1">
+                    <Box className="flex justify-between items-start mb-2">
+                      <Box>
+                        <Typography variant="h6" className="font-bold text-[#C8A846]">
+                          {getDiscountLabel(discount)}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {discount.name}
+                        </Typography>
+                      </Box>
+                      {isExpiringSoon(discount.expireAt) && (
+                        <Chip
+                          icon={<AccessTime />}
+                          label={t("discount.expiringSoon")}
+                          color="warning"
+                          size="small"
+                        />
+                      )}
+                    </Box>
 
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
-                      <div className="flex items-center mb-1">
-                        <Users className="w-3 h-3 mr-1" />
-                        Đã dùng: {discount.userDiscounts?.length}/
-                        {discount.usageLimit}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        Hết hạn: {formatDate(discount.expireAt.toString())}
-                      </div>
-                    </div>
+                    <Typography variant="body2" className="mb-3">
+                      {discount.description}
+                    </Typography>
+                    
+                    <Typography variant="body2" color="text.secondary" className="mb-3">
+                      {getThresholdText(discount.thresholdAmount)}
+                    </Typography>
 
-                    <button
-                      className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                      style={{
-                        backgroundColor: PRIMARY_COLOR,
+                    <Stack direction="row" spacing={2} className="mb-3">
+                      <Box className="flex items-center gap-1">
+                        <People fontSize="small" className="text-gray-500" />
+                        <Typography variant="caption">
+                          {discount.userDiscounts?.length}/{discount.usageLimit}
+                        </Typography>
+                      </Box>
+                      <Box className="flex items-center gap-1">
+                        <CalendarToday fontSize="small" className="text-gray-500" />
+                        <Typography variant="caption">
+                          {formatDate(discount.expireAt.toString())}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(
+                        ((discount.userDiscounts?.length || 0) / discount.usageLimit) * 100,
+                        100
+                      )}
+                      className="mb-3"
+                      sx={{
+                        backgroundColor: '#f0f0f0',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: '#C8A846',
+                        },
                       }}
-                      onMouseEnter={(e) =>
-                        ((e.target as HTMLElement).style.backgroundColor =
-                          PRIMARY_COLOR_HOVER)
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.target as HTMLElement).style.backgroundColor =
-                          PRIMARY_COLOR)
-                      }
-                      onClick={() => handleApplyDiscount(discount.slug)}
-                    >
-                      {t("discount.useNow")}
-                    </button>
-                  </div>
+                    />
 
-                  <div className="mt-3">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="h-2 rounded-full transition-all duration-300"
-                        style={{
-                          background: `linear-gradient(90deg, ${PRIMARY_COLOR} 0%, ${PRIMARY_COLOR_LIGHT} 100%)`,
-                          width: `${Math.min(
-                            (discount.userDiscounts?.length || 0 /
-                              discount.usageLimit) *
-                              100,
-                            100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1 text-center">
-                      <CountdownTimer expireAt={discount?.expireAt} />
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => handleApplyDiscount()}
+                        className="bg-[#C8A846] hover:bg-[#ae923e]"
+                      >
+                        {t("discount.useNow")}
+                      </Button>
+                      <Tooltip title="Copy Code">
+                        <IconButton
+                          size="small"
+                          onClick={() => copyToClipboard(discount.slug)}
+                        >
+                          <ContentCopy fontSize="small" onClick={() => copyToClipboard(discount.slug)} />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
 
-        {filteredAndSortedDiscounts?.length === 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <Gift className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">
-              Không tìm thấy voucher phù hợp
-            </h3>
-            <p className="text-gray-500">
-              Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc để tìm thêm voucher
-            </p>
-          </div>
-        )}
+                    <Box className="mt-2">
+                      <Typography variant="caption" color="text.secondary">
+                        <CountdownTimer expireAt={discount?.expireAt} />
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
-        {filteredAndSortedDiscounts?.length < total && (
-          <div className="text-center mt-8">
-            <button
-              className="bg-white border px-8 py-3 rounded-lg transition-colors font-medium"
-              style={{
-                borderColor: PRIMARY_COLOR,
-                color: PRIMARY_COLOR,
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = PRIMARY_COLOR;
-                (e.target as HTMLElement).style.color = "white";
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = "white";
-                (e.target as HTMLElement).style.color = PRIMARY_COLOR;
-              }}
-            >
-              Xem thêm voucher
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+      {filteredAndSortedDiscounts?.length === 0 && (
+        <Card elevation={1} className="text-center py-12">
+          <CardContent>
+            <LocalOffer className="text-gray-300 mb-4" sx={{ fontSize: 64 }} />
+            <Typography variant="h6" color="text.secondary" className="mb-2">
+              {t("discount.noVoucherFound")}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t("discount.tryChangingYourSearchTermsOrFiltersToFindMoreVouchers")}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
+      {filteredAndSortedDiscounts?.length < total && (
+        <Box className="text-center mt-8">
+          <Button
+            variant="outlined"
+            size="large"
+            className="text-[#C8A846] border-[#C8A846] hover:bg-[#C8A846] hover:text-white px-8"
+          >
+            {t("discount.loadMoreVouchers")}
+          </Button>
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import { CommentType } from "@/types/review";
+import { CommentType } from "@/shared/types/review";
 import { renderStars } from "./renderStar";
 
 type props = {
