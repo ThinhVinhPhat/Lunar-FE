@@ -16,6 +16,19 @@ export type UserType = {
   isOnline: boolean;
 };
 
+// Form type for profile editing - only includes editable fields
+export type ProfileFormType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  company: string;
+  city: string;
+  role: Role;
+  avatar: File[] | null;
+};
+
 export type AuthType = {
   firstName?: string | undefined;
   lastName?: string | undefined;

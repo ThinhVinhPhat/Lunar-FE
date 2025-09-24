@@ -98,10 +98,14 @@ export const AddProductModal = ({
       discount: Number(data.discount)
     };
     
-    isUpdate ? await updateProduct({
-      ...baseData,
-      id: currentProduct?.id || '',
-    }) : await addProduct(baseData);
+    if (isUpdate) {
+      await updateProduct({
+        ...baseData,
+        id: currentProduct?.id || '',
+      });
+    } else {
+      await addProduct(baseData);
+    }
  
      if(isSuccessAdd || isSuccessUpdate) {
       handleRefresh();

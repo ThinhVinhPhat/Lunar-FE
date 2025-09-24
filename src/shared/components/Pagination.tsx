@@ -10,6 +10,8 @@ import {
   InputLabel,
   Chip,
   alpha,
+  SelectChangeEvent,
+  PaginationProps as MuiPaginationProps,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -73,8 +75,16 @@ export const Pagination: React.FC<PaginationProps> = ({
   const startItem = (currentPage - 1) * limit + 1;
   const endItem = Math.min(currentPage * limit, productCount);
 
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number): void => {
+    onSetPage(value);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  const handleLimitChange = (event: any) => {
+  const handlePageChangeSimple = (_event: React.ChangeEvent<unknown>, value: number): void => {
+    onSetPage(value);
+  };
+
+  const handleLimitChange = (event: SelectChangeEvent<number>) => {
     const newLimit = event.target.value as number;
     onLimitChange?.(newLimit);
   };
@@ -85,10 +95,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <StyledPagination
           count={totalPages}
           page={currentPage}
-          onChange={(value: number) => {
-            onSetPage(value);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
+          onChange={handlePageChange as unknown as MuiPaginationProps['onChange']}
           color="primary"
           size="small"
           siblingCount={1}
@@ -153,10 +160,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             <StyledPagination
               count={totalPages}
               page={currentPage}
-              onChange={(value: number) => {
-                onSetPage(value);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+              onChange={handlePageChange as unknown as MuiPaginationProps['onChange']}
               color="primary"
               showFirstButton
               showLastButton
@@ -205,7 +209,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <StyledPagination
         count={totalPages}
         page={currentPage}
-        onChange={(value: number) => onSetPage(value)}
+        onChange={handlePageChangeSimple as unknown as MuiPaginationProps['onChange']}
         color="primary"
         showFirstButton
         showLastButton

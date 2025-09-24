@@ -6,7 +6,7 @@ import DiscountPage from "./DiscountPage";
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { useNavigate } from "react-router-dom";
 import FormProfile from "@/shared/components/form/form-profile";
-import { UserType } from "@/shared/types/user";
+import { UserType, ProfileFormType } from "@/shared/types/user";
 import {
   Box,
   Container,
@@ -69,16 +69,16 @@ const Profile = () => {
     handleSubmit,
     formState: { isDirty },
     setValue,
-  } = useForm({
+  } = useForm<ProfileFormType>({
     defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      email: user?.email,
-      phone: user?.phone,
-      address: user?.address,
-      company: user?.company,
-      city: user?.city,
-      role: user?.role,
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      address: user?.address || '',
+      company: user?.company || '',
+      city: user?.city || '',
+      role: user?.role || 'user',
       avatar: user?.avatar ? [user.avatar] : [],
     },
   });
@@ -94,10 +94,15 @@ const Profile = () => {
   };
 
 
-  const onSubmit = async (data: UserType) => {
+  const onSubmit = async (formData: ProfileFormType) => {
     try {
-      if (isDirty) {
-        await updateUser(data);
+      if (isDirty && user) {
+        // Transform form data to UserType by merging with existing user data
+        const userData: UserType = {
+          ...user,
+          ...formData,
+        };
+        await updateUser(userData);
         setIsEditing(false);
       }
     } catch (error) {

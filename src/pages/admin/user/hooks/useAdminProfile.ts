@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { UserType } from "@/shared/types/user";
+import { UserType, ProfileFormType } from "@/shared/types/user";
 import { useUpdateUser } from "@/lib/hooks/queryClient/mutator/user/user.mutator";
 import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import {
@@ -43,17 +43,17 @@ export const useAdminProfile = () => {
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
 
   // ===== FORM MANAGEMENT =====
-  const form = useForm({
+  const form = useForm<ProfileFormType>({
     defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      email: user?.email,
-      phone: user?.phone,
-      address: user?.address,
-      company: user?.company,
-      city: user?.city,
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      address: user?.address || "",
+      company: user?.company || "",
+      city: user?.city || "",
       role: user?.role,
-      avatar: user?.avatar ? [user.avatar] : [],
+      avatar: user?.avatar ? [user.avatar] : null,
     },
   });
 
@@ -78,15 +78,15 @@ export const useAdminProfile = () => {
   // Update form when user data changes
   useEffect(() => {
     if (user) {
-      setValue("firstName", user.firstName);
-      setValue("lastName", user.lastName);
-      setValue("email", user.email);
-      setValue("phone", user.phone);
-      setValue("address", user.address);
-      setValue("company", user.company);
-      setValue("city", user.city);
+      setValue("firstName", user.firstName || "");
+      setValue("lastName", user.lastName || "");
+      setValue("email", user.email || "");
+      setValue("phone", user.phone || "");
+      setValue("address", user.address || "");
+      setValue("company", user.company || "");
+      setValue("city", user.city || "");
       setValue("role", user.role);
-      setValue("avatar", user.avatar ? [user.avatar] : []);
+      setValue("avatar", user.avatar ? [user.avatar] : null);
     }
   }, [user, setValue]);
 
@@ -94,10 +94,15 @@ export const useAdminProfile = () => {
   /**
    * Handle form submission for profile update
    */
-  const onSubmit = async (data: UserType) => {
+  const onSubmit = async (data: ProfileFormType) => {
     try {
       if (isDirty) {
-        await updateUser(data);
+        // Merge form data with existing user data to create complete UserType
+        const updatedUserData: UserType = {
+          ...user!,
+          ...data,
+        };
+        await updateUser(updatedUserData);
         setIsEditing(false);
       }
     } catch (error) {

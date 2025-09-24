@@ -1,4 +1,4 @@
-import { UserType } from "@/shared/types/user";
+import { UserType, ProfileFormType } from "@/shared/types/user";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { FiUser, FiCamera, FiSave, FiEdit2 } from "react-icons/fi";
@@ -10,12 +10,13 @@ import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 type FormProfileProps = {
   user: UserType;
-  onSubmit: (data: UserType) => void;
-  handleSubmit: (onSubmit: (data: any) => void) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  register: any;
-  setValue: any;
+  onSubmit: (data: ProfileFormType) => void;
+  handleSubmit: (onSubmit: (data: ProfileFormType) => void) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  register: UseFormRegister<ProfileFormType>;
+  setValue: UseFormSetValue<ProfileFormType>;
   formState: { isDirty: boolean; isSubmitting: boolean };
   isEditing: boolean;
   isUpdating: boolean;
@@ -152,14 +153,7 @@ export default function FormProfile({
                           : "border-gray-200 bg-gray-50"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent`}
                       {...register(
-                        field as
-                          | "firstName"
-                          | "lastName"
-                          | "email"
-                          | "phone"
-                          | "address"
-                          | "company"
-                          | "city",
+                        field as keyof ProfileFormType,
                         { required: true }
                       )}
                     />
