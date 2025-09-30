@@ -74,7 +74,7 @@ export const ContextProvider = ({
   }, [order]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3100", {
+    const socket = io("https://lunar.id.vn", {
       auth: { token: Cookies.get("accessToken") },
       transports: ["websocket"],
     });
