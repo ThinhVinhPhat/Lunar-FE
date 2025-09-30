@@ -4,13 +4,13 @@ import { useState } from "react";
 import usePagination from "@/shared/hooks/usePagination";
 import OrderModal from "./OrderModal";
 import { useGetOrderList } from "@/lib/hooks/queryClient/query/order/order.query";
-import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { Order } from "@/shared/types/order";
 import { AuthProps, isLoginAuth } from "@/shared/components/wrapper/withAuth";
 import OrderEmpty from "./OrderEmpty";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "@/lib/ultis/formatDate";
+import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 
 const OrderList: React.FC<AuthProps> = () => {
   const [status, setStatus] = useState("All Order");
@@ -78,11 +78,7 @@ const OrderList: React.FC<AuthProps> = () => {
         />
       )}
 
-      {isOrderListLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <LoadingSpinner />
-        </div>
-      ) : (
+      <IsLoadingWrapper isLoading={isOrderListLoading}>
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -163,7 +159,7 @@ const OrderList: React.FC<AuthProps> = () => {
             </table>
           </div>
         </div>
-      )}
+      </IsLoadingWrapper> 
       {orderList?.length > 10 && (
         <Pagination
           productCount={total}

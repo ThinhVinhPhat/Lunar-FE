@@ -34,6 +34,11 @@ export const login = async (data: LoginInterface) => {
   const response = await instance.post(API_URL.AUTH.LOGIN, {
     email: data.email,
     password: data.password,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -45,6 +50,11 @@ export const register = async (data: RegisterInterface) => {
     email: data.email,
     password: data.password,
     role: Role.CUSTOMER,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -52,6 +62,11 @@ export const register = async (data: RegisterInterface) => {
 export const forgotPassword = async (data: ForgotPasswordInterface) => {
   const response = await instance.post(API_URL.AUTH.FORGOT_PASSWORD, {
     email: data.email,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -60,6 +75,11 @@ export const verifyRegister = async (data: VerifyRegisterInterface) => {
   const response = await instance.post(API_URL.AUTH.VERIFY, {
     email: data.email,
     code: data.code,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };

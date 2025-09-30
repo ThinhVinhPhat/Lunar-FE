@@ -4,39 +4,48 @@ import instance from "..";
 export type CreateProductParams = {
   categoryId: string[];
   name: string;
-  price: number;
   description: string;
-  stock: number;
-  discount: number;
-  video?: string;
+  video?: string | null;
   images: (string | File)[];
   isFreeShip: boolean;
   isNew: boolean;
   isFeatured: boolean;
+  status: boolean;
 };
 
 export type UpdateProductParams = {
   id: string;
   categoryId: string[];
   name: string;
-  price: number;
   description: string;
-  stock: number;
-  discount: number;
-  video?: string;
+  video?: string | null;
   images: (string | File)[];
   isFreeShip: boolean;
   isNew: boolean;
   isFeatured: boolean;
-  status?: boolean;
+  status: boolean;
 };
 
-export const getProducts = async (
-  category?: string[],
-  page: number = 1,
-  limit: number = 20,
-  userId?: string
-) => {
+export type GetProductsParams = {
+  category?: string[];
+  page: number;
+  limit: number;
+  userId?: string;
+};
+
+
+export type FindProductBySuggestionParams = {
+  suggestion: string;
+  limit: number;
+  page: number;
+};
+
+export const getProducts = async ({
+  category,
+  page = 1,
+  limit = 20,
+  userId,
+}: GetProductsParams) => {
   let query = API_URL.PRODUCTS.LIST + `?page=${page}&limit=${limit}`;
 
   if (category && category?.length > 0) {
@@ -48,7 +57,12 @@ export const getProducts = async (
     query += `&userId=${userId}`;
   }
 
-  const response = await instance.get(query);
+  const response = await instance.get(query, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -57,7 +71,12 @@ export const getProduct = async (slug: string | undefined, userId?: string) => {
   if (userId) {
     query += `&userId=${userId}`;
   }
-  const response = await instance.get(query);
+  const response = await instance.get(query, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -78,7 +97,13 @@ export const addProduct = async (data: CreateProductParams) => {
     }
   });
 
-  const response = await instance.post(API_URL.PRODUCTS.CREATE, formData);
+  const response = await instance.post(API_URL.PRODUCTS.CREATE, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -100,28 +125,56 @@ export const updateProduct = async (data: UpdateProductParams) => {
     }
   });
 
-  const response = await instance.patch(API_URL.PRODUCTS.UPDATE(data.id as string), formData);
+  const response = await instance.patch(API_URL.PRODUCTS.UPDATE(data.id as string), formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 export const deleteProduct = async (id: string | undefined) => {
-  const response = await instance.delete(API_URL.PRODUCTS.DELETE(id as string));
+  const response = await instance.delete(API_URL.PRODUCTS.DELETE(id as string), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 export const favoriteProduct = async (productId: string | undefined) => {
   const response = await instance.post(
-    API_URL.FAVORITES.ADD(productId as string)
+    API_URL.FAVORITES.ADD_PRODUCT(productId as string),
+    {},
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
 
 export const getFavoriteProducts = async () => {
-  const response = await instance.get(API_URL.FAVORITES.GET_BY_USER);
+  const response = await instance.get(API_URL.FAVORITES.GET_BY_USER, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
-export const getProductBySuggestion = async (suggestion: string) => {
-  const response = await instance.get(API_URL.PRODUCTS.SUGGESTION(suggestion));
+export const getProductBySuggestion = async ({ suggestion, page = 1, limit = 20 }: FindProductBySuggestionParams) => {
+  const response = await instance.get(API_URL.PRODUCTS.SUGGESTION(suggestion, page, limit), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };

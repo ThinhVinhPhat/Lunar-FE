@@ -87,7 +87,7 @@ export function RequireRole({ allowedRoles, children }: RequireRoleProps) {
   const { data: user, isLoading } = useGetUser();
 
   if (isLoading == false) {
-    if (!allowedRoles.includes(user?.role)) {
+    if (!user?.role || !allowedRoles.includes(user.role)) {
       return <Navigate to="/admin/unauthorized" replace />;
     }
   }

@@ -40,7 +40,11 @@ export const RelatedProduct = ({
                     <h3 className="font-medium text-gray-900 mb-1">
                       {product.name}
                     </h3>
-                    <p className="text-gray-600">${product.price}</p>
+                    <p className="text-gray-600">
+                      ${product.variants && product.variants.length > 0 
+                        ? Math.min(...product.variants.map(v => v.price))
+                        : 0}
+                    </p>
                   </Link>
                 ))}
             </div>

@@ -168,7 +168,13 @@ function OrderModal({
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="h-10 w-10 flex-shrink-0 bg-gray-200 rounded-md"></div>
+                              <div className="h-12 w-20 flex-shrink-0 bg-gray-200 rounded-md">
+                                <img
+                                  className="h-full w-full object-cover"
+                                  src={item?.variant?.images[0]}
+                                  alt={item?.product_name}
+                                />
+                              </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
                                   {item?.product_name}

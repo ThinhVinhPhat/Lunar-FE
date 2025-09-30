@@ -1,5 +1,6 @@
 import { DiscountInterface } from "./discount";
 import { Product } from "./product";
+import { ProductVariantResponse } from "./product-varitant";
 import { UserType } from "./user";
 
 export type CreateOrderProps = {
@@ -51,7 +52,8 @@ export type OrderDetail = {
   quantity: number;
   price: string;
   total: string;
-  product: Product;
+  product?: Product;
+  variant?: ProductVariantResponse;
 };
 export enum PaymentMethod {
   CREDIT_CARD = "Credit Card",

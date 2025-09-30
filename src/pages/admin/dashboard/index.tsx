@@ -27,8 +27,8 @@ import {
 import { AuthProps, isLoginAdminAuth } from "@/shared/components/wrapper/withAuth";
 import { useDashboardManagement } from "./hooks/useDashboardManagement";
 import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
-import { Product } from "@/shared/types/product";
 import { OrderFilterEnum } from "@/shared/types/analytic";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
 
 ChartJS.register(
   CategoryScale,
@@ -219,18 +219,18 @@ const Dashboard: React.FC<AuthProps> = ({ user }) => {
             Top Products
           </h2>
           <div className="space-y-4">
-            {topProducts?.map((product: Product, index: number) => (
+            {topProducts?.map((product: ProductVariantResponse, index: number) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
-                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                    <img src={product.images[0]} alt={product.color} className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800">
-                      {product.name || 'Product'}
+                      {product.color || 'Product'}
                     </h3>
                     <p className="text-sm text-gray-500">
                       Qty: {product.stock}

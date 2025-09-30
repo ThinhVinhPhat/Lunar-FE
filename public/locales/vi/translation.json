@@ -149,7 +149,9 @@
     "description": "Mô tả",
     "customer_reviews": "Đánh giá của khách hàng",
     "write_a_review": "Viết đánh giá",
-    "color": "Màu sắc"
+    "color": "Màu sắc",
+    "select_variant": "Chọn phiên bản",
+    "variants": "Phiên bản"
   },
   "search": {
     "search_products": "Tìm kiếm sản phẩm",

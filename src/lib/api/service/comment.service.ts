@@ -26,6 +26,10 @@ export const getCommentByProduct = async (
 ) => {
   const response = await instance.get(API_URL.COMMENTS.GET_BY_PRODUCT(id), {
     params: data,
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -50,7 +54,9 @@ export const createComment = async (
     formData,
     {
       headers: {
+        ...(instance.defaults.headers.common || {}),
         "Content-Type": "multipart/form-data",
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
       },
     }
   );
@@ -60,11 +66,20 @@ export const createComment = async (
 export const getUserComment = async (data: GetUserCommentInterface) => {
   const response = await instance.get(API_URL.COMMENTS.GET_BY_USER, {
     params: data,
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const deleteComment = async (id: string) => {
-  const response = await instance.delete(API_URL.COMMENTS.DELETE(id));
+  const response = await instance.delete(API_URL.COMMENTS.DELETE(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };

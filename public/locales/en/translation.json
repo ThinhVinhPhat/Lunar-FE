@@ -157,7 +157,9 @@
     "fit_details": "Fit Details",
     "features": "Features",
     "add_to_cart": "Add to Cart",
-    "color": "Color"
+    "color": "Color",
+    "select_variant": "Select Variant",
+    "variants": "Variants"
   },
   "profile_fields": {
     "firstName": "First Name",

@@ -27,6 +27,7 @@ export type ProfileFormType = {
   city: string;
   role: Role;
   avatar: File[] | null;
+  status?: string | boolean;
 };
 
 export type AuthType = {

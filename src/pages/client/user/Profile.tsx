@@ -7,6 +7,7 @@ import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
 import { useNavigate } from "react-router-dom";
 import FormProfile from "@/shared/components/form/form-profile";
 import { UserType, ProfileFormType } from "@/shared/types/user";
+import { Role } from "@/shared/types";
 import {
   Box,
   Container,
@@ -78,8 +79,8 @@ const Profile = () => {
       address: user?.address || '',
       company: user?.company || '',
       city: user?.city || '',
-      role: user?.role || 'user',
-      avatar: user?.avatar ? [user.avatar] : [],
+      role: user?.role || Role.CUSTOMER,
+      avatar: user?.avatar ? (Array.isArray(user.avatar) ? user.avatar : [user.avatar]) : null,
     },
   });
 
@@ -97,11 +98,11 @@ const Profile = () => {
   const onSubmit = async (formData: ProfileFormType) => {
     try {
       if (isDirty && user) {
-        // Transform form data to UserType by merging with existing user data
         const userData: UserType = {
           ...user,
           ...formData,
-        };
+          status: user.status,
+        };  
         await updateUser(userData);
         setIsEditing(false);
       }
@@ -118,7 +119,16 @@ const Profile = () => {
             <Box className="flex items-center gap-6">
               <Zoom>
                 <Avatar
-                  src={user?.avatar}
+                  src={(() => {
+                    if (Array.isArray(user?.avatar) && user.avatar.length > 0) {
+                      const firstAvatar = user.avatar[0];
+                      return firstAvatar instanceof File ? URL.createObjectURL(firstAvatar) : firstAvatar || undefined;
+                    }
+                    if (user?.avatar && user.avatar instanceof File) {
+                      return URL.createObjectURL(user.avatar);
+                    }
+                    return typeof user?.avatar === 'string' ? user.avatar : undefined;
+                  })()}
                   sx={{ width: 80, height: 80, border: '3px solid white' }}
                 >
                 {user?.firstName?.[0]}{user?.lastName?.[0]}

@@ -28,7 +28,12 @@ export type CreateUserParams = {
 
 export const UserService = {
   getUser: async () => {
-    const response = await instance.get(API_URL.USERS.ME, {});
+    const response = await instance.get(API_URL.USERS.ME, {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    });
     return response.data;
   },
 
@@ -46,7 +51,9 @@ export const UserService = {
 
     const response = await instance.patch(API_URL.USERS.UPDATE, formData, {
       headers: {
+        ...(instance.defaults.headers.common || {}),
         "Content-Type": "multipart/form-data",
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
       },
     });
     return response.data;
@@ -62,6 +69,11 @@ export const updatePassword = async (
     email: email,
     code: code,
     password: password,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -69,6 +81,10 @@ export const updatePassword = async (
 export const findUser = async (data: FindUserParams) => {
   const response = await instance.get(API_URL.USERS.FIND_ALL, {
     params: data,
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
 
   return response.data;
@@ -81,12 +97,22 @@ export const createUser = async (data: CreateUserParams) => {
     email: data.email,
     password: data.password,
     role: data.role,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const deleteUser = async (id: string) => {
-  const response = await instance.delete(API_URL.USERS.DELETE(id));
+  const response = await instance.delete(API_URL.USERS.DELETE(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -96,11 +122,21 @@ export const updateUserAdmin = async (data: UpdateUserAdminParams) => {
     lastName: data.lastName,
     role: data.role,
     status: data.status,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const getUserById = async (id: string) => {
-  const response = await instance.get(API_URL.USERS.GET_BY_ID(id));
+  const response = await instance.get(API_URL.USERS.GET_BY_ID(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };

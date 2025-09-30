@@ -1,10 +1,13 @@
 import { useState } from "react";
 import usePagination from "@/shared/hooks/usePagination";
 import FilterDrawer from "@/components/product/Filter/FilterDrawer";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Pagination } from "@/shared/components/Pagination";
 import Text from "@/shared/components/wrapper/Text";
-import { useProductAction } from "@/shared/hooks/useProductAction";
+import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
+import { useFavoriteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
+import { enqueueSnackbar } from "notistack";
 import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { Button } from "@/shared/components/Button";
 import ProductItem from "@/components/product/ProductItem";
@@ -16,12 +19,35 @@ import {
   TextField,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { Product } from "@/shared/types/product";
+
+// FilterDrawer now only returns Products, so no need for type guards
 
 const ProductList = () => {
   const { type } = useParams();
+  const navigate = useNavigate();
   const { page, handlePageChange } = usePagination();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const { products, isLoading, total, handleFavoriteProduct } = useProductAction(page, 20, null);
+  const { data: user } = useGetUser();
+  const { mutateAsync: favoriteProduct } = useFavoriteProduct();
+  
+  // Fetch products with variants populated
+  const { data: productsData, isLoading, refetch, total } = useProducts({ 
+    page: page, 
+    limit: 20 
+  });
+  
+  const products = productsData?.data || [];
+  
+  const handleFavoriteProduct = async (productId: string) => {
+    if (user?.id) {
+      await favoriteProduct(productId);
+      refetch();
+    } else {
+      enqueueSnackbar("Please login to favorite product", { variant: "error" });
+      navigate("/login");
+    }
+  };
 
   const imageUrl = type === "men"
     ? "https://shwoodshop.com/cdn/shop/collections/f0395074198cd18e070e805ac2f80682_99a27b1f-60f2-4f74-afe7-061d0b89fa36.jpg?v=1658366448&width=1920"
@@ -72,7 +98,7 @@ const ProductList = () => {
                   </Button>
                 </Box>
 
-                {filteredProducts.length === 0 ? (
+                {filteredProducts?.length === 0 ? (
                   <Box sx={{ textAlign: "center", py: 8 }}>
                     <Typography variant="h6" color="text.secondary" mb={2}>
                       <Text id="product_list.no_products_found_matching_your_criteria" />
@@ -101,21 +127,30 @@ const ProductList = () => {
                       mb: 6
                     }}
                   >
-                    {filteredProducts.map((product) => (
-                      <Box key={product.id}>
-                        <ProductItem
-                          product={product}
-                          hoveredId={hoveredId}
-                          setHoveredId={setHoveredId}
-                          handleFavoriteProduct={handleFavoriteProduct}
-                        />
-                      </Box>
-                    ))}
+                    {filteredProducts?.map((item) => {
+                      const product = item as Product;
+                      const itemId = product?.id;
+
+                      if (!product || !itemId) {
+                        return null;
+                      }
+                      
+                      return (
+                        <Box key={itemId}>
+                          <ProductItem
+                            product={product}
+                            hoveredId={hoveredId}
+                            setHoveredId={setHoveredId}
+                            handleFavoriteProduct={handleFavoriteProduct}
+                          />
+                        </Box>
+                      );
+                    })}
                   </Box>
                 )}
 
                 <Pagination
-                  productCount={total}
+                  productCount={total || 0}
                   currentPage={page}
                   onSetPage={handlePageChange}
                   limit={20}

@@ -40,9 +40,18 @@ const globalStyles = (
 const FeaturedProducts = () => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { products, isLoading, handleFavoriteProduct } = useProductAction();
+  
+  console.log(products);
 
-  const mostViewedProducts = products
-    ?.sort((a: Product, b: Product) => b.views - a.views)
+  const featuredProducts = products
+    ?.sort((a: Product, b: Product) => {
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    })
     .slice(0, 4);
 
   return (
@@ -172,7 +181,7 @@ const FeaturedProducts = () => {
                   </Box>
                 </Box>
               ))
-            : mostViewedProducts?.map((product: Product, index: number) => (
+            : featuredProducts?.map((product: Product, index: number) => (
                 <Box 
                   key={product.id}
                   sx={{

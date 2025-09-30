@@ -31,9 +31,11 @@ const PaymentResult: React.FC<PaymentResultProps> = ({ status }) => {
     const fetchData = async () => {
       if (currentStatus == "success") {
         await getSuccessPayment(orderId, sessionId);
-        await queryClient.invalidateQueries({
-          queryKey: ["create-order"],
-        });
+        await queryClient.invalidateQueries(
+          {
+            queryKey: ["create-order"],
+          }
+        );
       } else {
         await getFailedPayment();
       }

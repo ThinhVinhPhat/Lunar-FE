@@ -17,7 +17,13 @@ export interface UpdateNotificationParams extends CreateNotificationParams {
 
 export const getNotificationByUser = async (page: number, limit: number) => {
   const response = await instance.get(
-    API_URL.NOTIFICATIONS.GET_BY_USER(page, limit)
+    API_URL.NOTIFICATIONS.GET_BY_USER(page, limit),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
@@ -45,7 +51,12 @@ export const createNotification = async (data: CreateNotificationParams) => {
       formData.append(key, data[key as keyof CreateNotificationParams] as string);
     }
   });
-  const response = await instance.post(API_URL.NOTIFICATIONS.CREATE, formData);
+  const response = await instance.post(API_URL.NOTIFICATIONS.CREATE, formData, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -60,12 +71,22 @@ export const updateNotification = async (id: string, data: UpdateNotificationPar
       formData.append(key, data[key as keyof CreateNotificationParams] as string);
     }
   });
-  const response = await instance.patch(API_URL.NOTIFICATIONS.UPDATE(id), formData);
+  const response = await instance.patch(API_URL.NOTIFICATIONS.UPDATE(id), formData, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 export const updateNotificationStatus = async (id: string) => {
-  const response = await instance.patch(API_URL.NOTIFICATIONS.UPDATE_STATUS(id));
+  const response = await instance.patch(API_URL.NOTIFICATIONS.UPDATE_STATUS(id), {}, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -76,12 +97,23 @@ export const getAllNotification = async (
   roles: string[]
 ) => {
   const response = await instance.get(
-    API_URL.NOTIFICATIONS.LIST(name, page, limit, roles)
+    API_URL.NOTIFICATIONS.LIST(name, page, limit, roles),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
 
 export const deleteNotification = async (id: string) => {
-  const response = await instance.delete(API_URL.NOTIFICATIONS.DELETE(id));
+  const response = await instance.delete(API_URL.NOTIFICATIONS.DELETE(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };

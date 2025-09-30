@@ -1,4 +1,3 @@
-import { Product } from "@/shared/types/product";
 import FilterItem from "./FitlerItem";
 import { filterOptions } from "@/database/filter";
 import Text from "@/shared/components/wrapper/Text";
@@ -12,30 +11,33 @@ import {
   List,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Product } from "@/shared/types/product";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
+
+// Union type for search results
+type SearchResultItem = Product | ProductVariantResponse;
 
 type FilterProps = {
   isLoading?: boolean;
-  products?: Product[];
-  type?: "collection" | "product";
   onClose?: () => void;
   openSections?: {
     categories: boolean;
     colors: boolean;
-    materials: boolean;
+    collections: boolean;
     shapes: boolean;
     price: boolean;
   };
   activeFilters?: {
     categories: string[];
     colors: string[];
-    materials: string[];
+    collections: string[];
     shapes: string[];
     priceRange: [number, number] | null;
   };
-  toggleSection?: (section: "categories" | "colors" | "materials" | "shapes" | "price") => void;
-  handleFilterChange?: (type: "categories" | "colors" | "materials" | "shapes" | "priceRange", value: string) => void;
+  toggleSection?: (section: "categories" | "colors" | "collections" | "shapes" | "price") => void;
+  handleFilterChange?: (type: "categories" | "colors" | "collections" | "shapes" | "priceRange", value: string) => void;
   clearFilters?: () => void;
-  applyFilters?: (products: Product[]) => Product[];
+  applyFilters?: (products: SearchResultItem[]) => SearchResultItem[];
 };
 
 function Filter({
@@ -58,7 +60,7 @@ function Filter({
       if (Array.isArray(filterArray)) {
         return count + filterArray.length;
       }
-      return filterArray ? count + 1 : count;
+      return filterArray ? count + 1 : count -1;
     }, 0) : 0;
 
   const filterContent = (
@@ -93,14 +95,14 @@ function Filter({
                 key={filterKey}
                 name={filterKey}
                 activeFilters={(() => {
-                  const filters = activeFilters || { categories: [], colors: [], materials: [], shapes: [], priceRange: null };
+                  const filters = activeFilters || { categories: [], colors: [], collections: [], shapes: [], priceRange: null };
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   const { priceRange, ...arrayFilters } = filters;
                   return arrayFilters;
                 })()}
                 handleFilterChange={handleFilterChange}
                 toggleSection={toggleSection}
-                openSections={openSections || { categories: true, colors: true, materials: true, shapes: true, price: true }}
+                openSections={openSections || { categories: true, colors: true, collections: true, shapes: true, price: true }}
                 filterOptions={filterOptions}
               />
             );

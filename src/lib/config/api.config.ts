@@ -31,13 +31,24 @@ export const API_URL = {
     CREATE: `/product`,
     UPDATE: (id: string) => `/product/${id}`,
     DELETE: (id: string) => `/product/${id}`,
-    SUGGESTION: (name: string) => `/product/find-by-suggestion?name=${name}`,
+    SUGGESTION: (name: string, page: number, limit: number) => `/product/find-by-suggestion?name=${name}&page=${page}&limit=${limit}`,
+  },
+
+  // Product Variant
+  PRODUCT_VARIANT: {
+    LIST: `/product-variant`,
+    DETAIL_BY_SLUG: (slug: string) => `/product-variant/find-by-slug?slug=${slug}`,
+    CREATE: (id: string) => `/product-variant/${id}`,
+    UPDATE: (id: string) => `/product-variant/${id}`,
+    DELETE: (id: string) => `/product-variant/${id}`,
+    SUGGESTION: (name: string, page: number, limit: number) => `/product-variant/find-by-suggestion?name=${name}&page=${page}&limit=${limit}`,
   },
 
   // Favorites
   FAVORITES: {
-    ADD: (productId: string) => `/favorite/${productId}`,
+    ADD_PRODUCT: (productId: string) => `/favorite/product/${productId}`,
     GET_BY_USER: `/favorite/find-by-user`,
+    ADD_VARIANT: (variantId: string) => `/favorite/product-variant/${variantId}`,
   },
 
   // Categories

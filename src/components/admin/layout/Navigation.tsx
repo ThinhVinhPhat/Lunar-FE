@@ -51,7 +51,7 @@ function Navigation({
           <ul className="space-y-2">
             {navItems.map(
               (item) =>
-                item.roles.includes(user?.role) && (
+                user?.role && item.roles.includes(user.role) && (
                   <li key={item.path}>
                     <Link
                       to={item.path}
@@ -105,7 +105,16 @@ function Navigation({
               <div className="relative">
                 <div className="p-0.5 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 rounded-full shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <img
-                    src={user?.avatar}
+                    src={(() => {
+                      if (Array.isArray(user?.avatar) && user.avatar.length > 0) {
+                        const firstAvatar = user.avatar[0];
+                        return firstAvatar instanceof File ? URL.createObjectURL(firstAvatar) : firstAvatar || undefined;
+                      }
+                      if (user?.avatar && user.avatar instanceof File) {
+                        return URL.createObjectURL(user.avatar);
+                      }
+                      return typeof user?.avatar === 'string' ? user.avatar : undefined;
+                    })()}
                     alt="Profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-white shadow-inner transition-transform duration-300 group-hover:scale-105"
                   />

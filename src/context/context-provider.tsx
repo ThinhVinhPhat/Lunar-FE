@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { Socket, io } from "socket.io-client";
 import { useCreateOrder } from "@/lib/hooks/queryClient/mutator/order/order";
 import i18n from "@/i18n";
+import { Role } from "@/shared/types";
 type ContextType = {
   isLogin: boolean | UserType;
   isAdmin: boolean;
@@ -47,7 +48,7 @@ export const ContextProvider = ({
     if (user?.firstName && user?.lastName) {
       setIsLogin(true);
     }
-    if (user?.role === "admin") {
+    if (user?.role === Role.ADMIN) {
       setIsAdmin(true);
     }
   }, [user]);
@@ -96,6 +97,9 @@ export const ContextProvider = ({
     };
   }, []);
 
+
+  
+
   const memorizedValue = useMemo(() => {
     return {
       isLogin,
@@ -105,7 +109,7 @@ export const ContextProvider = ({
       isOpenCart,
       cart,
       cartItems,
-      user,
+      user: user || undefined,
       currentLanguage,
       setCurrentLanguage,
       setIsLogin,

@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
         element: <React.Suspense fallback={<div>Loading...</div>}><Home /></React.Suspense>,
       },
       {
-        path: "/product/:id",
+        path: "/product/:slug",
         element: <React.Suspense fallback={<div>Loading...</div>}><ProductDetail /></React.Suspense>,
       },
       {

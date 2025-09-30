@@ -53,7 +53,7 @@ export const useAdminProfile = () => {
       company: user?.company || "",
       city: user?.city || "",
       role: user?.role,
-      avatar: user?.avatar ? [user.avatar] : null,
+      avatar: user?.avatar ? (Array.isArray(user.avatar) ? user.avatar : [user.avatar]) : null,
     },
   });
 
@@ -86,7 +86,7 @@ export const useAdminProfile = () => {
       setValue("company", user.company || "");
       setValue("city", user.city || "");
       setValue("role", user.role);
-      setValue("avatar", user.avatar ? [user.avatar] : null);
+      setValue("avatar", user.avatar ? (Array.isArray(user.avatar) ? user.avatar : [user.avatar]) : null);
     }
   }, [user, setValue]);
 

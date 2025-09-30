@@ -1,12 +1,11 @@
-import { useGetCategoriesDetail } from "@/lib/hooks/queryClient/query/category/category.query";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FormField } from "@/shared/components/form/form-register";
 import { useAddProduct, useUpdateProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
 import clsx from "clsx";
-import { Product, ProductCategory } from "@/shared/types/product";
-import { CategoryDetail } from "@/shared/types/category";
+import { Product } from "@/shared/types/product";
 import { useEffect, useState } from "react";
 import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
+import { ImageUploadField, CheckboxField } from "../components";
 
 type AddProductModalsProps = {
   showAddModal: boolean;
@@ -17,15 +16,14 @@ type AddProductModalsProps = {
 
 type AddProductForm = {
   name: string;
-  price: number;
-  stock: number;
-  discount: number;
   description: string;
   category: string[];
   images: (string | File)[];
   isFreeShip: boolean;
   isFeatured: boolean;
   isNew: boolean;
+  status: boolean;
+  video?: string;
 };
 
 
@@ -36,33 +34,26 @@ export const AddProductModal = ({
   handleRefresh,
 }: AddProductModalsProps) => {
   const [isUpdate, setIsUpdate] = useState(false);
-  const { data: categoriesDetails } = useGetCategoriesDetail();
-  const { mutateAsync: addProduct, isPending: isAdding, isSuccess: isSuccessAdd } = useAddProduct();
-  const { mutateAsync: updateProduct, isPending: isUpdating, isSuccess: isSuccessUpdate } = useUpdateProduct();
+  const { mutateAsync: addProduct, isPending: isAdding } = useAddProduct();
+  const { mutateAsync: updateProduct, isPending: isUpdating } = useUpdateProduct();
 
   const {
     register,
     handleSubmit,
     control,
-    setValue,
-    getValues,
     reset,
     formState: { isDirty, errors },
   } = useForm<AddProductForm>({
     defaultValues: {
       name: currentProduct?.name || "",
-      price: Number(currentProduct?.price) || 0,
-      stock: Number(currentProduct?.stock) || 0,
       description: currentProduct?.description || "",
-      discount: Number(currentProduct?.discount_percentage) || 0,
-      category:
-        currentProduct?.productCategories?.map(
-          (category: ProductCategory) => category.categoryDetails.id
-        ) || [],
+      category: [],
       images: currentProduct?.images || [],
-      isFreeShip: currentProduct?.isFreeShip,
-      isFeatured: currentProduct?.isFeatured,
-      isNew: currentProduct?.isNew,
+      isFreeShip: currentProduct?.isFreeShip || false,
+      isFeatured: currentProduct?.isFeatured || false,
+      isNew: currentProduct?.isNew || false,
+      status: currentProduct?.status ?? true,
+      video: currentProduct?.video || "",
     },
   });
 
@@ -71,54 +62,56 @@ export const AddProductModal = ({
     if(currentProduct) {
       reset({
         name: currentProduct.name,
-        price: Number(currentProduct.price) || 0,
-        stock: Number(currentProduct.stock) || 0,
         description: currentProduct.description || "",
-        discount: Number(currentProduct.discount_percentage) || 0,
-        category:
-          currentProduct.productCategories?.map(
-            (category: ProductCategory) => category.categoryDetails.id
-          ) || [],
+        category: [],
         images: currentProduct.images || [],
-        isFreeShip: currentProduct.isFreeShip,
-        isFeatured: currentProduct.isFeatured,
-        isNew: currentProduct.isNew,
+        isFreeShip: currentProduct.isFreeShip || false,
+        isFeatured: currentProduct.isFeatured || false,
+        isNew: currentProduct.isNew || false,
+        status: currentProduct.status ?? true,
+        video: currentProduct.video || "",
       });
-    }    
+    }
+    else {
+      reset({});
+    }
     setIsUpdate(!!currentProduct);
-  }, [currentProduct]);
+  }, [currentProduct, reset]);
   
   const onSubmit = async (data: AddProductForm) => {
     if (!isDirty) return;
     
-    const baseData = {
-      ...data,
+    const productData = {
+      name: data.name,
+      description: data.description,
       categoryId: data.category,
-      images: data.images, // Giữ nguyên File objects, không convert thành string
-      discount: Number(data.discount)
+      images: data.images,
+      isFreeShip: data.isFreeShip,
+      isFeatured: data.isFeatured,
+      isNew: data.isNew,
+      status: data.status,
+      video: data.video || null,
     };
     
-    if (isUpdate) {
-      await updateProduct({
-        ...baseData,
-        id: currentProduct?.id || '',
-      });
-    } else {
-      await addProduct(baseData);
-    }
- 
-     if(isSuccessAdd || isSuccessUpdate) {
+    try {
+      if (isUpdate) {
+        await updateProduct({
+          ...productData,
+          id: currentProduct?.id || '',
+        });
+      } else {
+        await addProduct(productData);
+      }
+      
       handleRefresh();
-      setShowAddModal(false);
-      reset();
-     }
+      // setShowAddModal(false);
+      // reset();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      // Modal stays open on error so user can retry
+    }
   };
 
-  const handleRemoveImage = (index: number) => {
-    const currentImages = getValues("images") || [];
-    const updatedImages = currentImages.filter((_, i) => i !== index);
-    setValue("images", updatedImages, { shouldDirty: true });
-  };
 
   return (
     showAddModal && (
@@ -155,136 +148,30 @@ export const AddProductModal = ({
                           {...register("name")}
                         />
                       </div>
+                      {/* <CategorySelector
+                        control={control}
+                        name="category"
+                        categories={categoriesDetails}
+                        label="Categories"
+                      /> */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
-                          Category
+                          Video URL (Optional)
                         </label>
-                        <div className="flex flex-col space-y-2">
-                          {categoriesDetails?.map(
-                            (category: CategoryDetail) => (
-                              <div
-                                key={category.name  }
-                                className="flex items-center"
-                              >
-                                <Controller
-                                  control={control}
-                                  name="category"
-                                  render={({ field }) => (
-                                    <input
-                                      type="checkbox"
-                                      checked={field.value.includes(category.name)}
-                                      onChange={(e) => {
-                                        const newValue = e.target.checked
-                                          ? [...field.value, category.name]
-                                          : field.value.filter(
-                                              (name) => name !== category.name
-                                            );
-                                        field.onChange(newValue);
-                                      }}
-                                    />
-                                  )}
-                                />
-
-                                <label
-                                  htmlFor={`category-${category.name}`}
-                                  className="ml-2 block text-sm text-gray-900"
-                                >
-                                  {category.name}
-                                </label>
-                                {errors.category?.message}
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Price ($)
-                          </label>
-                          <FormField
-                            type="number"
-                            label="price"
-                            step={0.01}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                            placeholder="Enter price"
-                            error={errors.price?.message as string}
-                            {...register("price")}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Stock
-                          </label>
-                          <FormField
-                            type="number"
-                            label="Stock"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                            placeholder="Enter stock"
-                            {...register("stock")}
-                            error={errors.stock?.message as string}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Discount
-                          </label>
-                          <FormField
-                            type="number"
-                            label="Discount"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                            placeholder="Enter discount"
-                            {...register("discount")}
-                            error={errors.discount?.message as string}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Images
-                        </label>
-                        <Controller
-                          control={control}
-                          name="images"
-                          render={({ field }) => (
-                            <div className="space-y-4">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={(e) => {
-                                  if (e.target.files && e.target.files.length > 0) {
-                                    const newFiles = Array.from(e.target.files);
-                                    field.onChange([...field.value, ...newFiles]);
-                                  }
-                                }}
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                              />
-                              
-                              {field.value && field.value.length > 0 && (
-                                <div className="grid grid-cols-3 gap-2">
-                                  {field.value.map((image: string | File, index: number) => (
-                                    <div key={index} className="relative">
-                                      <img
-                                        src={image instanceof File ? URL.createObjectURL(image) : image}
-                                        className="w-full h-20 object-cover rounded-md"
-                                        alt={`Product Image ${index + 1}`}
-                                      />
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemoveImage(index)}
-                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
-                                      >
-                                        ×
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )}
+                        <FormField
+                          label="Video URL"
+                          placeholder="Enter video URL"
+                          error={errors.video?.message as string}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
+                          {...register("video")}
                         />
                       </div>
+                      <ImageUploadField
+                        control={control}
+                        name="images"
+                        label="Product Images"
+                        multiple={true}
+                      />
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
                           Description
@@ -296,23 +183,31 @@ export const AddProductModal = ({
                         ></textarea>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Status
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                          Product Settings
                         </label>
-                        {["isFreeShip", "isNew", "isFeatured"].map((status) => (
-                          <div className="flex flex-col space-y-2">
-                            <FormField
-                              type="checkbox"
-                              label={status}
-                              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#C8A846] focus:border-[#C8A846]"
-                              checked={
-                                currentProduct?.[status as keyof Product] as boolean
-                              }
-                              {...register(status as keyof AddProductForm)}
-                            />
-                            <label htmlFor={status}>{status}</label>
-                          </div>
-                        ))}
+                        <div className="space-y-3">
+                          <CheckboxField
+                            control={control}
+                            name="status"
+                            label="Active Status"
+                          />
+                          <CheckboxField
+                            control={control}
+                            name="isFreeShip"
+                            label="Free Shipping"
+                          />
+                          <CheckboxField
+                            control={control}
+                            name="isNew"
+                            label="New Product"
+                          />
+                          <CheckboxField
+                            control={control}
+                            name="isFeatured"
+                            label="Featured Product"
+                          />
+                        </div>
                       </div>
 
                       <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -320,10 +215,10 @@ export const AddProductModal = ({
                           disabled={!isDirty}
                           type="submit"
                           className={clsx(
-                            "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#C8A846] text-base font-medium text-white hover:bg-[#b39539] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A846] sm:ml-3 sm:w-auto sm:text-sm",
+                            "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A846] sm:ml-3 sm:w-auto sm:text-sm",
                             {
-                              "bg-[#b39539] cursor-not-allowed": isAdding,
-                              "bg-[#C8A846]": !isAdding,
+                              "bg-gray-400 cursor-not-allowed": !isDirty || isAdding || isUpdating,
+                              "bg-[#C8A846] hover:bg-[#b39539]": isDirty && !isAdding && !isUpdating,
                             }
                           )}
                         >
@@ -333,8 +228,15 @@ export const AddProductModal = ({
                         </button>
                         <button
                           type="button"
+                          disabled={isAdding || isUpdating}
                           onClick={() => setShowAddModal(false)}
-                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                          className={clsx(
+                            "mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm",
+                            {
+                              "bg-gray-200 text-gray-400 cursor-not-allowed": isAdding || isUpdating,
+                              "bg-white text-gray-700 hover:bg-gray-50": !isAdding && !isUpdating,
+                            }
+                          )}
                         >
                           Cancel
                         </button>

@@ -30,7 +30,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
   const [showDiscounts, setShowDiscounts] = useState(false);
   const { cart, setCartItems, cartItems, setCart } = useContextProvider();
   const { data: me } = useGetUser();
-  const hasValidInfo = me?.address && me?.phone;
+  const hasValidInfo = me?.address !== null && me?.phone !== null;
   const isCartEmpty = cartItems.length === 0;
   const { refetch } = useGetOrderDetail(cart?.id || "");
   const { mutateAsync: updateOrder } = useUpdateOrder();
@@ -59,7 +59,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
 
   const calculateSubtotal = (items: OrderDetail[]) => {
     const total = items.reduce(
-      (sum, item) => sum + Number(item.product.price) * item.quantity,
+      (sum, item) => sum + Number(item.price) * item.quantity,
       0
     );
     setSubtotal(total);
@@ -76,6 +76,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
     }
     onClose();
   };
+
+  console.log(cart);
+  
 
   const removeItem = async (id: string) => {
     try {
@@ -96,6 +99,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
       removeItem(id);
       return;
     }
+    
 
     const updatedItems = cartItems.map((item) =>
       item.id === id ? { ...item, quantity: newQuantity } : item
@@ -173,7 +177,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
       <CartHeader cart={cart || null} handleDeleteDiscountFromOrder={handleDeleteDiscountFromOrder} />
 
 
-      {/* Products Section */}
       <Box sx={{ 
         flexGrow: 1, 
         overflowY: 'auto', 
@@ -191,9 +194,11 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
         />
       </Box>
       
-      <Divider />
       
-      {/* Discount Toggle Section */}
+      {cartItems.length > 0 && (
+        <>
+        
+        <Divider />
       <Box sx={{ p: 1.5, backgroundColor: '#fff' }}>
         <Button
           fullWidth
@@ -232,6 +237,8 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }: CartProps) => {
           />
         </Box>
       </Collapse>
+        </>
+      )}
 
       <CartButton
         cartItems={cartItems}

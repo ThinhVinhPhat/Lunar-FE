@@ -5,6 +5,7 @@ import { SnackbarProvider } from "notistack";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { QueryProvider } from "./lib/providers/query-provider.tsx";
+import { NuqsAdapter } from 'nuqs/adapters/react'
 
 const theme = createTheme({
   palette: {
@@ -27,7 +28,9 @@ const AppWrapper = () => {
       <QueryProvider>
         <ContextProvider>
           <SnackbarProvider>
-            <RouterProvider router={router} />
+            <NuqsAdapter>
+              <RouterProvider router={router} />
+            </NuqsAdapter>
           </SnackbarProvider>
         </ContextProvider>
       </QueryProvider>

@@ -1,6 +1,6 @@
 "use server";
 
-import axios, { AxiosRequestHeaders } from "axios";
+import axios from "axios";
 import Cookies from "js-cookie";
 import { API_BASE_URL, API_VERSION } from "../config/api.config";
 
@@ -9,19 +9,26 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(
-  function (config) {
+  (config) => {
     const accessToken = Cookies.get("accessToken");
+
+    // Với Axios v1+, headers là AxiosHeaders, nên dùng set:
     if (accessToken) {
-      config.headers = {
-        Authorization: `Bearer ${accessToken}`,
-      } as AxiosRequestHeaders;
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
     }
+
+    // Thêm API key
+    const apiKey = import.meta.env.VITE_PUBLIC_API_KEY;
+    if (apiKey) {
+      config.headers.set("x-api-key", apiKey);
+    }
+
     return config;
   },
-  function (error) {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
+
+
 
 instance.interceptors.response.use(
   (response) => response,
@@ -50,7 +57,10 @@ instance.interceptors.response.use(
         });
 
         // Cập nhật header và gửi lại request cũ
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers = {
+          ...(originalRequest.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        };
         return instance(originalRequest);
       } catch (refreshError) {
         // Không thể refresh -> logout

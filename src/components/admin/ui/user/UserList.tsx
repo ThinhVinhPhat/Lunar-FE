@@ -19,7 +19,7 @@ export default function UserList() {
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="text-xs text-gray-500">
             {userList
-              .filter((u: UserType) => u.id !== user?.id && u.isOnline)
+              ?.filter((u: UserType) => u.id !== user?.id && u.isOnline)
               .length.toString() + " "}
             Online
           </span>

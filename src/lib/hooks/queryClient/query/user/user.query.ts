@@ -6,6 +6,7 @@ import {
   UserService,
 } from "@/lib/api/service/user.service";
 import Cookies from "js-cookie";
+import { UserType } from "@/shared/types/user";
 
 export const useGetUser = () => {
   const response = useQuery({
@@ -17,7 +18,7 @@ export const useGetUser = () => {
 
   return {
     ...response,
-    data: response.data?.data || null,
+    data: response.data?.data as UserType | null,
   };
 };
 
@@ -30,7 +31,7 @@ export const useGetUserById = (id: string) => {
 
   return {
     ...response,
-    data: response.data?.data || null,
+    data: response.data?.data as UserType | null,
   };
 };
 
@@ -44,7 +45,7 @@ export const useFindUser = (data: FindUserParams) => {
 
   return {
     ...response,
-    data: response.data?.data || [],
+    data: response.data?.data as UserType[] | [],
     total: response.data?.meta.total || 0,
   };
 };

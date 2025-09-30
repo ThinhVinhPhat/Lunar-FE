@@ -19,19 +19,34 @@ export interface UpdateCategoryDetailInterface extends CreateCategoryDetailInter
 }
 
 export const getCategoriesDetail = async () => {
-  const response = await instance.get(API_URL.CATEGORIES.GET_DETAIL);
+  const response = await instance.get(API_URL.CATEGORIES.GET_DETAIL, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 export const addCategory = async (data: CreateCategoryInterface) => {
   const response = await instance.post(API_URL.CATEGORIES.CREATE, {
     name: data.name,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const deleteCategory = async (id: string) => {
-  const response = await instance.delete(API_URL.CATEGORIES.DELETE(id));
+  const response = await instance.delete(API_URL.CATEGORIES.DELETE(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -41,20 +56,37 @@ export const getCategories = async (
   name: string
 ) => {
   const response = await instance.get(
-    API_URL.CATEGORIES.LIST(name, page, limit)
+    API_URL.CATEGORIES.LIST(name, page, limit),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
 
 export const getCategoriesDetailByCategoryName = async (name: string) => {
   const response = await instance.get(
-    API_URL.CATEGORIES.GET_DETAIL_BY_NAME(name)
+    API_URL.CATEGORIES.GET_DETAIL_BY_NAME(name),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
 
 export const deleteCategoryDetail = async (id: string) => {
-  const response = await instance.delete(API_URL.CATEGORIES.DELETE_DETAIL(id));
+  const response = await instance.delete(API_URL.CATEGORIES.DELETE_DETAIL(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -74,7 +106,9 @@ export const addCategoryDetail = async (categoryId: string, data: CreateCategory
     formData,
     {
       headers: {
+        ...(instance.defaults.headers.common || {}),
         "Content-Type": "multipart/form-data",
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
       },
     }
   );
@@ -94,7 +128,13 @@ export const updateCategoryDetail = async (categoryId: string, data: UpdateCateg
   });
   const response = await instance.patch(
     API_URL.CATEGORIES.UPDATE_DETAIL(categoryId),
-    formData
+    formData,
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };

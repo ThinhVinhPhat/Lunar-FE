@@ -29,19 +29,35 @@ export const getAllDiscounts = async (
   name: string
 ) => {
   const response = await instance.get(
-    API_URL.DISCOUNTS.LIST(discountType, name, page, limit)
+    API_URL.DISCOUNTS.LIST(discountType, name, page, limit),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
 
 export const getDiscountsByUser = async () => {
-  const response = await instance.get(API_URL.DISCOUNTS.GET_BY_USER);
+  const response = await instance.get(API_URL.DISCOUNTS.GET_BY_USER, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 // Lấy một discount theo ID
 export const getDiscountById = async (id: string) => {
-  const response = await instance.get(API_URL.DISCOUNTS.GET_BY_ID(id));
+  const response = await instance.get(API_URL.DISCOUNTS.GET_BY_ID(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -59,13 +75,25 @@ export const createDiscount = async (data: CreateDiscountInterface) => {
     expireAt: data.expireAt,
     productIds: data.productIds,
     userIds: data.userIds,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const applyDiscount = async (discountId: string, orderId: string) => {
   const response = await instance.patch(
-    API_URL.DISCOUNTS.APPLY_FOR_ORDER(discountId, orderId)
+    API_URL.DISCOUNTS.APPLY_FOR_ORDER(discountId, orderId),
+    {},
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
@@ -73,6 +101,11 @@ export const applyDiscount = async (discountId: string, orderId: string) => {
 export const applyDiscountForUser = async (slug: string) => {
   const response = await instance.patch(API_URL.DISCOUNTS.APPLY_FOR_USER, {
     slug,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -92,12 +125,22 @@ export const updateDiscount = async (id: string, data: UpdateDiscountInterface) 
     productIds: data.productIds,
     userIds: data.userIds,
     isActive: data.isActive,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const deleteDiscount = async (id: string) => {
-  const response = await instance.delete(API_URL.DISCOUNTS.DELETE(id));
+  const response = await instance.delete(API_URL.DISCOUNTS.DELETE(id), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -106,7 +149,13 @@ export const deleteDiscountFromOrder = async (
   orderId: string
 ) => {
   const response = await instance.delete(
-    API_URL.DISCOUNTS.DELETE_FROM_ORDER(discountId, orderId)
+    API_URL.DISCOUNTS.DELETE_FROM_ORDER(discountId, orderId),
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };

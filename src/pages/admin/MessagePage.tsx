@@ -113,7 +113,16 @@ const MessagePage = () => {
               {user?.avatar ? (
                 <div className="p-0.5 bg-gradient-to-br from-[#C8A846] to-amber-600 rounded-full shadow-lg">
                   <img
-                    src={user?.avatar}
+                    src={(() => {
+                      if (Array.isArray(user?.avatar) && user.avatar.length > 0) {
+                        const firstAvatar = user.avatar[0];
+                        return firstAvatar instanceof File ? URL.createObjectURL(firstAvatar) : firstAvatar || undefined;
+                      }
+                      if (user?.avatar && user.avatar instanceof File) {
+                        return URL.createObjectURL(user.avatar);
+                      }
+                      return typeof user?.avatar === 'string' ? user.avatar : undefined;
+                    })()}
                     alt={user?.firstName || ""}
                     className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-inner"
                   />
@@ -187,7 +196,7 @@ const MessagePage = () => {
               message={msg}
               isOwn={msg?.sender?.id === currentUser?.id}
               sender={currentUser}
-              receiver={user}
+              receiver={user || undefined}
             />
           ))
         )}

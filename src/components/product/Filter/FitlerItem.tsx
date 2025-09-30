@@ -13,8 +13,8 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 type FilterItemProps = {
   name: string;
   activeFilters: Record<string, string[]>;
-  handleFilterChange: (filter: "categories" | "colors" | "materials" | "shapes" | "priceRange", value: string) => void;
-  toggleSection: (section: "categories" | "colors" | "materials" | "shapes" | "price") => void;
+  handleFilterChange: (filter: "categories" | "colors" | "collections" | "shapes" | "priceRange", value: string) => void;
+  toggleSection: (section: "categories" | "colors" | "collections" | "shapes" | "price") => void;
   openSections: Record<string, boolean>;
   filterOptions: Record<string, string[]>;
 };
@@ -33,7 +33,7 @@ function FilterItem({
     <Box sx={{ borderBottom: 1, borderColor: "divider", py: 2 }}>
       <Button
         fullWidth
-        onClick={() => toggleSection(name as "categories" | "colors" | "materials" | "shapes" | "price")}
+        onClick={() => toggleSection(name as "categories" | "colors" | "collections" | "shapes" | "price")}
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -57,7 +57,7 @@ function FilterItem({
               control={
                 <Checkbox
                   checked={activeFilters[name]?.includes(category) || false}
-                  onChange={() => handleFilterChange(name as "categories" | "colors" | "materials" | "shapes" | "priceRange", category)}
+                  onChange={() => handleFilterChange(name as "categories" | "colors" | "collections" | "shapes" | "priceRange", category)}
                   sx={{ color: "#C8A846", "&.Mui-checked": { color: "#C8A846" } }}
                 />
               }

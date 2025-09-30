@@ -5,9 +5,11 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
 import { useProductBySuggestion } from "@/lib/hooks/queryClient/query/product/product.query";
 import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
-import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
-import ProductSearch from "./ProductSearch";
+import ProductSearch, { SearchResultItem } from "./ProductSearch";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "@/shared/components/Pagination";
+import usePagination from "@/shared/hooks/usePagination";
+import { useProductVariants } from "@/lib/hooks/queryClient/query/product-variant/product-variant.query";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -23,14 +25,34 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debouncedValue = useDebounce(searchQuery, 500);
-  const { data: productSuggestion, isLoading: isLoadingSuggestion } =
-    useProductBySuggestion(debouncedValue);
-  const { data: allProducts, isLoading: isLoadingAllProducts } = useProducts({
-    limit: 3,
+  
+  const pagination = usePagination({
+    initialPage: 1,
+    initialLimit: 6,
+    maxLimit: 50
+  });
+
+  const { data: productSuggestionResponse, isLoading: isLoadingSuggestion, products: productSuggestions } =
+    useProductBySuggestion(debouncedValue, pagination.page, pagination.limit);
+  const { data: allProductVariants, isLoading: isLoadingAllProducts, total } = useProductVariants({
+    limit: pagination.limit,
+    page: pagination.page,
   });
   const navigate = useNavigate();
 
-  // Focus the search input when the modal is opened
+  // Combine search results: Products and ProductVariants
+  const combinedSearchResults: SearchResultItem[] = searchQuery 
+    ? [...(productSuggestions || []), ...(allProductVariants || [])]
+    : [...(allProductVariants || [])];
+
+  const totalResults = searchQuery 
+    ? (productSuggestionResponse?.total || 0) + (total || 0)
+    : (total || 0);
+
+  useEffect(() => {
+    pagination.setTotalItems(totalResults);
+  }, [totalResults, pagination]);
+
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
       setTimeout(() => {
@@ -39,7 +61,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Close the modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -58,7 +79,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
-  // Prevent body scrolling when the modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -71,11 +91,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Handle autocomplete completion
   useEffect(() => {
-    if (productSuggestion?.data?.length > 0 && debouncedValue.trim()) {
-      const suggestions = productSuggestion.data.filter((product: Product) =>
-        product.name.toLowerCase().startsWith(debouncedValue.toLowerCase())
+    if (productSuggestions?.length > 0 && debouncedValue.trim()) {
+      const suggestions = productSuggestions.filter((product: Product) =>
+        product?.name?.toLowerCase().startsWith(debouncedValue?.toLowerCase())
       );
 
       if (suggestions.length > 0 && debouncedValue.length > 0) {
@@ -90,9 +109,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       setCompletion("");
       setShowCompletion(false);
     }
-  }, [productSuggestion, debouncedValue]);
+  }, [productSuggestions, debouncedValue]);
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Tab" && showCompletion) {
       e.preventDefault();
@@ -104,36 +122,36 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       }
     }
 
-    if (productSuggestion?.data?.length) {
+    if (productSuggestions?.length) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) =>
-          prev < productSuggestion?.data?.length - 1 ? prev + 1 : prev
+          prev < productSuggestions?.length - 1 ? prev + 1 : prev
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) => (prev > -1 ? prev - 1 : -1));
       } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
         e.preventDefault();
-        const selectedProduct = productSuggestion.data[selectedSuggestionIndex];
+        const selectedProduct = productSuggestions[selectedSuggestionIndex];
         navigate(`/product/${selectedProduct.slug}`);
         onClose();
       }
     }
   };
 
-  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setSelectedSuggestionIndex(-1);
+    pagination.goToFirstPage();
   };
 
-  // Clear the search input
   const clearSearch = () => {
     setSearchQuery("");
     setCompletion("");
     setShowCompletion(false);
     setSelectedSuggestionIndex(-1);
+    pagination.goToFirstPage();
     searchInputRef.current?.focus();
   };
 
@@ -219,22 +237,34 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 searchQuery ? isLoadingSuggestion : isLoadingAllProducts
               }
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                {!searchQuery && allProducts?.data?.length > 0 ? (
-                  <ProductSearch
-                    products={allProducts.data}
-                    onClose={onClose}
-                  />
-                ) : searchQuery && productSuggestion?.data?.length > 0 ? (
-                  <ProductSearch
-                    products={productSuggestion.data}
-                    onClose={onClose}
-                  />
-                ) : (
-                  <div className="col-span-full text-center text-gray-500 py-8">
-                    {searchQuery && !isLoadingSuggestion
-                      ? t("search.no_results")
-                      : t("search.no_products")}
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {combinedSearchResults.length > 0 ? (
+                    <ProductSearch
+                      products={combinedSearchResults}
+                      onClose={onClose}
+                    />
+                  ) : (
+                    <div className="col-span-full text-center text-gray-500 py-8">
+                      {searchQuery && !isLoadingSuggestion
+                        ? t("search.no_results")
+                        : t("search.no_products")}
+                    </div>
+                  )}
+                </div>
+
+                {totalResults > 0 && (
+                  <div className="mt-6">
+                    <Pagination
+                      productCount={totalResults}
+                      currentPage={pagination.page}
+                      onSetPage={pagination.handlePageChange}
+                      limit={pagination.limit}
+                      onLimitChange={pagination.handleLimitChange}
+                      variant="compact"
+                      showItemsPerPage={true}
+                      showPageInfo={true}
+                    />
                   </div>
                 )}
               </div>

@@ -12,9 +12,9 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 type FormProfileProps = {
-  user: UserType;
+  user: UserType | null;
   onSubmit: (data: ProfileFormType) => void;
-  handleSubmit: (onSubmit: (data: ProfileFormType) => void) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: any;
   register: UseFormRegister<ProfileFormType>;
   setValue: UseFormSetValue<ProfileFormType>;
   formState: { isDirty: boolean; isSubmitting: boolean };

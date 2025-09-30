@@ -1,22 +1,25 @@
 import { useState } from "react";
-import { Product } from "@/shared/types/product";
 import Filter from "./Filter";
 import { useFilter } from "@/shared/hooks/useFilter";
 import {
   Drawer,
 } from "@mui/material";
+import { Product } from "@/shared/types/product";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
+
+type SearchResultItem = Product | ProductVariantResponse;
 
 type FilterDrawerProps = {
-  products: Product[];
+  products: SearchResultItem[] | null;
   isLoading?: boolean;
   children: (props: {
-    filteredProducts: Product[];
+    filteredProducts: SearchResultItem[] | null;
     activeFilterCount: number;
     openFilter: () => void;
   }) => React.ReactNode;
 };
 
-const FilterDrawer = ({ products, isLoading, children }: FilterDrawerProps) => {
+const FilterDrawer = ({ products, isLoading, children }: FilterDrawerProps): React.JSX.Element => {
   const [filterOpen, setFilterOpen] = useState(false);
   const {
     openSections,
@@ -24,10 +27,38 @@ const FilterDrawer = ({ products, isLoading, children }: FilterDrawerProps) => {
     toggleSection,
     handleFilterChange,
     clearFilters,
-    applyFilters,
+    applyProductFilters,
   } = useFilter();
 
-  const filteredProducts = applyFilters(products || []);
+  const isProduct = (item: SearchResultItem): item is Product => {
+    return 'variants' in item;
+  };
+
+  const isProductVariant = (item: SearchResultItem): item is ProductVariantResponse => {
+    return 'product' in item;
+  };
+
+  const applyUnifiedFilters = (items: SearchResultItem[]) => {
+    const products: Product[] = [];
+    
+    items.forEach(item => {
+      if (isProduct(item)) {
+        products.push(item);
+      } else if (isProductVariant(item)) {
+        if (item.product) {
+          const existingProduct = products.find(p => p.id === item.product.id);
+          if (!existingProduct) {
+            products.push(item.product);
+          }
+        }
+      }
+    });
+    
+    const filteredProducts = applyProductFilters(products);
+    return filteredProducts as SearchResultItem[];
+  };
+  
+  const filteredProducts = applyUnifiedFilters(products || []);
   const activeFilterCount = Object.values(activeFilters).flat().length;
 
   const openFilter = () => setFilterOpen(true);
@@ -50,16 +81,15 @@ const FilterDrawer = ({ products, isLoading, children }: FilterDrawerProps) => {
       >
         <Filter
           isLoading={isLoading}
-          products={products}
-          type="product"
           onClose={closeFilter}
           openSections={openSections}
           activeFilters={activeFilters}
           toggleSection={toggleSection}
           handleFilterChange={handleFilterChange}
           clearFilters={clearFilters}
-          applyFilters={applyFilters}
+          applyFilters={applyUnifiedFilters}
         />
+        
       </Drawer>
     </>
   );

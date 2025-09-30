@@ -1,45 +1,30 @@
 import { CategoryDetail } from "./category";
+import { ProductVariantResponse } from "./product-varitant";
 
 export interface Product {
   id: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   name: string;
   slug: string;
-  price: string;
-  discount_percentage: number;
   description: string;
   status: boolean;
-  stock: number;
-  views: number;
-  video: string;
-  images: string[];
+  video: string | null;
   isFreeShip: boolean;
-  color: string;
-  allColors: {
-    id: string;
-    slug: string;
-    color: string;
-    image: string;
-  }[];
   isNew: boolean;
+  images: string[];
   isFeatured: boolean;
-  isFavorite: boolean;
-  productCategories: {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    quantity: number;
-    categoryDetails: {
-      id: string;
-      createdAt: string;
-      updatedAt: string;
-      name: string;
-      description: string;
-      image: string;
-      status: boolean;
-    };
-  }[];
+  categories?: string;
+  isFavorite?: boolean;
+  variants?: ProductVariantResponse[];
+}
+
+export interface ProductCategory {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  quantity: number;
+  categoryDetail: CategoryDetail;
 }
 
 export interface ProductType {
@@ -56,21 +41,14 @@ export interface ProductsType {
 
 export interface FavoriteProductInterface {
   product: Product;
-  createdAt: string;
-  updatedAt: string;
+  productVariant?: ProductVariantResponse;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProductColorInterface {
-  id: string,
-  slug: string,
-  color: string,
-  image: string,
-}
-
-export type ProductCategory = {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  quantity: number;
-  categoryDetails: CategoryDetail;
-};
+  slug: string;
+  color: string;
+  image: string;
+}

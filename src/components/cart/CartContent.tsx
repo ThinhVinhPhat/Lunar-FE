@@ -49,8 +49,8 @@ function CartContent({
         <li key={item.id} className="py-4 flex">
           <div className="h-24 w-[150px] flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
             <img
-              src={item?.product?.images?.[0]}
-              alt={item?.product?.name || "Product image"}
+              src={item?.variant?.images?.[0]}
+              alt={item?.variant?.color || "Product image"}
               className="h-full w-[200px] object-cover object-center rounded-md"
             />
           </div>
@@ -68,8 +68,8 @@ function CartContent({
               <p className="ml-4">
                 $
                 {Number(
-                  (Number(item?.product?.price) || 0) *
-                    (1 - (Number(item?.product?.discount_percentage) || 0) / 100) *
+                  (Number(item?.variant?.price) || 0) *
+                    (1 - (Number(item?.variant?.discount_percentage) || 0) / 100) *
                     item.quantity
                 ).toFixed(2)}
               </p>
@@ -79,7 +79,7 @@ function CartContent({
               <div className="flex items-center border border-gray-300 rounded">
                 <button
                   onClick={() =>
-                    updateQuantity(item.id, item.product?.id || '', item.quantity - 1)
+                    updateQuantity(item.id, item?.variant?.id || '', item.quantity - 1)
                   }
                   className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 >
@@ -88,7 +88,7 @@ function CartContent({
                 <span className="px-3 py-1">{item.quantity}</span>
                 <button
                   onClick={() =>
-                    updateQuantity(item.id, item.product?.id || '', item.quantity + 1)
+                    updateQuantity(item.id, item?.variant?.id || '', item.quantity + 1)
                   }
                   className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 >

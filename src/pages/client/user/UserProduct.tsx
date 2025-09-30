@@ -85,9 +85,9 @@ function UserProduct() {
                             alt={item.product.name}
                             className="rounded-lg object-cover group-hover:scale-105 transition-transform duration-300"
                           />
-                          {item.product.discount_percentage > 0 && (
+                          {(item.productVariant?.discount_percentage || item.product.variants?.[0]?.discount_percentage) && (item.productVariant?.discount_percentage || item.product.variants?.[0]?.discount_percentage || 0) > 0 && (
                             <Chip
-                              label={`${item.product.discount_percentage}%`}
+                              label={`${item.productVariant?.discount_percentage || item.product.variants?.[0]?.discount_percentage}%`}
                               color="error"
                               size="small"
                               sx={{ position: 'absolute', top: -8, right: -8, fontSize: '0.7rem', height: 20 }}
@@ -99,24 +99,30 @@ function UserProduct() {
                             {item.product.name}
                           </Typography>
                           <Box className="flex items-center gap-1 mb-1">
-                            {item.product.discount_percentage > 0 ? (
-                              <>
+                            {(() => {
+                              const variant = item.productVariant || item.product.variants?.[0];
+                              const discount = variant?.discount_percentage || 0;
+                              const price = variant?.price || 0;
+                              
+                              return discount > 0 ? (
+                                <>
+                                  <Typography variant="body2" className="text-[#C8A846] font-bold">
+                                    $
+                                    {(
+                                      Number(price) *
+                                      (1 - discount / 100)
+                                    ).toFixed(2)}
+                                  </Typography>
+                                  <Typography variant="caption" className="text-gray-400 line-through">
+                                    ${price}
+                                  </Typography>
+                                </>
+                              ) : (
                                 <Typography variant="body2" className="text-[#C8A846] font-bold">
-                                  $
-                                  {(
-                                    Number(item.product.price) *
-                                    (1 - item.product.discount_percentage / 100)
-                                  ).toFixed(2)}
+                                  ${price}
                                 </Typography>
-                                <Typography variant="caption" className="text-gray-400 line-through">
-                                  ${item.product.price}
-                                </Typography>
-                              </>
-                            ) : (
-                              <Typography variant="body2" className="text-[#C8A846] font-bold">
-                                ${item.product.price}
-                              </Typography>
-                            )}
+                              );
+                            })()}
                           </Box>
                           <Box className="flex justify-between items-center">
                             <Typography variant="caption" color="text.secondary">

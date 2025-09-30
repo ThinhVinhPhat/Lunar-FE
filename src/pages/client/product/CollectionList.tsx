@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import FilterDrawer from "@/components/product/Filter/FilterDrawer";
-import { useParams } from "react-router-dom";
-import { useProducts } from "@/lib/hooks/queryClient/query/product/product.query";
+import { useParams, useNavigate } from "react-router-dom";
 import { filterCategories } from "@/database/filter";
 import IsLoadingWrapper from "@/shared/components/wrapper/isLoading";
 import { Button } from "@/shared/components/Button";
 import ProductItem from "@/components/product/ProductItem";
 import Text from "@/shared/components/wrapper/Text";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
+import { useFavoriteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
+import { enqueueSnackbar } from "notistack";
 
 import {
   Box,
@@ -15,17 +17,32 @@ import {
   TextField,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { useProductVariants } from "@/lib/hooks/queryClient/query/product-variant/product-variant.query";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
+import { SearchResultItem } from "@/shared/components/Search/ProductSearch";
+
+const isProductVariant = (item: SearchResultItem ): item is ProductVariantResponse => {
+  return item && typeof item === 'object' && 'product' in item && 'color' in item;
+};
 
 const CollectionList = () => {
   const { type } = useParams();
+  const navigate = useNavigate();
   const [initialCategory, setInitialCategory] = useState<string[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { data: user } = useGetUser();
+  const { mutateAsync: favoriteProduct } = useFavoriteProduct();
 
-  const { products, isLoading } = useProducts({ category: initialCategory });
+  const { data: productVariants, isLoading, refetch } = useProductVariants({ category: initialCategory, page: 1, limit: 10 });
 
-  // Mock handleFavoriteProduct function - replace with actual implementation
-  const handleFavoriteProduct = (productId: string) => {
-    console.log('Toggle favorite for product:', productId);
+  const handleFavoriteProduct = async (productId: string) => {
+    if (user?.id) {
+      await favoriteProduct(productId);
+      refetch();
+    } else {
+      enqueueSnackbar("Please login to favorite product", { variant: "error" });
+      navigate("/login");
+    }
   };
 
   useEffect(() => {
@@ -60,7 +77,7 @@ const CollectionList = () => {
       </Box>
       <IsLoadingWrapper isLoading={isLoading}>
         <Container maxWidth="lg" sx={{ px: 2, py: 4 }}>
-          <FilterDrawer products={products || []} isLoading={isLoading}>
+          <FilterDrawer products={productVariants || []} isLoading={isLoading}>
             {({ filteredProducts, activeFilterCount, openFilter }) => (
               <>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
@@ -84,7 +101,7 @@ const CollectionList = () => {
                   </Button>
                 </Box>
 
-                {filteredProducts.length === 0 ? (
+                {filteredProducts?.length === 0 ? (
                   <Box sx={{ textAlign: "center", py: 8 }}>
                     <Typography variant="h6" color="text.secondary" mb={2}>
                       <Text id="product_list.no_products_found_matching_your_criteria" />
@@ -113,16 +130,21 @@ const CollectionList = () => {
                       mb: 6
                     }}
                   >
-                    {filteredProducts.map((product) => (
-                      <Box key={product.id}>
-                        <ProductItem
-                          product={product}
-                          hoveredId={hoveredId}
-                          setHoveredId={setHoveredId}
-                          handleFavoriteProduct={handleFavoriteProduct}
-                        />
-                      </Box>
-                    ))}
+                    {filteredProducts?.map((item) => {
+                      const product = isProductVariant(item) ? item.product : item;
+                      const itemId = isProductVariant(item) ? item.id : item.id;
+                      
+                      return (
+                        <Box key={itemId}>
+                          <ProductItem
+                            product={product}
+                            hoveredId={hoveredId}
+                            setHoveredId={setHoveredId}
+                            handleFavoriteProduct={handleFavoriteProduct}
+                          />
+                        </Box>
+                      );
+                    })}
                   </Box>
                 )}
               </>

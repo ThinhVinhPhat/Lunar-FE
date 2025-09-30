@@ -1,9 +1,14 @@
-  import { API_URL } from "@/lib/config/api.config";
+import { API_URL } from "@/lib/config/api.config";
 import instance from "..";
 import { CreateOrderProps } from "@/shared/types/order";
 
 export const getOrders = async (page: number, limit: number) => {
-  const response = await instance.get(API_URL.ORDERS.LIST(page, limit));
+  const response = await instance.get(API_URL.ORDERS.LIST(page, limit), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 export const createOrder = async (order: CreateOrderProps) => {
@@ -12,31 +17,55 @@ export const createOrder = async (order: CreateOrderProps) => {
     shipPhone: order.shipPhone,
     shippingFee: order.shippingFee,
     note: order.note,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const getOrderById = async (id: string | undefined) => {
-  const response = await instance.get(API_URL.ORDERS.DETAIL(id as string));
+  const response = await instance.get(API_URL.ORDERS.DETAIL(id as string), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
 export const createOrderDetail = async (orderDetail: {
-  productId: string;
+  productId?: string;
+  productVariantId?: string;
   orderId: string;
   quantity: number;
 }) => {
+  const productIdToUse = orderDetail.productVariantId || orderDetail.productId || "";
   const response = await instance.post(
-    API_URL.ORDER_DETAILS.CREATE(orderDetail.productId, orderDetail.orderId),
+    API_URL.ORDER_DETAILS.CREATE(productIdToUse, orderDetail.orderId),
     {
       quantity: orderDetail.quantity,
+      productVariantId: orderDetail.productVariantId,
+    },
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
     }
   );
   return response.data;
 };
 
 export const deleteOrderDetail = async (orderId: string) => {
-  const response = await instance.delete(API_URL.ORDER_DETAILS.DELETE(orderId));
+  const response = await instance.delete(API_URL.ORDER_DETAILS.DELETE(orderId), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -47,7 +76,12 @@ export const getOrdersByStatus = async (
 ) => {
   const response = await instance.get(
     API_URL.ORDERS.LIST_BY_STATUS(status, page, limit),
-    {}
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
+    }
   );
   return response.data;
 };
@@ -55,6 +89,11 @@ export const getOrdersByStatus = async (
 export const cancelOrder = async (orderId: string | undefined) => {
   const response = await instance.patch(API_URL.ORDERS.CANCEL(orderId as string), {
     status: "Rejected",
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -69,6 +108,12 @@ export const updateOrder = async (
     API_URL.ORDER_DETAILS.UPDATE(orderDetailId, orderId, productId),
     {
       quantity: quantity,
+    },
+    {
+      headers: {
+        ...(instance.defaults.headers.common || {}),
+        "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+      },
     }
   );
   return response.data;
@@ -82,12 +127,22 @@ export const updateOrderStatus = async (
   const response = await instance.patch(API_URL.ORDERS.UPDATE_STATUS(orderId), {
     status: status,
     description: description,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
 
 export const deleteOrder = async (orderId: string) => {
-  const response = await instance.delete(API_URL.ORDERS.DELETE(orderId));
+  const response = await instance.delete(API_URL.ORDERS.DELETE(orderId), {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
+  });
   return response.data;
 };
 
@@ -103,6 +158,11 @@ export const createOrderShipment = async (
     estimateDate: data.estimateDate,
     deliveredDate: data.deliveredDate,
     shippingCarrier: data.shippingCarrier,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };
@@ -110,6 +170,11 @@ export const createOrderShipment = async (
 export const updateOrderAddress = async (orderId: string, address: string) => {
   const response = await instance.patch(API_URL.ORDERS.UPDATE_ADDRESS(orderId), {
     shippingAddress: address,
+  }, {
+    headers: {
+      ...(instance.defaults.headers.common || {}),
+      "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+    },
   });
   return response.data;
 };

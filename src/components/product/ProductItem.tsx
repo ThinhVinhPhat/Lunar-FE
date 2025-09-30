@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Product } from "@/shared/types/product";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
+import { useFavoriteProductVariant } from "@/lib/hooks/queryClient/mutator/product-variant/product-variant.mutator";
+import { useGetUser } from "@/lib/hooks/queryClient/query/user/user.query";
+import { enqueueSnackbar } from "notistack";
 
 import {
   Card,
@@ -31,21 +35,44 @@ function ProductItem({
 }: ProductItemProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [activeVariant, setActiveVariant] = useState(product);
+  const { data: user } = useGetUser();
+  const { mutateAsync: favoriteProductVariant } = useFavoriteProductVariant();
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariantResponse | null>(null);
 
-  const handleVariantClick = (variantId: string) => {
-    const selected = product?.allColors?.find((v) => v.id === variantId);
-
-    if (selected) {
-      setActiveVariant({
-        ...product,
-        id: selected.id,
-        slug: selected.slug,
-        images: selected.image ? [selected.image] : product.images,
-        color: selected.color,
-      });
+  useEffect(() => {
+    if (product?.variants && product?.variants?.length > 0) {
+      setSelectedVariant(product?.variants?.[0]);
     }
-  };
+  }, [product]);
+
+  const handleVariantClick = useCallback((variant: ProductVariantResponse) => {
+    setSelectedVariant(variant);
+  }, []);
+
+  const handleFavoriteClick = useCallback(async () => {
+    if (!user?.id) {
+      enqueueSnackbar("Please login to favorite product", { variant: "error" });
+      navigate("/login");
+      return;
+    }
+    
+    if (selectedVariant) {
+      await favoriteProductVariant(selectedVariant.id);
+    } else {
+      handleFavoriteProduct(product.id);
+    }
+  }, [user?.id, selectedVariant, favoriteProductVariant, handleFavoriteProduct, product.id, navigate]);
+
+  const isFavorited = selectedVariant 
+    ? selectedVariant.isFavorite
+    : product.isFavorite;
+
+  
+
+  const displayImages = selectedVariant?.images || product.images || [];
+  const displayPrice = selectedVariant?.price || 0;
+  const displayDiscount = selectedVariant?.discount_percentage || 0;
+  const displaySlug = selectedVariant?.slug || product.slug;
 
   return (
     <Card
@@ -56,18 +83,20 @@ function ProductItem({
         boxShadow: 1,
         "&:hover": { boxShadow: 6 },
       }}
-      onMouseEnter={() => setHoveredId(product.id)}
-      onMouseLeave={() => setHoveredId(null)}
-    >
-      <Box sx={{ position: "relative", aspectRatio: "1080 / 614", overflow: "hidden" }}>
+      >
+      <Box 
+      sx={{ position: "relative", aspectRatio: "1080 / 614", overflow: "hidden" }}
+        onMouseEnter={() => setHoveredId(product.id)}
+        onMouseLeave={() => setHoveredId(null)}
+      >
         <CardMedia
           component="img"
           image={
-            hoveredId === activeVariant.id && activeVariant.images[1]
-              ? activeVariant.images[1]
-              : activeVariant.images[0]
+            hoveredId === product.id && displayImages[1]
+              ? displayImages[1]
+              : displayImages[0]
           }
-          alt={activeVariant.name}
+          alt={product.name}
           sx={{
             width: "100%",
             height: "100%",
@@ -86,9 +115,9 @@ function ProductItem({
           />
         )}
 
-        {product.discount_percentage > 0 && (
+        {displayDiscount > 0 && (
           <Chip
-            label={`${t("product_item.save")} ${product.discount_percentage}%`}
+            label={`${t("product_item.save")} ${displayDiscount}%`}
             color="error"
             size="small"
             sx={{ position: "absolute", top: 16, right: 16 }}
@@ -96,7 +125,7 @@ function ProductItem({
         )}
 
         <IconButton
-          onClick={() => handleFavoriteProduct(product.id)}
+          onClick={handleFavoriteClick}
           sx={{
             position: "absolute",
             bottom: 16,
@@ -113,12 +142,12 @@ function ProductItem({
             transition: "all 0.3s ease-in-out"
           }}
           aria-label={
-            product.isFavorite
+            isFavorited
               ? t("product_item.remove_from_favorites")
               : t("product_item.add_to_favorites")
           }
         >
-          {product.isFavorite ? (
+          {isFavorited ? (
             <FavoriteIcon sx={{ color: "#C8A846" }} />
           ) : (
             <FavoriteBorderIcon sx={{ color: "#C8A846" }} />
@@ -148,7 +177,7 @@ function ProductItem({
               variant="overlay-primary"
               size="medium"
               fullWidth
-              onClick={() => navigate(`/product/${activeVariant.slug}`)}
+              onClick={() => navigate(`/product/${displaySlug}`)}
             >
               {t("product_item.quick_shop")}
             </Button>
@@ -158,9 +187,9 @@ function ProductItem({
               variant="overlay-secondary"
               size="medium"
               fullWidth
-              onClick={() => handleFavoriteProduct(activeVariant.id)}
+              onClick={handleFavoriteClick}
             >
-              {product.isFavorite
+              {isFavorited
                 ? t("product_item.remove_from_favorites")
                 : t("product_item.add_to_favorites")}
             </Button>
@@ -175,20 +204,36 @@ function ProductItem({
         borderTop: "1px solid rgba(200,168,70,0.1)"
       }}>
         <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 1 }}>
-          {product.allColors?.map((variant) => (
-            <IconButton
+          {product.variants?.map((variant) => (
+            <Box
               key={variant.id}
-              onClick={() => handleVariantClick(variant.id)}
+              onClick={() => handleVariantClick(variant)}
               sx={{
-                width: 24,
-                height: 24,
-                borderRadius: "50%",
-                border: activeVariant.id === variant.id ? "2px solid black" : "1px solid #ccc",
-                bgcolor: variant.color || "#ccc",
-                "&:hover": { transform: "scale(1.1)" },
-                transition: "transform 0.2s ease-in-out",
+                border: selectedVariant?.id === variant.id ? "2px solid #C8A846" : "1px solid #e0e0e0",
+                borderRadius: "6px",
+                width: "40px",
+                height: "40px",
+                p: "2px",
+                cursor: "pointer",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  border: "2px solid #C8A846",
+                  transform: "scale(1.05)"
+                }
               }}
-            />
+            >
+              <Box
+                component="img"
+                src={variant.images?.[0] || product.images?.[0]}
+                alt={`${product.name} - ${variant.color}`}
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "4px"
+                }}
+              />
+            </Box>
           ))}
         </Box>
         <Typography
@@ -201,9 +246,9 @@ function ProductItem({
             "&:hover": { color: "#C8A846" },
             transition: "color 0.3s ease-in-out",
             fontSize: {
-              xs: product.name.length > 20 ? '1rem' : product.name.length > 15 ? '1.1rem' : '1.2rem',
-              sm: product.name.length > 25 ? '1rem' : product.name.length > 20 ? '1.1rem' : '1.2rem',
-              md: product.name.length > 30 ? '1rem' : product.name.length > 25 ? '1.1rem' : '1.2rem'
+              xs: product?.name?.length > 20 ? '1rem' : product?.name?.length > 15 ? '1.1rem' : '1.2rem',
+              sm: product?.name?.length > 25 ? '1rem' : product?.name?.length > 20 ? '1.1rem' : '1.2rem',
+              md: product?.name?.length > 30 ? '1rem' : product?.name?.length > 25 ? '1.1rem' : '1.2rem'
             },
             lineHeight: 1.3,
             height: '2.6em',
@@ -214,7 +259,7 @@ function ProductItem({
             textOverflow: 'ellipsis',
             cursor: 'pointer'
           }}
-          onClick={() => navigate(`/product/${activeVariant.slug}`)}
+          onClick={() => navigate(`/product/${displaySlug}`)}
         >
           {product.name}
         </Typography>
@@ -229,20 +274,20 @@ function ProductItem({
           borderRadius: 2,
           background: "rgba(200,168,70,0.05)"
         }}>
-          {product.discount_percentage > 0 ? (
+          {displayDiscount > 0 ? (
             <>
               <Typography variant="body1" color="error" fontWeight="medium">
                 ${Math.round(
-                  Number(product.price) *
-                    (1 - product.discount_percentage / 100)
+                  Number(displayPrice) *
+                    (1 - displayDiscount / 100)
                 )}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ textDecoration: "line-through" }}>
-                ${product.price}
+                ${displayPrice}
               </Typography>
             </>
           ) : (
-            <Typography variant="body1" sx={{ color: "#C8A846", fontWeight: "bold", fontSize: "1.1rem" }}>${product.price}</Typography>
+            <Typography variant="body1" sx={{ color: "#C8A846", fontWeight: "bold", fontSize: "1.1rem" }}>${displayPrice}</Typography>
           )}
         </Box>
       </CardContent>

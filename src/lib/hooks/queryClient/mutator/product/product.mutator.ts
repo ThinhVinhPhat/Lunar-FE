@@ -3,12 +3,14 @@ import { addProduct, CreateProductParams, deleteProduct, favoriteProduct, update
 import { enqueueSnackbar } from "notistack";
 
 export const useAddProduct = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async (data: CreateProductParams) => await addProduct(data),
     onSuccess: () => {
       enqueueSnackbar("Product added successfully", {
         variant: "success",
       });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
     onError: () => {
       enqueueSnackbar("Failed to add product", {
@@ -24,12 +26,14 @@ export const useAddProduct = () => {
 
 
 export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async (data: UpdateProductParams) => await updateProduct(data),
     onSuccess: () => {
       enqueueSnackbar("Product updated successfully", {
         variant: "success",
       });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
     onError: () => {
       enqueueSnackbar("Failed to update product", {
@@ -45,12 +49,14 @@ export const useUpdateProduct = () => {
 
 
 export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (id: string | undefined) => deleteProduct(id),
     onSuccess: () => {
       enqueueSnackbar("Product deleted successfully", {
         variant: "success",
       });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
     },
     onError: () => {
       enqueueSnackbar("Failed to delete product", {

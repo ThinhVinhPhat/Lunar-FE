@@ -6,7 +6,8 @@ export const useOrderDetail = () => {
     mutationKey: ["order-detail"],
     mutationFn: (orderDetail: {
       orderId: string;
-      productId: string;
+      productId?: string;
+      productVariantId?: string;
       quantity: number;
     }) => createOrderDetail(orderDetail),
   });

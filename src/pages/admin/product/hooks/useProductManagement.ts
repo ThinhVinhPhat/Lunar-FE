@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { Product, ProductCategory } from "@/shared/types/product";
+import { ProductVariantResponse } from "@/shared/types/product-varitant";
 import { useProductAction } from "@/shared/hooks/useProductAction";
 import { useDeleteProduct } from "@/lib/hooks/queryClient/mutator/product/product.mutator";
+import { useDeleteProductVariant } from "@/lib/hooks/queryClient/mutator/product-variant/product-variant.mutator";
 import usePagination from "@/shared/hooks/usePagination";
 import { formatDate } from "@/lib/ultis/formatDate";
 
@@ -32,7 +34,9 @@ export const useProductManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [showDeleteVariantModal, setShowDeleteVariantModal] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+  const [currentVariant, setCurrentVariant] = useState<ProductVariantResponse | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // ===== PAGINATION =====
@@ -42,6 +46,7 @@ export const useProductManagement = () => {
   // ===== API HOOKS =====
   const { products, isLoading, refetch, total } = useProductAction(page, itemsPerPage);
   const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
+  const { mutateAsync: deleteVariant, isPending: isDeletingVariant } = useDeleteProductVariant();
 
   // ===== COMPUTED DATA =====
   /**
@@ -53,19 +58,21 @@ export const useProductManagement = () => {
     return products.filter((product: Product) => {
       // Search filter
       const matchesSearch = 
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productCategories.some((category: ProductCategory) =>
-          category.categoryDetails.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        );
+        product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product?.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product?.variants?.some(variant => 
+          variant.productCategories?.some((category: ProductCategory) =>
+            category?.categoryDetail?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        ) || false;
 
       // Category filter
       const matchesCategory = filterCategory === "all" || 
-        product.productCategories.some((category: ProductCategory) => 
-          category.categoryDetails.name.toLowerCase() === filterCategory.toLowerCase()
-        );
+        product?.variants?.some(variant => 
+          variant.productCategories?.some((category: ProductCategory) => 
+            category?.categoryDetail?.name?.toLowerCase() === filterCategory.toLowerCase()
+          )
+        ) || false;
 
       // Status filter
       const matchesStatus = filterStatus === "all" || 
@@ -87,20 +94,22 @@ export const useProductManagement = () => {
 
       switch (sortBy) {
         case "name":
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+          aValue = a?.name?.toLowerCase();
+          bValue = b?.name?.toLowerCase();
           break;
         case "price":
-          aValue = parseFloat(a.price);
-          bValue = parseFloat(b.price);
+          // Get minimum price from variants
+          aValue = Math.min(...(a?.variants?.map(v => Number(v.price)) || [0]));
+          bValue = Math.min(...(b.variants?.map(v => Number(v.price)) || [0]));
           break;
         case "stock":
-          aValue = a.stock;
-          bValue = b.stock;
+          // Get total stock from all variants
+          aValue = a.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
+          bValue = b.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
           break;
-        case "views":
-          aValue = a.views;
-          bValue = b.views;
+        case "variants":
+          aValue = a.variants?.length || 0;
+          bValue = b.variants?.length || 0;
           break;
         case "createdAt":
         default:
@@ -137,20 +146,30 @@ export const useProductManagement = () => {
       lowStockProducts: 0,
       totalValue: 0,
       averagePrice: 0,
-      totalViews: 0
+      totalVariants: 0
     };
 
     const totalProducts = products.length;
     const activeProducts = products.filter((product: Product) => product.status).length;
     const inactiveProducts = totalProducts - activeProducts;
-    const lowStockProducts = products.filter((product: Product) => product.stock < 10).length;
+    const lowStockProducts = products.filter((product: Product) => {
+      const totalStock = (product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0);
+      return totalStock < 10;
+    }).length;
     
-    const totalValue = products.reduce((sum: number, product: Product) => 
-      sum + (parseFloat(product.price) * product.stock), 0
-    );
-    const averagePrice = totalProducts > 0 ? 
-      products.reduce((sum: number, product: Product) => sum + parseFloat(product.price), 0) / totalProducts : 0;
-    const totalViews = products.reduce((sum: number, product: Product) => sum + product.views, 0);
+    const totalValue = products.reduce((sum: number, product: Product) => {
+      const productValue = product.variants?.reduce((variantSum, variant) => 
+        variantSum + (Number(variant.price) * variant.stock), 0
+      ) || 0;
+      return sum + productValue;
+    }, 0);
+    
+    const allVariants = products.flatMap(product => product.variants || []);
+    const averagePrice = allVariants.length > 0 ? 
+      allVariants.reduce((sum, variant) => sum + Number(variant.price), 0) / allVariants.length : 0;
+    
+    // Remove totalViews as it's not available in the new structure
+    const totalVariants = allVariants.length;
 
     return {
       totalProducts,
@@ -159,7 +178,7 @@ export const useProductManagement = () => {
       lowStockProducts,
       totalValue,
       averagePrice,
-      totalViews
+      totalVariants
     };
   }, [products]);
 
@@ -171,8 +190,11 @@ export const useProductManagement = () => {
     
     const categories = new Set<string>();
     products.forEach((product: Product) => {
-      product.productCategories.forEach((category: ProductCategory) => {
-        categories.add(category.categoryDetails.name);
+      const variants = product.variants || [];
+      variants.forEach(variant => {
+        variant.productCategories?.forEach((category: ProductCategory) => {
+          categories.add(category.categoryDetail.name);
+        });
       });
     });
     
@@ -180,6 +202,114 @@ export const useProductManagement = () => {
   }, [products]);
 
   // ===== UTILITY FUNCTIONS =====
+
+  /**
+   * Get all variants from a product
+   * @param {Product} product - Product object
+   * @returns {ProductVariantResponse[]} Array of variants
+   */
+  const getProductVariants = (product: Product): ProductVariantResponse[] => {
+    return product.variants || [];
+  };
+
+  /**
+   * Get minimum price from product variants
+   * @param {Product} product - Product object
+   * @returns {number} Minimum price
+   */
+  const getProductMinPrice = (product: Product): number => {
+    const variants = product.variants || [];
+    if (variants.length === 0) return 0;
+    return Math.min(...variants.map(v => Number(v.price)));
+  };
+
+  /**
+   * Get maximum price from product variants
+   * @param {Product} product - Product object
+   * @returns {number} Maximum price
+   */
+  const getProductMaxPrice = (product: Product): number => {
+    const variants = product.variants || [];
+    if (variants.length === 0) return 0;
+    return Math.max(...variants.map(v => Number(v.price)));
+  };
+
+  /**
+   * Get total stock from all product variants
+   * @param {Product} product - Product object
+   * @returns {number} Total stock
+   */
+  const getProductTotalStock = (product: Product): number => {
+    const variants = product.variants || [];
+    return variants.reduce((sum, variant) => sum + variant.stock, 0);
+  };
+
+  /**
+   * Get total value (price * stock) from all product variants
+   * @param {Product} product - Product object
+   * @returns {number} Total value
+   */
+  const getProductTotalValue = (product: Product): number => {
+    const variants = product.variants || [];
+    return variants.reduce((sum, variant) => sum + (Number(variant.price) * variant.stock), 0);
+  };
+
+  /**
+   * Check if product has low stock (total stock < 10)
+   * @param {Product} product - Product object
+   * @returns {boolean} Whether product has low stock
+   */
+  const hasLowStock = (product: Product): boolean => {
+    const totalStock = (product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0);
+    return totalStock < 10;
+  };
+
+  /**
+   * Get unique categories from product variants
+   * @param {Product} product - Product object
+   * @returns {string[]} Array of unique category names
+   */
+  const getProductUniqueCategories = (product: Product): string[] => {
+    const allCategories = new Set<string>();
+    const variants = product.variants || [];
+    
+    variants.forEach(variant => {
+      variant.productCategories?.forEach((category: ProductCategory) => {
+        allCategories.add(category.categoryDetail.name);
+      });
+    });
+    
+    return Array.from(allCategories);
+  };
+
+  /**
+   * Get price display string for product (range if multiple prices)
+   * @param {Product} product - Product object
+   * @returns {string} Price display string
+   */
+  const getProductPriceDisplay = (product: Product): string => {
+    const variants = product.variants || [];
+    if (variants.length === 0) return "No variants";
+    
+    const prices = variants.map(v => Number(v.price));
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    
+    if (minPrice === maxPrice) return formatCurrency(minPrice);
+    return `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
+  };
+
+  /**
+   * Get stock status text for product
+   * @param {Product} product - Product object
+   * @returns {string} Stock status text
+   */
+  const getProductStockStatus = (product: Product): string => {
+    const totalStock = (product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0);
+    if (totalStock === 0) return "Out of stock";
+    if (totalStock < 10) return `Low stock (${totalStock})`;
+    return `In stock (${totalStock})`;
+  };
 
   /**
    * Handle refresh
@@ -237,9 +367,16 @@ export const useProductManagement = () => {
    * @returns {string} Categories joined by comma
    */
   const getProductCategories = (product: Product) => {
-    return product.productCategories
-      .map((category: ProductCategory) => category.categoryDetails.name)
-      .join(", ");
+    const allCategories = new Set<string>();
+    const variants = product.variants || [];
+    
+    variants.forEach(variant => {
+      variant.productCategories?.forEach((category: ProductCategory) => {
+        allCategories.add(category.categoryDetail.name);
+      });
+    });
+    
+    return Array.from(allCategories).join(", ");
   };
 
   /**
@@ -337,6 +474,31 @@ export const useProductManagement = () => {
   };
 
   /**
+   * Handle opening variant delete confirmation modal
+   * @param {ProductVariantResponse} variant - Variant to delete
+   */
+  const handleDeleteVariantClick = (variant: ProductVariantResponse) => {
+    setCurrentVariant(variant);
+    setShowDeleteVariantModal(true);
+  };
+
+  /**
+   * Handle variant deletion
+   */
+  const handleDeleteVariant = async () => {
+    if (!currentVariant) return;
+    
+    try {
+      await deleteVariant(currentVariant.id);
+      setShowDeleteVariantModal(false);
+      setCurrentVariant(null);
+      handleRefresh();
+    } catch (error) {
+      console.error("Error deleting variant:", error);
+    }
+  };
+
+  /**
    * Handle product selection for bulk operations
    * @param {string} productId - Product ID to toggle
    */
@@ -391,7 +553,9 @@ export const useProductManagement = () => {
     setShowAddModal(false);
     setShowDeleteModal(false);
     setShowBulkDeleteModal(false);
+    setShowDeleteVariantModal(false);
     setCurrentProduct(null);
+    setCurrentVariant(null);
   };
 
   /**
@@ -428,6 +592,7 @@ export const useProductManagement = () => {
     // Loading states
     isLoading,
     isDeleting,
+    isDeletingVariant,
     
     // Filter and search state
     searchTerm,
@@ -440,10 +605,14 @@ export const useProductManagement = () => {
     showAddModal,
     showDeleteModal,
     showBulkDeleteModal,
+    showDeleteVariantModal,
     currentProduct,
+    currentVariant,
     setShowAddModal,
     setShowDeleteModal,
     setShowBulkDeleteModal,
+    setShowDeleteVariantModal,
+    setCurrentVariant,
     
     // Selection state
     selectedProducts,
@@ -462,6 +631,8 @@ export const useProductManagement = () => {
     handleEdit,
     handleDeleteClick,
     handleDelete,
+    handleDeleteVariantClick,
+    handleDeleteVariant,
     handleProductSelect,
     handleSelectAll,
     handleBulkDelete,
@@ -478,5 +649,16 @@ export const useProductManagement = () => {
     getProductCategories,
     isProductSelected,
     formatDate,
+    
+    // Variant helper functions
+    getProductVariants,
+    getProductMinPrice,
+    getProductMaxPrice,
+    getProductTotalStock,
+    getProductTotalValue,
+    hasLowStock,
+    getProductUniqueCategories,
+    getProductPriceDisplay,
+    getProductStockStatus,
   };
 };

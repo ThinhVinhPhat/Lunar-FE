@@ -304,14 +304,14 @@ const OrderTrack: React.FC<AuthProps> = () => {
                           <div className="flex items-center">
                             <div className="h-10 w-12 flex-shrink-0 bg-[#F5EFD9] rounded-md">
                               <img
-                                src={item.product?.images[0]}
-                                alt={item.product?.name}
+                                src={item.variant?.images[0]}
+                                alt={item.variant?.color}
                                 className="w-full h-full object-cover"
                               />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">
-                                {item.product?.name}
+                                {item.variant?.color}
                               </div>
                             </div>
                           </div>
@@ -320,7 +320,7 @@ const OrderTrack: React.FC<AuthProps> = () => {
                           {item.quantity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#C8A846]">
-                          {Number(item.product?.price).toLocaleString()} $
+                          {Number(item?.price).toLocaleString()} $
                         </td>
                       </tr>
                     )

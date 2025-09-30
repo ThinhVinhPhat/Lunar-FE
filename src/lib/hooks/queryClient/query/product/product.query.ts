@@ -1,6 +1,6 @@
-import { getFavoriteProducts, getProduct, getProductBySuggestion, getProducts } from "@/lib/api/service/product.service";
+import { getProduct, getProducts, getFavoriteProducts, getProductBySuggestion } from "@/lib/api/service/product.service";
+import { Product, FavoriteProductInterface } from "@/shared/types/product";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 
 type DataProp = {
     category?: string[];
@@ -16,7 +16,7 @@ export const useGetFavoriteProducts = () => {
   });
   return {
     ...response,
-    data: response.data?.data || [],
+    data: response.data?.data as FavoriteProductInterface[] || [],
   };
 };
 
@@ -34,17 +34,20 @@ export const useProduct = (slug: string | undefined, userId?: string) => {
   
     return {
       ...response,
-      product: response.data?.data || null,
+      product: response.data?.data as Product || null,
     };
   };
   
-  export const useProductBySuggestion = (suggestion: string) => {
+  export const useProductBySuggestion = (suggestion: string, page?: number, limit?: number) => {
     const response = useQuery({
-      queryKey: ["product-suggestion", suggestion],
-      queryFn: () => getProductBySuggestion(suggestion),
+      queryKey: ["product-suggestion", suggestion, page, limit],
+      queryFn: () => getProductBySuggestion({ suggestion, page: page ?? 1, limit: limit ?? 20 }),
       enabled: !!suggestion,
     });
-    return response;
+    return {
+      ...response,
+      products: response.data?.data as Product[] || [],
+    };
   };
   
   
@@ -52,18 +55,18 @@ export const useProduct = (slug: string | undefined, userId?: string) => {
     const response = useQuery({
       queryKey: [
         "products",
-        data?.category,
-        data?.page,
-        data?.limit,
+        data?.category?.join(","),
+        data?.page ?? 1,
+        data?.limit ?? 20,
         data?.userId,
       ],
       queryFn: () =>
-        getProducts(data?.category, data?.page, data?.limit, data?.userId),
+        getProducts({ category: data?.category, page: data?.page ?? 1, limit: data?.limit ?? 20, userId: data?.userId }),
     });
   
     return {
       ...response,
-      products: response.data?.data || [],
+      products: response.data?.data as Product[] || [],
       total: response.data?.meta.total || 0,
     };
   };
