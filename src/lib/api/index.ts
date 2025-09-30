@@ -43,6 +43,11 @@ instance.interceptors.response.use(
         const refreshToken = Cookies.get("refreshToken");
         const res = await instance.post("/auth/refresh-token", {
           refreshToken: refreshToken,
+        }, {
+          headers: {
+            ...(instance.defaults.headers.common || {}),
+            "x-api-key": import.meta.env.VITE_PUBLIC_API_KEY ?? "",
+          },
         });
         const newAccessToken = res.data.accessToken;
         Cookies.set("accessToken", newAccessToken, {
