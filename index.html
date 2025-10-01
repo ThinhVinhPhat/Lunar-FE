@@ -19,9 +19,9 @@
           const orderId = urlParams.get("order_id");
           const sessionId = urlParams.get("session_id");
           
-          document.write('<meta http-equiv="refresh" content="0; URL=http://localhost:5173/payment/success?order_id=' + orderId + '&session_id=' + sessionId + '">');
+          document.write('<meta http-equiv="refresh" content="0; URL=https://glasses-store-mxm5.onrender.com/payment/success?order_id=' + orderId + '&session_id=' + sessionId + '">');
         } else if (fullUrl.includes("https://jwt-be-production.up.railway.app/api/v1/payment/failed/checkout/session")) {
-          document.write('<meta http-equiv="refresh" content="0; URL=http://localhost:5173/payment/failure">');
+          document.write('<meta http-equiv="refresh" content="0; URL=https://glasses-store-mxm5.onrender.com/payment/failure">');
         }
       })();
     </script>
